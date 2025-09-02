@@ -1,0 +1,211 @@
+---
+title: "lebe_aug25_preprocess"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(janitor)
+library(httr)
+
+df_deid <- read.csv("~/Google Drive/My Drive/left behind/aug25/data/df_raw_deid.csv")
+```
+
+remove ineligible participants
+
+```{r}
+#keep only those who finished
+df_lebe <- df_deid %>% 
+  filter(Finished == 1) %>% 
+  filter(Progress == 100) %>% 
+  filter(intro == 4)
+```
+
+Put NA's where necessary
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(income = ifelse(income == "Prefer not to answer",NA,income))
+```
+
+define income and edu as factors
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(income = factor(income,c("$0-$20,000",
+                                  "$20,001-$40,000",
+                                  "$40,001-$60,000",
+                                  "$60,001-$80,000",
+                                  "$80,001-$100,000",
+                                  "$100,001-$120,000",
+                                  "$120,001-$140,000",
+                                  "$140,001-$160,000",
+                                  "$160,001-$180,000",
+                                  "$180,001-$200,000",
+                                  "Over $200,000")),
+         edu = factor(edu,c("noHS",
+                            "GED",
+                            "2yearColl",
+                            "4yearColl",
+                            "MA",
+                            "PHD")))
+```
+
+fix race
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate_at(vars(race_1:race_8),function(x){as.character(x)}) %>% 
+  mutate_at(vars(race_1:race_8),function(x){replace_na(x,"")}) %>% 
+  mutate(race_num_1 = ifelse(race_1 != "",1,0),
+         race_num_2 = ifelse(race_2 != "",1,0),
+         race_num_3 = ifelse(race_3 != "",1,0),
+         race_num_4 = ifelse(race_4 != "",1,0),
+         race_num_5 = ifelse(race_5 != "",1,0),
+         race_num_6 = ifelse(race_6 != "",1,0),
+         race_num_7 = ifelse(race_7 != "",1,0),
+         race_num_8 = ifelse(race_8 != "",1,0),
+         race_num = race_num_1 + race_num_2 + race_num_3 + race_num_4 + race_num_5 + race_num_6 + race_num_7 + race_num_8,
+         race = ifelse(race_num > 1,"multiracial",paste0(race_1,race_2,race_3,race_4,race_5,race_6,race_7,race_8)),
+         race = ifelse(race == "",NA,race))
+```
+
+rename some vars
+
+```{r}
+df_lebe <- df_lebe %>% 
+  rename(ideo_con = ideo_1,
+         ideo_lib = ideo_2,
+         ideo_demsoc = ideo_3,
+         ideo_lbrtn = ideo_4,
+         ideo_prog = ideo_5,
+         how = how_1,
+         otherself = IOS)
+         
+         
+```
+
+reverse-score items
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(antiest_4R = 8 - antiest_4)
+```
+
+recode items
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(elect = elect - 1,
+         vote_2024 = ifelse(vote_2024 == "Other (please specify)",vote_2024_12_TEXT,vote_2024),
+         vote_now = ifelse(vote_now == "Other (please specify)",vote_now_12_TEXT,vote_now)) %>% 
+  mutate(party_followup = case_when(party_gen == "Democrat" ~ paste0("Democrat | ",party_dem),
+                                    party_gen == "Republican" ~ paste0("Republican | ",party_rep),
+                                    party_gen == "Independent" |
+                                      party_gen == "No preference" |
+                                      party_gen == "Other party" ~ paste0("Independent | ",party_ind),
+                                    .default = NA)) 
+```
+
+mean scores
+
+```{r}
+df_lebe <- df_lebe %>% 
+  rowwise() %>% 
+  mutate(antidem = mean(c(antidem_1,
+                          antidem_2,
+                          antidem_3,
+                          antidem_4,
+                          antidem_5),na.rm = T),
+         antiest = mean(c(antiest_1,
+                          antiest_2,
+                          antiest_3,
+                          antiest_4R),na.rm = T),
+         trust = mean(c(trust_con,
+                        trust_gov,
+                        trust_jud,
+                        trust_sci,
+                        trust_pol,
+                        trust_news),na.rm = T),
+         polparticipation = mean(c(polparticip_1,
+                                   polparticip_2,
+                                   polparticip_3,
+                                   polparticip_4,
+                                   polparticip_5,
+                                   polparticip_6),na.rm = T)) %>% 
+  ungroup()
+```
+
+check
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(att_1 = ifelse(check_1 == "14285733",0,1),
+         is_elg = ifelse(att_1 == 0,0,1))
+```
+
+clean text
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(describe = str_squish(describe)) %>% 
+  mutate_at(vars(why_1:why_5),function(x){str_squish(x)})
+```
+
+
+take only necessary variables
+
+```{r}
+df_lebe <- df_lebe %>% 
+  dplyr::select(PID,
+                describe:otherself,
+                antidem,
+                trust,
+                antiest,
+                elect,
+                polparticipation,
+                antidem_1,
+                          antidem_2,
+                          antidem_3,
+                          antidem_4,
+                          antidem_5,
+                antiest_1,
+                          antiest_2,
+                          antiest_3,
+                          antiest_4R,
+                trust_con,
+                        trust_gov,
+                        trust_jud,
+                        trust_sci,
+                        trust_pol,
+                        trust_news,
+                polparticip_1,
+                                   polparticip_2,
+                                   polparticip_3,
+                                   polparticip_4,
+                                   polparticip_5,
+                                   polparticip_6,
+                vote_2024,
+                vote_now,
+                ideo_con:ideo_prog,
+                party_gen,
+                party_dem,
+                party_rep,
+                party_ind,
+                party_followup,
+                att_1,
+                is_elg,
+                age,
+                gender,
+                race,
+                edu,
+                income,
+                feedback)
+```
+
+write csv
+
+```{r}
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/aug25/data/df_lebe.csv",row.names = F)
+```
+
