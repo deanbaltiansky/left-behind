@@ -24,8 +24,9 @@ library(tidyverse)
 library(janitor)
 library(httr)
 library(here)
+library(knitr)
 
-opts_knit$set(root.dir = here::here())
+knitr::opts_knit$set(root.dir = here::here())
 
 df_deid <- read.csv(here("study-aug25","data","df_raw_deid.csv"))
 ```
