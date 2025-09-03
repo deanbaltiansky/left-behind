@@ -3,12 +3,31 @@ title: "lebe_aug25_preprocess"
 output: html_document
 ---
 
+```{r,include=FALSE}
+detachAllPackages <- function() {
+
+  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
+
+  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+
+  package.list <- setdiff(package.list,basic.packages)
+
+  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
+
+}
+
+detachAllPackages()
+```
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(janitor)
 library(httr)
+library(here)
 
-df_deid <- read.csv("~/Google Drive/My Drive/left behind/aug25/data/df_raw_deid.csv")
+opts_knit$set(root.dir = here::here())
+
+df_deid <- read.csv(here("study-aug25","data","df_raw_deid.csv"))
 ```
 
 remove ineligible participants
