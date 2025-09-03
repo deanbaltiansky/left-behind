@@ -23,12 +23,10 @@ detachAllPackages()
 library(tidyverse)
 library(janitor)
 library(httr)
-library(here)
-library(knitr)
+library(readr)
 
-knitr::opts_knit$set(root.dir = here::here())
-
-df_deid <- read.csv(here("study-aug25","data","df_raw_deid.csv"))
+url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-aug25/data/df_raw_deid.csv"
+df_deid  <- readr::read_csv(url, show_col_types = FALSE)
 ```
 
 remove ineligible participants
@@ -226,6 +224,6 @@ df_lebe <- df_lebe %>%
 write csv
 
 ```{r}
-write.csv(df_lebe,"~/Google Drive/My Drive/left behind/aug25/data/df_lebe.csv",row.names = F)
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-aug25/data/df_lebe.csv",row.names = F)
 ```
 

@@ -1,12 +1,15 @@
 ---
 title: "Left Behind"
 subtitle: "Aug 2025: Analysis"
-output: 
+output:
   html_document:
-    toc: yes
-    toc_float: yes
+    toc: true
+    toc_float: true
     code_folding: hide
+knit: (function(input_file, encoding) { rmarkdown::render(input_file, encoding = encoding, output_file = 'index.html', output_dir = here::here('docs','studies','study-aug25')); })
 ---
+
+
 ```{r,include=FALSE}
 detachAllPackages <- function() {
 
@@ -51,13 +54,13 @@ library(quanteda)
 library(bruceR)
 library(here)
 
-df_lebe <- read.csv("~/Google Drive/My Drive/left behind/aug25/data/df_lebe.csv")
-df_lebe_gpt4o <- read.csv("~/Google Drive/My Drive/left behind/aug25/data/df_lebe_gpt4o.csv")
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-aug25/data/"
 
-reasons_gpt4o <- read.csv("~/Google Drive/My Drive/left behind/aug25/data/reasons_gpt4o.csv") %>% 
+df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
+df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+reasons_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_gpt4o.csv"), show_col_types = FALSE) %>% 
   rename(PID = pid)
-
-reasons_agg_gpt4o <- read.csv("~/Google Drive/My Drive/left behind/aug25/data/reasons_agg_gpt4o.csv") %>% 
+reasons_agg_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_agg_gpt4o.csv"), show_col_types = FALSE) %>% 
   rename(PID = pid)
 ```
 
