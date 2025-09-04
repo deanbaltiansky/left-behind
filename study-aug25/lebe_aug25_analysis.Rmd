@@ -57,7 +57,8 @@ library(here)
 repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-aug25/data/"
 
 df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
-
+reasons_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_gpt4o.csv"), show_col_types = FALSE) %>% 
+  rename(PID = pid)
 ```
 
 ```{r,include=FALSE}
@@ -84,7 +85,8 @@ df_lebe_elg <- df_lebe %>%
   filter(is_elg == 1)
 ```
 
-To play around with the data, open the interactive [Shiny app →](app/)
+To play around with the data, open the interactive <a href="studies/study-aug25/app/" target="_blank" rel="noopener">Shiny App</a>
+
 
 # Purpose
 
