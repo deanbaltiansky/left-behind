@@ -92,10 +92,11 @@ df_lebe_elg <- df_lebe %>%
   left_join(reasons_agg_gpt4o,by = "PID")
 ```
 
+To play around with the data, open the interactive [Shiny app →](app/)
+
 # Purpose
 
 This is a pilot study intended to explore the relationships between perceived feeling of being left behind, its attributions, and consequent political attitudes and behaviors. At this stage, we're examining different ways to measure the construct of "left behind" with open-ended questions and likert scales.
-
 # Procedure
 
 ## Demographics

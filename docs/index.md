@@ -12,3 +12,4 @@ A few words about the project...
 ## Studies
 
 - [Study — August 2025](studies/study-aug25/)
+  - [Interactive app](studies/study-aug25/app/)
