@@ -25,8 +25,14 @@ library(janitor)
 library(httr)
 library(readr)
 
-url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-aug25/data/df_raw_deid.csv"
-df_deid  <- readr::read_csv(url, show_col_types = FALSE)
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-aug25/data/"
+
+df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
+df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+reasons_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_gpt4o.csv"), show_col_types = FALSE) %>% 
+  rename(PID = pid)
+reasons_agg_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_agg_gpt4o.csv"), show_col_types = FALSE) %>% 
+  rename(PID = pid)
 ```
 
 remove ineligible participants
@@ -66,7 +72,9 @@ df_lebe <- df_lebe %>%
                             "2yearColl",
                             "4yearColl",
                             "MA",
-                            "PHD")))
+                            "PHD")),
+         income_num = as.numeric(income),
+         edu_num = as.numeric(edu))
 ```
 
 fix race
@@ -85,7 +93,24 @@ df_lebe <- df_lebe %>%
          race_num_8 = ifelse(race_8 != "",1,0),
          race_num = race_num_1 + race_num_2 + race_num_3 + race_num_4 + race_num_5 + race_num_6 + race_num_7 + race_num_8,
          race = ifelse(race_num > 1,"multiracial",paste0(race_1,race_2,race_3,race_4,race_5,race_6,race_7,race_8)),
-         race = ifelse(race == "",NA,race))
+         race = ifelse(race == "",NA,race)) %>% 
+  mutate(white_bin = ifelse(race == "white",1,0))
+```
+
+gender
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(man_bin = ifelse(gender == "man",1,0))
+```
+
+party 
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(rep_bin = ifelse(party_gen == "Republican",1,0),
+         dem_bin = ifelse(party_gen == "Democrat",1,0),
+         ind_bin = ifelse(party_gen == "Independent",1,0))
 ```
 
 rename some vars
@@ -170,6 +195,14 @@ df_lebe <- df_lebe %>%
   mutate_at(vars(why_1:why_5),function(x){str_squish(x)})
 ```
 
+attach from text analysis scripts
+
+```{r}
+df_lebe <- df_lebe %>% 
+  left_join(df_lebe_gpt4o,by = "PID") %>% 
+  left_join(reasons_agg_gpt4o,by = "PID")
+```
+
 
 take only necessary variables
 
@@ -218,6 +251,10 @@ df_lebe <- df_lebe %>%
                 race,
                 edu,
                 income,
+                income_num,
+                edu_num,
+                white_bin:ind_bin,
+                ai_sentiment:top_category,
                 feedback)
 ```
 

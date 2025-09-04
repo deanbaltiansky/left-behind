@@ -57,11 +57,7 @@ library(here)
 repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-aug25/data/"
 
 df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
-df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
-reasons_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_gpt4o.csv"), show_col_types = FALSE) %>% 
-  rename(PID = pid)
-reasons_agg_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_agg_gpt4o.csv"), show_col_types = FALSE) %>% 
-  rename(PID = pid)
+
 ```
 
 ```{r,include=FALSE}
@@ -82,14 +78,10 @@ df_lebe <- df_lebe %>%
                             "2yearColl",
                             "4yearColl",
                             "MA",
-                            "PHD")),
-         income_num = as.numeric(income),
-         edu_num = as.numeric(edu))
+                            "PHD")))
 
 df_lebe_elg <- df_lebe %>% 
-  filter(is_elg == 1) %>% 
-  left_join(df_lebe_gpt4o,by = "PID") %>% 
-  left_join(reasons_agg_gpt4o,by = "PID")
+  filter(is_elg == 1)
 ```
 
 To play around with the data, open the interactive [Shiny app →](app/)
