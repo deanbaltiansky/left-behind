@@ -94,7 +94,7 @@ df_lebe <- df_lebe %>%
          race_num = race_num_1 + race_num_2 + race_num_3 + race_num_4 + race_num_5 + race_num_6 + race_num_7 + race_num_8,
          race = ifelse(race_num > 1,"multiracial",paste0(race_1,race_2,race_3,race_4,race_5,race_6,race_7,race_8)),
          race = ifelse(race == "",NA,race)) %>% 
-  mutate(white_bin = ifelse(race == "white",1,0))
+  mutate(white_bin = ifelse(race == "White",1,0))
 ```
 
 gender
