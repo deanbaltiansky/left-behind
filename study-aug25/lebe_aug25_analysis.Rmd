@@ -85,12 +85,10 @@ df_lebe_elg <- df_lebe %>%
   filter(is_elg == 1)
 ```
 
-To play around with the data, open the interactive <a href="https://deanbaltiansky.github.io/left-behind/studies/study-aug25/app/" target="_blank" rel="noopener">Shiny App</a>
-
-
 # Purpose
 
 This is a pilot study intended to explore the relationships between perceived feeling of being left behind, its attributions, and consequent political attitudes and behaviors. At this stage, we're examining different ways to measure the construct of "left behind" with open-ended questions and likert scales.
+
 # Procedure
 
 ## Demographics
