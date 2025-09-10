@@ -29,6 +29,8 @@ repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/s
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
 df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+df_lebe_gpt4o_extra <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o_extra.csv"), show_col_types = FALSE) %>% 
+  rename(left_behind_score_revised = left_behind_score)
 reasons_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_gpt4o.csv"), show_col_types = FALSE) %>% 
   rename(PID = pid)
 reasons_agg_gpt4o <- readr::read_csv(paste0(repo_url,"reasons_agg_gpt4o.csv"), show_col_types = FALSE) %>% 
@@ -199,7 +201,8 @@ attach from text analysis scripts
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  left_join(df_lebe_gpt4o,by = "PID") %>% 
+  left_join(df_lebe_gpt4o,by = "PID") %>%
+  left_join(df_lebe_gpt4o_extra,by = "PID") %>% 
   left_join(reasons_agg_gpt4o,by = "PID")
 ```
 
@@ -255,6 +258,7 @@ df_lebe <- df_lebe %>%
                 edu_num,
                 white_bin:ind_bin,
                 ai_sentiment:top_category,
+                left_behind_score_revised,
                 feedback)
 ```
 
