@@ -258,7 +258,6 @@ df_lebe <- df_lebe %>%
                 edu_num,
                 white_bin:ind_bin,
                 ai_sentiment:top_category,
-                left_behind_score_revised,
                 feedback)
 ```
 

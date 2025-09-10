@@ -7,7 +7,7 @@ DATA_URL <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/s
 
 # Optional: restrict to your hand-picked continuous vars (leave empty to auto-detect)
 numeric_vars_user <- c(
-  "left_behind_score","culprit","any_gov","frac_systemic",
+  "left_behind_score","left_behind_score_revised","culprit","any_gov","frac_systemic",
   "how","otherself","antidem","trust","antiest","elect","polparticipation",
   "trust_con","trust_gov","trust_jud","trust_sci","trust_pol","trust_news",
   "ideo_con","ideo_lib","ideo_demsoc","ideo_lbrtn","ideo_prog",

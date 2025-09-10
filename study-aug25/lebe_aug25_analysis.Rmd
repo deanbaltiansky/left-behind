@@ -701,7 +701,7 @@ I'll keep trying to get those clusters and derive some meaningful topics out of 
 I got gpt-4o ratings for each observations of the following dimensions:\
 (1) sentiment (negative, mixed, neutral, positive);\
 (2) 3-4 topics that were mentioned in the description;\
-(3) the extent to which the person described is left behind (1-10);\
+(3) the extent to which the person described is left behind (1-10); *update 9/10: added a revised score, based on more specific scale anchor points.\
 (4) category (economic, social, political, other);
 (5) mention of a culprit (1 = culprit; 0 = no culprit);\
 (6) if there is a culprit, who is that culprit;\
@@ -803,7 +803,44 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-hmm, I wish we got 9's and 10's... Maybe I'll adjust the prompt for that one. Ok let's keep going for now.
+hmm, I wish we got 9's and 10's... Maybe I'll adjust the prompt for that one. Ok let's keep going for now.\
+\
+Update 9/10: Revised the instructions to 1 = *is not left behind at all*; 2 = *slightly left behind*; 3 = *somewhat left behind*; 4 = *very left behind*; 5 = *extremely left behind*
+
+```{r,echo=FALSE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  select(left_behind_score_revised,describe) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                position = "left") %>% 
+  scroll_box(width = "100%", height = "400px")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = left_behind_score_revised)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1) +
+  scale_x_continuous(breaks = seq(1,5,1),
+                     limits = c(0,6)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$left_behind_score_revised,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+hmm, that's not a great distribution at all. And doesn't match the former coding. Might be a little too nuanced for gpt to pick up without much more context. To be fair, the instructions to participants didn't really allow them to clearly vary the extent to which their person is left behind, so maybe gpt is just picking up a lot of noise.
 
 ### Group/person category
 
