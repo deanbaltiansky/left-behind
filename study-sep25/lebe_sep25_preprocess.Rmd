@@ -128,7 +128,8 @@ reverse-score items
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  mutate(antiest_4R = 8 - antiest_4)
+  mutate(antiest_4R = 8 - antiest_4,
+         system_R = 8 - system)
 ```
 
 recode items
@@ -202,7 +203,9 @@ take only necessary variables
 df_lebe <- df_lebe %>% 
   dplyr::select(PID,
                 lebe_cont,
-                describe:trajectory,
+                describe,
+                system_R,
+                gov:trajectory,
                 antidem,
                 trust,
                 antiest,
