@@ -28,7 +28,7 @@ library(readr)
 repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25/data/"
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
-#df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
 
 ```
 
@@ -186,7 +186,13 @@ attach from text analysis scripts
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  left_join(df_lebe_gpt4o,by = "PID")
+  left_join(df_lebe_gpt4o %>% 
+              rename(PID = id,
+                     reasons = reasons_csv,
+                     system_to_ind = systemic,
+                     econ_to_cult = economic_or_cultural,
+                     hist_to_recent = history,
+                     traj_gpt = trajectory),by = "PID")
 ```
 
 
@@ -195,12 +201,12 @@ take only necessary variables
 ```{r}
 df_lebe <- df_lebe %>% 
   dplyr::select(PID,
-                describe:otherself,
+                lebe_cont,
+                describe:trajectory,
                 antidem,
                 trust,
                 antiest,
-                elect,
-                polparticipation,
+                elect_exp:elect_cult,
                 antidem_1,
                           antidem_2,
                           antidem_3,
@@ -216,14 +222,7 @@ df_lebe <- df_lebe %>%
                         trust_sci,
                         trust_pol,
                         trust_news,
-                polparticip_1,
-                                   polparticip_2,
-                                   polparticip_3,
-                                   polparticip_4,
-                                   polparticip_5,
-                                   polparticip_6,
                 vote_2024,
-                vote_now,
                 ideo_con:ideo_prog,
                 party_gen,
                 party_dem,
@@ -240,13 +239,13 @@ df_lebe <- df_lebe %>%
                 income_num,
                 edu_num,
                 white_bin:ind_bin,
-                ai_sentiment:top_category,
+                left_behind_score:traj_gpt,
                 feedback)
 ```
 
 write csv
 
 ```{r}
-write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-aug25/data/df_lebe.csv",row.names = F)
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-sep25/data/df_lebe.csv",row.names = F)
 ```
 
