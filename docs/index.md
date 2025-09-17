@@ -5,9 +5,7 @@ author: "Dean Baltiansky"
 
 # Left Behind - Project Hub
 
-<p align="center">
-  <img src="assets/leftbehind_cover.jpg" alt="Left behind cover photo" width="400">
-</p>
+<img src="assets/leftbehind_cover.jpg" alt="Left behind cover photo" style="width:100%; height:auto;">
 
 ## Background
 
