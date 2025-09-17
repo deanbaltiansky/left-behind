@@ -1,22 +1,24 @@
 # scripts/export_apps.R
-# install.packages("shinylive")  # run once
-library(shinylive)
+# Export all Shiny apps in study-* folders to docs/
+
 library(fs)
 
-apps <- c(
-  "study-aug25" = "app"   # source at study-aug25/app
-)
+# find all "app" folders under study-*
+app_dirs <- dir_ls(".", recurse = TRUE, type = "directory", regexp = "study-[^/]+/app$")
 
-for (study in names(apps)) {
-  appdir <- file.path(study, apps[[study]])                 # e.g., "study-aug25/app"
-  dest   <- "docs"                                          # Pages root
-  sub    <- file.path("studies", study, apps[[study]])      # e.g., "studies/study-aug25/app"
+if (!dir_exists("docs")) dir_create("docs")
+
+for (app_dir in app_dirs) {
+  study_name <- path_file(path_dir(app_dir))   # e.g., "study-sep25"
+  out_dir <- path("docs", study_name)
   
-  if (!dir_exists(appdir)) {
-    message("Skipping (not found): ", appdir)
-    next
-  }
-  dir_create(file.path(dest, sub))
-  message("Exporting ", appdir, " -> ", file.path(dest, sub))
-  shinylive::export(appdir = appdir, destdir = dest, subdir = sub)
+  message("Exporting app from ", app_dir, " --> ", out_dir)
+  
+  if (dir_exists(out_dir)) dir_delete(out_dir)
+  dir_create(out_dir, recurse = TRUE)
+  
+  # copy everything inside app_dir to docs/study-xx/
+  dir_copy(app_dir, out_dir, overwrite = TRUE)
 }
+
+message("✅ All apps exported to docs/")
