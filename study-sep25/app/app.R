@@ -1,14 +1,15 @@
-# study-aug25/app/app.R
+# study-sep25/app/app.R
 library(shiny)
 
 # 1) Data source (raw GitHub). If you prefer bundling a copy with the app,
-#    put it at: study-aug25/app/data/df_lebe.csv  (the code will auto-use it).
-DATA_URL <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-aug25/data/df_lebe.csv"
+#    put it at: study-sep25/app/data/df_lebe.csv  (the code will auto-use it).
+DATA_URL <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25/data/df_lebe.csv"
 
 # Optional: restrict to your hand-picked continuous vars (leave empty to auto-detect)
 numeric_vars_user <- c(
-  "left_behind_score","left_behind_score_revised","culprit","any_gov","frac_systemic",
-  "how","otherself","antidem","trust","antiest","elect","polparticipation",
+  "lebe_cont","system_R","gov","econcult","history","trajectory",
+  "leftbehind_gpt","system_to_ind_gpt","gov_gpt","econ_to_cult_gpt","history_gpt","trajectory_gpt",
+  "antidem","trust","antiest","elect_exp","elect_change","elect_econ","elect_cult",
   "trust_con","trust_gov","trust_jud","trust_sci","trust_pol","trust_news",
   "ideo_con","ideo_lib","ideo_demsoc","ideo_lbrtn","ideo_prog",
   "rep_bin","dem_bin","ind_bin",
@@ -25,7 +26,7 @@ load_data <- function() {
 }
 
 ui <- fluidPage(
-  titlePanel("Study Aug 2025 — Correlation Explorer"),
+  titlePanel("Study Sep 2025 — Correlations"),
   sidebarLayout(
     sidebarPanel(
       helpText("Pick two continuous variables to explore their linear relationship."),
