@@ -84,7 +84,12 @@ server <- function(input, output, session) {
   } else numeric_auto
   
   # Map pretty labels -> actual var names
-  pretty <- setNames(nm = numeric_choices_raw, object = vapply(numeric_choices_raw, get_label, character(1)))
+  # names = labels (shown), values = actual column names (returned)
+  pretty <- setNames(
+    object = numeric_choices_raw,                                # values (what Shiny returns)
+    nm     = vapply(numeric_choices_raw, get_label, character(1))# names/labels (what user sees)
+  )
+  
   # populate dropdowns
   updateSelectInput(session, "xvar", choices = pretty,
                     selected = if (length(numeric_choices_raw)) numeric_choices_raw[1])
