@@ -1011,7 +1011,7 @@ df_lebe_elg %>%
 
 # Analysis
 
-## Correlation matrix
+## Correlations
 
 ```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
 df_lebe_elg %>% 
@@ -1023,3 +1023,15 @@ To explore these correlations and more, see this
 <a href="app/" target="_blank" rel="noopener">
   Shiny App
 </a>
+
+## Interactions
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+m1 <- lm(elect_change ~ system_R:lebe_cont,df_lebe_elg)
+
+interact_plot(m1,
+              pred = system_R,
+              modx = lebe_cont,
+              interval = T)
+```
+
