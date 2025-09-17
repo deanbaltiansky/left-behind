@@ -1019,7 +1019,8 @@ df_lebe_elg %>%
    corPlot(upper = TRUE,stars = TRUE,xsrt = 270)
 ```
 
-To explore these correlations and more, see this
+To explore these correlations and more, see here:\
+\
 <a href="app/" target="_blank" rel="noopener">
   Shiny App: Correlations
 </a>
