@@ -1026,18 +1026,170 @@ To explore these correlations and more, see this
 
 ## Interactions
 
-There are a bunch of ways to interact these variables. Feel free to explore here:
+There are a bunch of ways to interact these variables. Feel free to explore here:\
+\
 <a href="../study-sep25-interactions/app/" target="_blank" rel="noopener">
   Shiny App: Interactions
-</a>
+</a>\
+\
+Note that these are just raw interactions, without controlling for main effects or any other variables. Let's start adding controls in the following linear models.
 
+## Linear models
 
-```{r,echo=TRUE,results='asis',warning=FALSE}
-# m1 <- lm(elect_change ~ system_R:lebe_cont,df_lebe_elg)
-# 
-# interact_plot(m1,
-#               pred = system_R,
-#               modx = lebe_cont,
-#               interval = T)
+Ok, now to run some actual stats. We want to see if these correlations and interactions hold
+when controlling for some important variables. I'll show a few of them below, but if you want to try some yourself, feel free to explore here:\
+\
+[SHINY LINK HERE]
+
+### DV: Candidate support for sweeping-incremental change
+
+Just as a reminder, this is the measure for this DV...\
+\
+Thinking about how they would approach change, what approach would you like them to take?\
+1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
+
+#### Model 1\
+\
+**Outcome:** Incremental change candidate\
+**Predictor:** left behind - continuous\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_change ~ lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
 ```
+
+#### Model 2\
+\
+**Outcome:** Incremental change candidate\
+**Predictor:** systemic reason for being left behind\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_change ~ system_R + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 3\
+\
+**Outcome:** Incremental change candidate\
+**Predictor:** systemic reason for being left behind\
+**Moderator:** continuous measure of feeling left behind\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_change ~ system_R*lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 4\
+\
+**Outcome:** Incremental change candidate\
+**Predictor:** systemic reason for being left behind - gpt (unreversed)\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_change ~ system_to_ind_gpt + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 5\
+\
+**Outcome:** Incremental change candidate\
+**Predictor:** trajectory\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_change ~ trajectory + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### DV: Candidate support for economically progressive policy
+
+Just as a reminder, this is the measure for this DV...\
+\
+Thinking about their economic platform, which positions would your ideal candidate advance?\
+1 = *Free Market* (low corporate taxes, deregulation); 7 = *Redistributive* (wealth tax, stronger unions)
+
+#### Model 1\
+\
+**Outcome:** Economically redistributive candidate\
+**Predictor:** left behind - continuous\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_econ ~ lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 2\
+\
+**Outcome:** Economically redistributive candidate\
+**Predictor:** systemic reason for being left behind\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_econ ~ system_R + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 3\
+\
+**Outcome:** Economically redistributive candidate\
+**Predictor:** economic-cultural reasons\
+**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(elect_econ ~ econcult + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 
