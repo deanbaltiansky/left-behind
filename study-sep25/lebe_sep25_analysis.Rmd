@@ -1021,17 +1021,23 @@ df_lebe_elg %>%
 
 To explore these correlations and more, see this
 <a href="app/" target="_blank" rel="noopener">
-  Shiny App
+  Shiny App: Correlations
 </a>
 
 ## Interactions
 
-```{r,echo=TRUE,results='asis',warning=FALSE}
-m1 <- lm(elect_change ~ system_R:lebe_cont,df_lebe_elg)
+There are a bunch of ways to interact these variables. Feel free to explore here:
+<a href="../study-sep25-interactions/app/" target="_blank" rel="noopener">
+  Shiny App: Interactions
+</a>
 
-interact_plot(m1,
-              pred = system_R,
-              modx = lebe_cont,
-              interval = T)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+# m1 <- lm(elect_change ~ system_R:lebe_cont,df_lebe_elg)
+# 
+# interact_plot(m1,
+#               pred = system_R,
+#               modx = lebe_cont,
+#               interval = T)
 ```
 
