@@ -148,11 +148,10 @@ server <- function(input, output, session) {
         lines(xx, mu, lwd = lw, col = cols[i])
       }
       
-      # Legend outside (right)
       usr <- par("usr")
       legend(x = usr[2] + 0.02 * diff(usr[1:2]), y = usr[4],
              legend = z_lbls, lty = 1, lwd = lw, col = cols, bty = "n",
-             xjust = 0, yjust = 1,
+             xjust = 0, yjust = 1,    # << left-align the legend
              title = paste0("Moderator (", get_label(input$zvar), ")"))
       
     } else {
@@ -189,11 +188,10 @@ server <- function(input, output, session) {
         lines(xx, mu, lwd = lw, col = cols[i])
       }
       
-      # Legend outside (right)
       usr <- par("usr")
       legend(x = usr[2] + 0.02 * diff(usr[1:2]), y = usr[4],
              legend = z_lbls, lty = 1, lwd = lw, col = cols, bty = "n",
-             xjust = 0, yjust = 1,
+             xjust = 0, yjust = 1,    # << left-align
              title = paste0("Moderator (", get_label(input$zvar), ")"))
     }
   })
