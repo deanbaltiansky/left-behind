@@ -110,90 +110,63 @@ server <- function(input, output, session) {
     x_seq <- seq(min(d$X, na.rm = TRUE), max(d$X, na.rm = TRUE), length.out = 160)
     is_binary <- input$zvar %in% binary_mods
     
-    # Save & widen margins; allow drawing in margin
-    old_par <- par(no.readonly = TRUE)
-    on.exit(par(old_par), add = TRUE)
-    par(xpd = NA, mar = c(par("mar")[1], par("mar")[2], par("mar")[3], 10))
-    
+    # Choose moderator levels & colors
     if (is_binary) {
+      # require both levels present
+      uniq <- sort(unique(d$Z))
+      validate(need(all(c(0,1) %in% uniq), "Binary moderator needs both 0 and 1 present."))
       z_vals <- c(0, 1)
       z_lbls <- c("Z = 0", "Z = 1")
       cols   <- c("red", "blue")
       ci_cols<- c("lightcoral", "lightblue")
-      lw     <- 4
-      
-      grid <- do.call(rbind, lapply(seq_along(z_vals), function(i) {
-        data.frame(X = x_seq, Z = z_vals[i], level = i)
-      }))
-      pr <- predict(m, newdata = grid, se.fit = TRUE)
-      grid$fit <- pr$fit; grid$se <- pr$se.fit
-      
-      xlab <- get_label(input$xvar); ylab <- get_label(input$yvar)
-      y_range <- if (isTRUE(input$show_ci)) {
-        range(grid$fit + 1.96 * grid$se, grid$fit - 1.96 * grid$se, na.rm = TRUE)
-      } else range(grid$fit, na.rm = TRUE)
-      
-      plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs = "i", yaxs = "i")
-      
-      for (i in seq_along(z_vals)) {
-        sli <- which(grid$level == i)
-        xx <- grid$X[sli]; mu <- grid$fit[sli]; se <- grid$se[sli]
-        if (isTRUE(input$show_ci)) {
-          ci <- 1.96 * se; upper <- mu + ci; lower <- mu - ci
-          polygon(c(xx, rev(xx)), c(upper, rev(lower)), border = NA,
-                  col = grDevices::adjustcolor(cols[i], alpha.f = 0.2))
-          lines(xx, upper, lty = 2, lwd = 2, col = ci_cols[i])
-          lines(xx, lower, lty = 2, lwd = 2, col = ci_cols[i])
-        }
-        lines(xx, mu, lwd = lw, col = cols[i])
-      }
-      
-      usr <- par("usr")
-      legend(x = usr[2] + 0.02 * diff(usr[1:2]), y = usr[4],
-             legend = z_lbls, lty = 1, lwd = lw, col = cols, bty = "n",
-             xjust = 0, yjust = 1,    # << left-align the legend
-             title = paste0("Moderator (", get_label(input$zvar), ")"))
-      
     } else {
       z_mean <- mean(d$Z, na.rm = TRUE); z_sd <- stats::sd(d$Z, na.rm = TRUE)
       z_vals <- c(z_mean - z_sd, z_mean, z_mean + z_sd)
       z_lbls <- c("Z = -1 SD", "Z = mean", "Z = +1 SD")
       cols   <- c("red", "black", "blue")
       ci_cols<- c("lightcoral", "grey50", "lightblue")
-      lw     <- 4
-      
-      grid <- do.call(rbind, lapply(seq_along(z_vals), function(i) {
-        data.frame(X = x_seq, Z = z_vals[i], level = i)
-      }))
-      pr <- predict(m, newdata = grid, se.fit = TRUE)
-      grid$fit <- pr$fit; grid$se <- pr$se.fit
-      
-      xlab <- get_label(input$xvar); ylab <- get_label(input$yvar)
-      y_range <- if (isTRUE(input$show_ci)) {
-        range(grid$fit + 1.96 * grid$se, grid$fit - 1.96 * grid$se, na.rm = TRUE)
-      } else range(grid$fit, na.rm = TRUE)
-      
-      plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs = "i", yaxs = "i")
-      
-      for (i in seq_along(z_vals)) {
-        sli <- which(grid$level == i)
-        xx <- grid$X[sli]; mu <- grid$fit[sli]; se <- grid$se[sli]
-        if (isTRUE(input$show_ci)) {
-          ci <- 1.96 * se; upper <- mu + ci; lower <- mu - ci
-          polygon(c(xx, rev(xx)), c(upper, rev(lower)), border = NA,
-                  col = grDevices::adjustcolor(cols[i], alpha.f = 0.2))
-          lines(xx, upper, lty = 2, lwd = 2, col = ci_cols[i])
-          lines(xx, lower, lty = 2, lwd = 2, col = ci_cols[i])
-        }
-        lines(xx, mu, lwd = lw, col = cols[i])
-      }
-      
-      usr <- par("usr")
-      legend(x = usr[2] + 0.02 * diff(usr[1:2]), y = usr[4],
-             legend = z_lbls, lty = 1, lwd = lw, col = cols, bty = "n",
-             xjust = 0, yjust = 1,    # << left-align
-             title = paste0("Moderator (", get_label(input$zvar), ")"))
     }
+    lw <- 4
+    
+    # Prediction grid and fits
+    grid <- do.call(rbind, lapply(seq_along(z_vals), function(i) {
+      data.frame(X = x_seq, Z = z_vals[i], level = i)
+    }))
+    pr <- predict(m, newdata = grid, se.fit = TRUE)
+    grid$fit <- pr$fit; grid$se <- pr$se.fit
+    
+    xlab <- get_label(input$xvar); ylab <- get_label(input$yvar)
+    y_range <- if (isTRUE(input$show_ci)) {
+      range(grid$fit + 1.96 * grid$se, grid$fit - 1.96 * grid$se, na.rm = TRUE)
+    } else range(grid$fit, na.rm = TRUE)
+    
+    # --- Layout: top = plot, bottom = legend ---
+    old_par <- par(no.readonly = TRUE)
+    on.exit(par(old_par), add = TRUE)
+    on.exit(layout(1), add = TRUE)  # reset layout afterwards
+    layout(matrix(c(1,2), nrow = 2, byrow = TRUE), heights = c(4, 1))
+    
+    # Top panel: the interaction curves
+    par(mar = c(5, 4, 2, 2))
+    plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs = "i", yaxs = "i")
+    for (i in seq_along(z_vals)) {
+      sli <- which(grid$level == i)
+      xx  <- grid$X[sli]; mu <- grid$fit[sli]; se <- grid$se[sli]
+      if (isTRUE(input$show_ci)) {
+        ci <- 1.96 * se; upper <- mu + ci; lower <- mu - ci
+        polygon(c(xx, rev(xx)), c(upper, rev(lower)), border = NA,
+                col = grDevices::adjustcolor(cols[i], alpha.f = 0.2))
+        lines(xx, upper, lty = 2, lwd = 2, col = ci_cols[i])
+        lines(xx, lower, lty = 2, lwd = 2, col = ci_cols[i])
+      }
+      lines(xx, mu, lwd = lw, col = cols[i])
+    }
+    
+    # Bottom panel: legend centered below plot
+    par(mar = c(0, 4, 0, 2))
+    plot.new()
+    legend(x = "center", legend = z_lbls, lty = 1, lwd = lw, col = cols, bty = "n",
+           title = paste0("Moderator (", get_label(input$zvar), ")"))
   })
   
   output$ydesc <- renderUI({ tags$p(tags$strong("Outcome (Y): "), tags$em(get_desc(input$yvar))) })
