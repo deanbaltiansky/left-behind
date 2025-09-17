@@ -1011,16 +1011,15 @@ df_lebe_elg %>%
 
 # Analysis
 
-To check out correlations, see this
-<a href="studies/study-sep25/app/" target="_blank" rel="noopener">
-  Shiny App
-</a>
-
 ## Correlation matrix
 
 ```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
-# df_lebe_elg %>% 
-#   select(lebe_cont,system_R:trajectory,left_behind_score,system_to_ind:traj_gpt,antidem:elect_cult) %>%
-#   corPlot(upper = TRUE,stars = TRUE,xsrt = 270)
+df_lebe_elg %>% 
+   select(lebe_cont,system_R:trajectory,leftbehind_gpt,system_to_ind_gpt:trajectory_gpt,antidem:elect_cult) %>%
+   corPlot(upper = TRUE,stars = TRUE,xsrt = 270)
 ```
 
+To explore these correlations and more, see this
+<a href="app/" target="_blank" rel="noopener">
+  Shiny App
+</a>
