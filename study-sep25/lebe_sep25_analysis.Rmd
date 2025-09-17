@@ -1039,7 +1039,7 @@ Note that these are just raw interactions, without controlling for main effects 
 Ok, now to run some actual stats. We want to see if these correlations and interactions hold
 when controlling for some important variables. I'll show a few of them below, but if you want to try some yourself, feel free to explore here:\
 \
-[SHINY LINK HERE]
+<a href="../study-sep25-lm-table/app/" target="_blank" rel="noopener">Shiny App: Linear Models</a>
 
 ### DV: Candidate support for sweeping-incremental change
 

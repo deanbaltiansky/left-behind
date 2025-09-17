@@ -6255,15 +6255,2989 @@ df_lebe_elg %&gt;%
 <div id="interactions" class="section level2">
 <h2>Interactions</h2>
 <p>There are a bunch of ways to interact these variables. Feel free to
-explore here:
+explore here:<br />
+<br />
 <a href="../study-sep25-interactions/app/" target="_blank" rel="noopener">
-Shiny App: Interactions </a></p>
-<pre class="r"><code># m1 &lt;- lm(elect_change ~ system_R:lebe_cont,df_lebe_elg)
-# 
-# interact_plot(m1,
-#               pred = system_R,
-#               modx = lebe_cont,
-#               interval = T)</code></pre>
+Shiny App: Interactions </a><br />
+<br />
+Note that these are just raw interactions, without controlling for main
+effects or any other variables. Let’s start adding controls in the
+following linear models.</p>
+</div>
+<div id="linear-models" class="section level2">
+<h2>Linear models</h2>
+<p>Ok, now to run some actual stats. We want to see if these
+correlations and interactions hold when controlling for some important
+variables. I’ll show a few of them below, but if you want to try some
+yourself, feel free to explore here:<br />
+<br />
+<a href="../study-sep25-lm-table/app/" target="_blank" rel="noopener">Shiny
+App: Linear Models</a></p>
+<div id="dv-candidate-support-for-sweeping-incremental-change" class="section level3">
+<h3>DV: Candidate support for sweeping-incremental change</h3>
+<p>Just as a reminder, this is the measure for this DV…<br />
+<br />
+Thinking about how they would approach change, what approach would you
+like them to take?<br />
+1 = <em>Sweeping</em> (bold, radical changes); 7 = <em>Incremental</em>
+(smaller, step-by-step changes)</p>
+<div id="model-1" class="section level4">
+<h4>Model 1<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Incremental change candidate<br />
+<strong>Predictor:</strong> left behind - continuous<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_change ~ lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+4.91
+</td>
+<td style="text-align:left;">
+[3.09, 6.73]
+</td>
+<td style="text-align:left;">
+5.32
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lebe cont
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.02, 0.00]
+</td>
+<td style="text-align:left;">
+-2.75
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.007
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.14
+</td>
+<td style="text-align:left;">
+[-0.33, 0.05]
+</td>
+<td style="text-align:left;">
+-1.45
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.149
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+0.45
+</td>
+<td style="text-align:left;">
+[-0.27, 1.17]
+</td>
+<td style="text-align:left;">
+1.24
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.217
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+-0.18
+</td>
+<td style="text-align:left;">
+[-2.68, 2.32]
+</td>
+<td style="text-align:left;">
+-0.14
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.889
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+0.84
+</td>
+<td style="text-align:left;">
+[-1.89, 3.56]
+</td>
+<td style="text-align:left;">
+0.61
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.545
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+0.60
+</td>
+<td style="text-align:left;">
+[-0.43, 1.63]
+</td>
+<td style="text-align:left;">
+1.15
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.252
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.04, 0.01]
+</td>
+<td style="text-align:left;">
+-1.38
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.170
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+0.06
+</td>
+<td style="text-align:left;">
+[-0.05, 0.18]
+</td>
+<td style="text-align:left;">
+1.10
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.272
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.09
+</td>
+<td style="text-align:left;">
+[-0.31, 0.13]
+</td>
+<td style="text-align:left;">
+-0.77
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.444
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+0.54
+</td>
+<td style="text-align:left;">
+[-0.78, 1.87]
+</td>
+<td style="text-align:left;">
+0.81
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.420
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+-0.31
+</td>
+<td style="text-align:left;">
+[-1.73, 1.11]
+</td>
+<td style="text-align:left;">
+-0.43
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.665
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+-0.99
+</td>
+<td style="text-align:left;">
+[-4.62, 2.63]
+</td>
+<td style="text-align:left;">
+-0.54
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.589
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+0.24
+</td>
+<td style="text-align:left;">
+[-1.27, 1.76]
+</td>
+<td style="text-align:left;">
+0.32
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.751
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+0.56
+</td>
+<td style="text-align:left;">
+[-0.49, 1.61]
+</td>
+<td style="text-align:left;">
+1.05
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.297
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.53, 0.51]
+</td>
+<td style="text-align:left;">
+-0.04
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.971
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-2" class="section level4">
+<h4>Model 2<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Incremental change candidate<br />
+<strong>Predictor:</strong> systemic reason for being left behind<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_change ~ system_R + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+4.72
+</td>
+<td style="text-align:left;">
+[2.97, 6.47]
+</td>
+<td style="text-align:left;">
+5.32
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+System R
+</td>
+<td style="text-align:left;">
+-0.19
+</td>
+<td style="text-align:left;">
+[-0.31, -0.06]
+</td>
+<td style="text-align:left;">
+-2.87
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.005
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.10
+</td>
+<td style="text-align:left;">
+[-0.28, 0.08]
+</td>
+<td style="text-align:left;">
+-1.06
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.289
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+0.26
+</td>
+<td style="text-align:left;">
+[-0.47, 0.98]
+</td>
+<td style="text-align:left;">
+0.71
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.481
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+-0.59
+</td>
+<td style="text-align:left;">
+[-3.07, 1.90]
+</td>
+<td style="text-align:left;">
+-0.47
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.642
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+0.21
+</td>
+<td style="text-align:left;">
+[-2.50, 2.93]
+</td>
+<td style="text-align:left;">
+0.15
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.878
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+0.30
+</td>
+<td style="text-align:left;">
+[-0.73, 1.33]
+</td>
+<td style="text-align:left;">
+0.57
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.568
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.03, 0.01]
+</td>
+<td style="text-align:left;">
+-1.09
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.278
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+0.08
+</td>
+<td style="text-align:left;">
+[-0.04, 0.19]
+</td>
+<td style="text-align:left;">
+1.33
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.186
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.03
+</td>
+<td style="text-align:left;">
+[-0.25, 0.19]
+</td>
+<td style="text-align:left;">
+-0.24
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.808
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+0.89
+</td>
+<td style="text-align:left;">
+[-0.44, 2.21]
+</td>
+<td style="text-align:left;">
+1.32
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.189
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+0.02
+</td>
+<td style="text-align:left;">
+[-1.42, 1.46]
+</td>
+<td style="text-align:left;">
+0.02
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.981
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+-1.04
+</td>
+<td style="text-align:left;">
+[-4.66, 2.57]
+</td>
+<td style="text-align:left;">
+-0.57
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.569
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+0.64
+</td>
+<td style="text-align:left;">
+[-0.88, 2.17]
+</td>
+<td style="text-align:left;">
+0.83
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.407
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+0.67
+</td>
+<td style="text-align:left;">
+[-0.38, 1.72]
+</td>
+<td style="text-align:left;">
+1.26
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.210
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+-0.10
+</td>
+<td style="text-align:left;">
+[-0.63, 0.43]
+</td>
+<td style="text-align:left;">
+-0.37
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.711
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-3" class="section level4">
+<h4>Model 3<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Incremental change candidate<br />
+<strong>Predictor:</strong> systemic reason for being left behind<br />
+<strong>Moderator:</strong> continuous measure of feeling left
+behind<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_change ~ system_R*lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+5.47
+</td>
+<td style="text-align:left;">
+[3.51, 7.44]
+</td>
+<td style="text-align:left;">
+5.49
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+System R
+</td>
+<td style="text-align:left;">
+-0.17
+</td>
+<td style="text-align:left;">
+[-0.36, 0.03]
+</td>
+<td style="text-align:left;">
+-1.71
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.089
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lebe cont
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.03, 0.01]
+</td>
+<td style="text-align:left;">
+-1.14
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.254
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.14
+</td>
+<td style="text-align:left;">
+[-0.33, 0.05]
+</td>
+<td style="text-align:left;">
+-1.47
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.142
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+0.33
+</td>
+<td style="text-align:left;">
+[-0.39, 1.05]
+</td>
+<td style="text-align:left;">
+0.90
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.371
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+-0.33
+</td>
+<td style="text-align:left;">
+[-2.81, 2.16]
+</td>
+<td style="text-align:left;">
+-0.26
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.795
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+0.49
+</td>
+<td style="text-align:left;">
+[-2.24, 3.22]
+</td>
+<td style="text-align:left;">
+0.35
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.724
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+0.41
+</td>
+<td style="text-align:left;">
+[-0.62, 1.45]
+</td>
+<td style="text-align:left;">
+0.79
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.430
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.03, 0.01]
+</td>
+<td style="text-align:left;">
+-1.35
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.178
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+0.05
+</td>
+<td style="text-align:left;">
+[-0.06, 0.17]
+</td>
+<td style="text-align:left;">
+0.92
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.360
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.06
+</td>
+<td style="text-align:left;">
+[-0.28, 0.16]
+</td>
+<td style="text-align:left;">
+-0.53
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.598
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+0.74
+</td>
+<td style="text-align:left;">
+[-0.59, 2.06]
+</td>
+<td style="text-align:left;">
+1.09
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.275
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+-0.05
+</td>
+<td style="text-align:left;">
+[-1.48, 1.39]
+</td>
+<td style="text-align:left;">
+-0.06
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.950
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+-0.77
+</td>
+<td style="text-align:left;">
+[-4.38, 2.83]
+</td>
+<td style="text-align:left;">
+-0.42
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.672
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+0.52
+</td>
+<td style="text-align:left;">
+[-1.01, 2.05]
+</td>
+<td style="text-align:left;">
+0.67
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.504
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+0.65
+</td>
+<td style="text-align:left;">
+[-0.39, 1.70]
+</td>
+<td style="text-align:left;">
+1.23
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.220
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+-0.10
+</td>
+<td style="text-align:left;">
+[-0.63, 0.42]
+</td>
+<td style="text-align:left;">
+-0.39
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.695
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+System R <span class="math inline">\(\times\)</span> Lebe cont
+</td>
+<td style="text-align:left;">
+0.00
+</td>
+<td style="text-align:left;">
+[0.00, 0.00]
+</td>
+<td style="text-align:left;">
+0.26
+</td>
+<td style="text-align:left;">
+166
+</td>
+<td style="text-align:left;">
+.798
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-4" class="section level4">
+<h4>Model 4<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Incremental change candidate<br />
+<strong>Predictor:</strong> systemic reason for being left behind - gpt
+(unreversed)<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_change ~ system_to_ind_gpt + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+3.20
+</td>
+<td style="text-align:left;">
+[1.53, 4.86]
+</td>
+<td style="text-align:left;">
+3.78
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+System to ind gpt
+</td>
+<td style="text-align:left;">
+0.21
+</td>
+<td style="text-align:left;">
+[0.07, 0.34]
+</td>
+<td style="text-align:left;">
+3.01
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.12
+</td>
+<td style="text-align:left;">
+[-0.30, 0.07]
+</td>
+<td style="text-align:left;">
+-1.26
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.208
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+0.36
+</td>
+<td style="text-align:left;">
+[-0.35, 1.08]
+</td>
+<td style="text-align:left;">
+1.00
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.317
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+-0.65
+</td>
+<td style="text-align:left;">
+[-3.13, 1.84]
+</td>
+<td style="text-align:left;">
+-0.51
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.608
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+0.35
+</td>
+<td style="text-align:left;">
+[-2.35, 3.05]
+</td>
+<td style="text-align:left;">
+0.26
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.799
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+0.50
+</td>
+<td style="text-align:left;">
+[-0.52, 1.52]
+</td>
+<td style="text-align:left;">
+0.97
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.335
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.03, 0.01]
+</td>
+<td style="text-align:left;">
+-0.96
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.340
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+0.09
+</td>
+<td style="text-align:left;">
+[-0.03, 0.20]
+</td>
+<td style="text-align:left;">
+1.53
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.128
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.03
+</td>
+<td style="text-align:left;">
+[-0.24, 0.19]
+</td>
+<td style="text-align:left;">
+-0.23
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.821
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+0.89
+</td>
+<td style="text-align:left;">
+[-0.43, 2.22]
+</td>
+<td style="text-align:left;">
+1.33
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.184
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+-0.07
+</td>
+<td style="text-align:left;">
+[-1.50, 1.36]
+</td>
+<td style="text-align:left;">
+-0.09
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.925
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+-1.13
+</td>
+<td style="text-align:left;">
+[-4.72, 2.47]
+</td>
+<td style="text-align:left;">
+-0.62
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.537
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+0.33
+</td>
+<td style="text-align:left;">
+[-1.17, 1.84]
+</td>
+<td style="text-align:left;">
+0.44
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.663
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+0.62
+</td>
+<td style="text-align:left;">
+[-0.43, 1.67]
+</td>
+<td style="text-align:left;">
+1.17
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.244
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+-0.05
+</td>
+<td style="text-align:left;">
+[-0.57, 0.47]
+</td>
+<td style="text-align:left;">
+-0.18
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.858
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-5" class="section level4">
+<h4>Model 5<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Incremental change candidate<br />
+<strong>Predictor:</strong> trajectory<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_change ~ trajectory + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+2.99
+</td>
+<td style="text-align:left;">
+[1.30, 4.69]
+</td>
+<td style="text-align:left;">
+3.49
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Trajectory
+</td>
+<td style="text-align:left;">
+0.29
+</td>
+<td style="text-align:left;">
+[0.11, 0.47]
+</td>
+<td style="text-align:left;">
+3.12
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.12
+</td>
+<td style="text-align:left;">
+[-0.31, 0.06]
+</td>
+<td style="text-align:left;">
+-1.31
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.191
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+0.31
+</td>
+<td style="text-align:left;">
+[-0.41, 1.02]
+</td>
+<td style="text-align:left;">
+0.84
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.401
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+-0.75
+</td>
+<td style="text-align:left;">
+[-3.23, 1.73]
+</td>
+<td style="text-align:left;">
+-0.60
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.550
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+0.52
+</td>
+<td style="text-align:left;">
+[-2.18, 3.22]
+</td>
+<td style="text-align:left;">
+0.38
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.703
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+0.41
+</td>
+<td style="text-align:left;">
+[-0.62, 1.43]
+</td>
+<td style="text-align:left;">
+0.79
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.433
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.03, 0.01]
+</td>
+<td style="text-align:left;">
+-0.90
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.369
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+0.06
+</td>
+<td style="text-align:left;">
+[-0.05, 0.18]
+</td>
+<td style="text-align:left;">
+1.06
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.291
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.04
+</td>
+<td style="text-align:left;">
+[-0.26, 0.18]
+</td>
+<td style="text-align:left;">
+-0.33
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.738
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+0.80
+</td>
+<td style="text-align:left;">
+[-0.51, 2.12]
+</td>
+<td style="text-align:left;">
+1.21
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.230
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+-0.21
+</td>
+<td style="text-align:left;">
+[-1.63, 1.20]
+</td>
+<td style="text-align:left;">
+-0.30
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.765
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+-0.63
+</td>
+<td style="text-align:left;">
+[-4.26, 2.99]
+</td>
+<td style="text-align:left;">
+-0.35
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.730
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+0.57
+</td>
+<td style="text-align:left;">
+[-0.94, 2.09]
+</td>
+<td style="text-align:left;">
+0.75
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.456
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+0.84
+</td>
+<td style="text-align:left;">
+[-0.22, 1.90]
+</td>
+<td style="text-align:left;">
+1.57
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.119
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+0.02
+</td>
+<td style="text-align:left;">
+[-0.49, 0.54]
+</td>
+<td style="text-align:left;">
+0.09
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.926
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="dv-candidate-support-for-economically-progressive-policy" class="section level3">
+<h3>DV: Candidate support for economically progressive policy</h3>
+<p>Just as a reminder, this is the measure for this DV…<br />
+<br />
+Thinking about their economic platform, which positions would your ideal
+candidate advance?<br />
+1 = <em>Free Market</em> (low corporate taxes, deregulation); 7 =
+<em>Redistributive</em> (wealth tax, stronger unions)</p>
+<div id="model-1-1" class="section level4">
+<h4>Model 1<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Economically redistributive candidate<br />
+<strong>Predictor:</strong> left behind - continuous<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_econ ~ lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+5.96
+</td>
+<td style="text-align:left;">
+[4.33, 7.58]
+</td>
+<td style="text-align:left;">
+7.23
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lebe cont
+</td>
+<td style="text-align:left;">
+0.02
+</td>
+<td style="text-align:left;">
+[0.01, 0.02]
+</td>
+<td style="text-align:left;">
+3.61
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.48
+</td>
+<td style="text-align:left;">
+[-0.65, -0.31]
+</td>
+<td style="text-align:left;">
+-5.66
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+-0.42
+</td>
+<td style="text-align:left;">
+[-1.06, 0.22]
+</td>
+<td style="text-align:left;">
+-1.29
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.197
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+0.44
+</td>
+<td style="text-align:left;">
+[-1.80, 2.67]
+</td>
+<td style="text-align:left;">
+0.38
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.701
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+0.78
+</td>
+<td style="text-align:left;">
+[-1.66, 3.21]
+</td>
+<td style="text-align:left;">
+0.63
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.530
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+-0.60
+</td>
+<td style="text-align:left;">
+[-1.52, 0.32]
+</td>
+<td style="text-align:left;">
+-1.28
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.202
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+0.01
+</td>
+<td style="text-align:left;">
+[-0.01, 0.03]
+</td>
+<td style="text-align:left;">
+0.73
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.466
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+0.02
+</td>
+<td style="text-align:left;">
+[-0.08, 0.12]
+</td>
+<td style="text-align:left;">
+0.39
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.698
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.21, 0.19]
+</td>
+<td style="text-align:left;">
+-0.12
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.906
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+0.27
+</td>
+<td style="text-align:left;">
+[-0.92, 1.45]
+</td>
+<td style="text-align:left;">
+0.44
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.657
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+-0.37
+</td>
+<td style="text-align:left;">
+[-1.64, 0.90]
+</td>
+<td style="text-align:left;">
+-0.57
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.569
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+0.85
+</td>
+<td style="text-align:left;">
+[-2.39, 4.09]
+</td>
+<td style="text-align:left;">
+0.52
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.606
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+-0.30
+</td>
+<td style="text-align:left;">
+[-1.65, 1.05]
+</td>
+<td style="text-align:left;">
+-0.44
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.658
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+-0.63
+</td>
+<td style="text-align:left;">
+[-1.57, 0.31]
+</td>
+<td style="text-align:left;">
+-1.32
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.188
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+0.45
+</td>
+<td style="text-align:left;">
+[-0.01, 0.92]
+</td>
+<td style="text-align:left;">
+1.92
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.056
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-2-1" class="section level4">
+<h4>Model 2<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Economically redistributive candidate<br />
+<strong>Predictor:</strong> systemic reason for being left behind<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_econ ~ system_R + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+6.72
+</td>
+<td style="text-align:left;">
+[5.10, 8.33]
+</td>
+<td style="text-align:left;">
+8.23
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+System R
+</td>
+<td style="text-align:left;">
+0.11
+</td>
+<td style="text-align:left;">
+[-0.01, 0.23]
+</td>
+<td style="text-align:left;">
+1.87
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.063
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.54
+</td>
+<td style="text-align:left;">
+[-0.71, -0.37]
+</td>
+<td style="text-align:left;">
+-6.28
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+-0.28
+</td>
+<td style="text-align:left;">
+[-0.95, 0.38]
+</td>
+<td style="text-align:left;">
+-0.84
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.404
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+0.86
+</td>
+<td style="text-align:left;">
+[-1.43, 3.15]
+</td>
+<td style="text-align:left;">
+0.74
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.458
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+1.34
+</td>
+<td style="text-align:left;">
+[-1.15, 3.84]
+</td>
+<td style="text-align:left;">
+1.06
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.290
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+-0.36
+</td>
+<td style="text-align:left;">
+[-1.31, 0.59]
+</td>
+<td style="text-align:left;">
+-0.75
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.454
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+0.00
+</td>
+<td style="text-align:left;">
+[-0.02, 0.02]
+</td>
+<td style="text-align:left;">
+0.30
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.768
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-0.11, 0.10]
+</td>
+<td style="text-align:left;">
+-0.14
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.891
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.07
+</td>
+<td style="text-align:left;">
+[-0.27, 0.14]
+</td>
+<td style="text-align:left;">
+-0.65
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.518
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+-0.01
+</td>
+<td style="text-align:left;">
+[-1.23, 1.21]
+</td>
+<td style="text-align:left;">
+-0.02
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.987
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+-0.55
+</td>
+<td style="text-align:left;">
+[-1.88, 0.77]
+</td>
+<td style="text-align:left;">
+-0.82
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.413
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+1.18
+</td>
+<td style="text-align:left;">
+[-2.15, 4.50]
+</td>
+<td style="text-align:left;">
+0.70
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.485
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+-0.57
+</td>
+<td style="text-align:left;">
+[-1.97, 0.84]
+</td>
+<td style="text-align:left;">
+-0.80
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.426
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+-0.69
+</td>
+<td style="text-align:left;">
+[-1.66, 0.28]
+</td>
+<td style="text-align:left;">
+-1.40
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.162
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+0.48
+</td>
+<td style="text-align:left;">
+[-0.01, 0.96]
+</td>
+<td style="text-align:left;">
+1.94
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.054
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-3-1" class="section level4">
+<h4>Model 3<br />
+</h4>
+<p><br />
+<strong>Outcome:</strong> Economically redistributive candidate<br />
+<strong>Predictor:</strong> economic-cultural reasons<br />
+<strong>Controls:</strong> political ideology (conservatism), party ID,
+age, income, education, race, gender</p>
+<pre class="r"><code>m1 &lt;- lm(elect_econ ~ econcult + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+
+apa_lm &lt;- apa_print(m1)
+ 
+kbl(apa_lm$table) %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+estimate
+</th>
+<th style="text-align:left;">
+conf.int
+</th>
+<th style="text-align:left;">
+statistic
+</th>
+<th style="text-align:left;">
+df
+</th>
+<th style="text-align:left;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Intercept
+</td>
+<td style="text-align:left;">
+7.44
+</td>
+<td style="text-align:left;">
+[5.91, 8.96]
+</td>
+<td style="text-align:left;">
+9.61
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Econcult
+</td>
+<td style="text-align:left;">
+-0.08
+</td>
+<td style="text-align:left;">
+[-0.21, 0.05]
+</td>
+<td style="text-align:left;">
+-1.20
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.230
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ideo con
+</td>
+<td style="text-align:left;">
+-0.54
+</td>
+<td style="text-align:left;">
+[-0.71, -0.37]
+</td>
+<td style="text-align:left;">
+-6.30
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+&lt; .001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genIndependent
+</td>
+<td style="text-align:left;">
+-0.37
+</td>
+<td style="text-align:left;">
+[-1.03, 0.29]
+</td>
+<td style="text-align:left;">
+-1.10
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.274
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genNo preference
+</td>
+<td style="text-align:left;">
+0.87
+</td>
+<td style="text-align:left;">
+[-1.43, 3.18]
+</td>
+<td style="text-align:left;">
+0.75
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.455
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genOther party
+</td>
+<td style="text-align:left;">
+1.06
+</td>
+<td style="text-align:left;">
+[-1.45, 3.58]
+</td>
+<td style="text-align:left;">
+0.84
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.404
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Party genRepublican
+</td>
+<td style="text-align:left;">
+-0.46
+</td>
+<td style="text-align:left;">
+[-1.41, 0.49]
+</td>
+<td style="text-align:left;">
+-0.96
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.336
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+0.00
+</td>
+<td style="text-align:left;">
+[-0.02, 0.02]
+</td>
+<td style="text-align:left;">
+0.43
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.670
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income num
+</td>
+<td style="text-align:left;">
+-0.02
+</td>
+<td style="text-align:left;">
+[-0.12, 0.09]
+</td>
+<td style="text-align:left;">
+-0.35
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.727
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Edu num
+</td>
+<td style="text-align:left;">
+-0.05
+</td>
+<td style="text-align:left;">
+[-0.25, 0.16]
+</td>
+<td style="text-align:left;">
+-0.46
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.644
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceBlack or African American
+</td>
+<td style="text-align:left;">
+0.09
+</td>
+<td style="text-align:left;">
+[-1.13, 1.31]
+</td>
+<td style="text-align:left;">
+0.15
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.881
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceHispanic, Latino, or Spanish origin
+</td>
+<td style="text-align:left;">
+-0.44
+</td>
+<td style="text-align:left;">
+[-1.76, 0.89]
+</td>
+<td style="text-align:left;">
+-0.65
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.514
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceMiddle Eastern or North African
+</td>
+<td style="text-align:left;">
+1.35
+</td>
+<td style="text-align:left;">
+[-1.99, 4.68]
+</td>
+<td style="text-align:left;">
+0.80
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.427
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Racemultiracial
+</td>
+<td style="text-align:left;">
+-0.38
+</td>
+<td style="text-align:left;">
+[-1.78, 1.02]
+</td>
+<td style="text-align:left;">
+-0.54
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.593
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RaceWhite
+</td>
+<td style="text-align:left;">
+-0.66
+</td>
+<td style="text-align:left;">
+[-1.64, 0.31]
+</td>
+<td style="text-align:left;">
+-1.35
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.180
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Genderwoman
+</td>
+<td style="text-align:left;">
+0.44
+</td>
+<td style="text-align:left;">
+[-0.05, 0.93]
+</td>
+<td style="text-align:left;">
+1.79
+</td>
+<td style="text-align:left;">
+168
+</td>
+<td style="text-align:left;">
+.075
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 
