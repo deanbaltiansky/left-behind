@@ -124,7 +124,12 @@ server <- function(input, output, session) {
       grid$fit <- pr$fit; grid$se <- pr$se.fit
       
       xlab <- get_label(input$xvar); ylab <- get_label(input$yvar)
-      y_range <- if (isTRUE(input$show_ci)) range(grid$fit ± 1.96*grid$se, na.rm=TRUE) else range(grid$fit, na.rm=TRUE)
+      y_range <- if (isTRUE(input$show_ci)) {
+        range(grid$fit + 1.96*grid$se, grid$fit - 1.96*grid$se, na.rm = TRUE)
+      } else {
+        range(grid$fit, na.rm = TRUE)
+      }
+      
       plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs="i", yaxs="i")
       
       for (i in seq_along(z_vals)) {
@@ -132,7 +137,7 @@ server <- function(input, output, session) {
         if (isTRUE(input$show_ci)) {
           ci <- 1.96*se; upper<-mu+ci; lower<-mu-ci
           polygon(c(xx, rev(xx)), c(upper, rev(lower)), border=NA,
-                  col=adjustcolor(cols[i], alpha.f=0.2))
+                  col = grDevices::adjustcolor(cols[i], alpha.f = 0.2))
           lines(xx, upper, lty=2, lwd=2, col=ci_cols[i])
           lines(xx, lower, lty=2, lwd=2, col=ci_cols[i])
         }
@@ -158,7 +163,12 @@ server <- function(input, output, session) {
       grid$fit <- pr$fit; grid$se <- pr$se.fit
       
       xlab <- get_label(input$xvar); ylab <- get_label(input$yvar)
-      y_range <- if (isTRUE(input$show_ci)) range(grid$fit ± 1.96*grid$se, na.rm=TRUE) else range(grid$fit, na.rm=TRUE)
+      y_range <- if (isTRUE(input$show_ci)) {
+        range(grid$fit + 1.96*grid$se, grid$fit - 1.96*grid$se, na.rm = TRUE)
+      } else {
+        range(grid$fit, na.rm = TRUE)
+      }
+      
       plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs="i", yaxs="i")
       
       for (i in seq_along(z_vals)) {
@@ -166,7 +176,7 @@ server <- function(input, output, session) {
         if (isTRUE(input$show_ci)) {
           ci <- 1.96*se; upper<-mu+ci; lower<-mu-ci
           polygon(c(xx, rev(xx)), c(upper, rev(lower)), border=NA,
-                  col=adjustcolor(cols[i], alpha.f=0.2))
+                  col = grDevices::adjustcolor(cols[i], alpha.f = 0.2))
           lines(xx, upper, lty=2, lwd=2, col=ci_cols[i])
           lines(xx, lower, lty=2, lwd=2, col=ci_cols[i])
         }
