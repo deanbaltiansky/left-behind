@@ -39,7 +39,7 @@ ui <- fluidPage(
       selectInput("zvar", "Moderator (Z)", choices = NULL),
       tags$hr(),
       checkboxInput("show_ci", "Show 95% CI bands", TRUE),
-      helpText("If moderator is binary (0/1): red=0, blue=1. Otherwise: −1 SD (red), mean (black), +1 SD (blue).")
+      helpText("If moderator is binary (0/1): red=0, blue=1. Otherwise: -1 SD (red), mean (black), +1 SD (blue).")
     ),
     mainPanel(
       verbatimTextOutput("coefbox"),
@@ -107,14 +107,19 @@ server <- function(input, output, session) {
   
   output$iplot <- renderPlot({
     d <- triplet(); m <- fit()
-    x_seq <- seq(min(d$X, na.rm=TRUE), max(d$X, na.rm=TRUE), length.out = 160)
+    x_seq <- seq(min(d$X, na.rm = TRUE), max(d$X, na.rm = TRUE), length.out = 160)
     is_binary <- input$zvar %in% binary_mods
+    
+    # Save & widen margins; allow drawing in margin
+    old_par <- par(no.readonly = TRUE)
+    on.exit(par(old_par), add = TRUE)
+    par(xpd = NA, mar = c(par("mar")[1], par("mar")[2], par("mar")[3], 10))
     
     if (is_binary) {
       z_vals <- c(0, 1)
       z_lbls <- c("Z = 0", "Z = 1")
-      cols   <- c("red","blue")
-      ci_cols<- c("lightcoral","lightblue")
+      cols   <- c("red", "blue")
+      ci_cols<- c("lightcoral", "lightblue")
       lw     <- 4
       
       grid <- do.call(rbind, lapply(seq_along(z_vals), function(i) {
@@ -125,35 +130,37 @@ server <- function(input, output, session) {
       
       xlab <- get_label(input$xvar); ylab <- get_label(input$yvar)
       y_range <- if (isTRUE(input$show_ci)) {
-        range(grid$fit + 1.96*grid$se, grid$fit - 1.96*grid$se, na.rm = TRUE)
-      } else {
-        range(grid$fit, na.rm = TRUE)
-      }
+        range(grid$fit + 1.96 * grid$se, grid$fit - 1.96 * grid$se, na.rm = TRUE)
+      } else range(grid$fit, na.rm = TRUE)
       
-      plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs="i", yaxs="i")
+      plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs = "i", yaxs = "i")
       
       for (i in seq_along(z_vals)) {
-        sli <- which(grid$level == i); xx<-grid$X[sli]; mu<-grid$fit[sli]; se<-grid$se[sli]
+        sli <- which(grid$level == i)
+        xx <- grid$X[sli]; mu <- grid$fit[sli]; se <- grid$se[sli]
         if (isTRUE(input$show_ci)) {
-          ci <- 1.96*se; upper<-mu+ci; lower<-mu-ci
-          polygon(c(xx, rev(xx)), c(upper, rev(lower)), border=NA,
+          ci <- 1.96 * se; upper <- mu + ci; lower <- mu - ci
+          polygon(c(xx, rev(xx)), c(upper, rev(lower)), border = NA,
                   col = grDevices::adjustcolor(cols[i], alpha.f = 0.2))
-          lines(xx, upper, lty=2, lwd=2, col=ci_cols[i])
-          lines(xx, lower, lty=2, lwd=2, col=ci_cols[i])
+          lines(xx, upper, lty = 2, lwd = 2, col = ci_cols[i])
+          lines(xx, lower, lty = 2, lwd = 2, col = ci_cols[i])
         }
-        lines(xx, mu, lwd=lw, col=cols[i])
+        lines(xx, mu, lwd = lw, col = cols[i])
       }
       
-      legend("topright", inset=-0.25, xpd=NA,
-             legend=z_lbls, lty=1, lwd=lw, col=cols, bty="n",
-             title=paste0("Moderator (", get_label(input$zvar), ")"))
+      # Legend outside (right)
+      usr <- par("usr")
+      legend(x = usr[2] + 0.02 * diff(usr[1:2]), y = usr[4],
+             legend = z_lbls, lty = 1, lwd = lw, col = cols, bty = "n",
+             xjust = 0, yjust = 1,
+             title = paste0("Moderator (", get_label(input$zvar), ")"))
       
     } else {
-      z_mean <- mean(d$Z, na.rm=TRUE); z_sd <- stats::sd(d$Z, na.rm=TRUE)
+      z_mean <- mean(d$Z, na.rm = TRUE); z_sd <- stats::sd(d$Z, na.rm = TRUE)
       z_vals <- c(z_mean - z_sd, z_mean, z_mean + z_sd)
-      z_lbls <- c("Z = −1 SD","Z = mean","Z = +1 SD")
-      cols   <- c("red","black","blue")
-      ci_cols<- c("lightcoral","grey50","lightblue")
+      z_lbls <- c("Z = -1 SD", "Z = mean", "Z = +1 SD")
+      cols   <- c("red", "black", "blue")
+      ci_cols<- c("lightcoral", "grey50", "lightblue")
       lw     <- 4
       
       grid <- do.call(rbind, lapply(seq_along(z_vals), function(i) {
@@ -164,28 +171,30 @@ server <- function(input, output, session) {
       
       xlab <- get_label(input$xvar); ylab <- get_label(input$yvar)
       y_range <- if (isTRUE(input$show_ci)) {
-        range(grid$fit + 1.96*grid$se, grid$fit - 1.96*grid$se, na.rm = TRUE)
-      } else {
-        range(grid$fit, na.rm = TRUE)
-      }
+        range(grid$fit + 1.96 * grid$se, grid$fit - 1.96 * grid$se, na.rm = TRUE)
+      } else range(grid$fit, na.rm = TRUE)
       
-      plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs="i", yaxs="i")
+      plot(NA, xlim = range(x_seq), ylim = y_range, xlab = xlab, ylab = ylab, xaxs = "i", yaxs = "i")
       
       for (i in seq_along(z_vals)) {
-        sli <- which(grid$level == i); xx<-grid$X[sli]; mu<-grid$fit[sli]; se<-grid$se[sli]
+        sli <- which(grid$level == i)
+        xx <- grid$X[sli]; mu <- grid$fit[sli]; se <- grid$se[sli]
         if (isTRUE(input$show_ci)) {
-          ci <- 1.96*se; upper<-mu+ci; lower<-mu-ci
-          polygon(c(xx, rev(xx)), c(upper, rev(lower)), border=NA,
+          ci <- 1.96 * se; upper <- mu + ci; lower <- mu - ci
+          polygon(c(xx, rev(xx)), c(upper, rev(lower)), border = NA,
                   col = grDevices::adjustcolor(cols[i], alpha.f = 0.2))
-          lines(xx, upper, lty=2, lwd=2, col=ci_cols[i])
-          lines(xx, lower, lty=2, lwd=2, col=ci_cols[i])
+          lines(xx, upper, lty = 2, lwd = 2, col = ci_cols[i])
+          lines(xx, lower, lty = 2, lwd = 2, col = ci_cols[i])
         }
-        lines(xx, mu, lwd=lw, col=cols[i])
+        lines(xx, mu, lwd = lw, col = cols[i])
       }
       
-      legend("topright", inset=-0.25, xpd=NA,
-             legend=z_lbls, lty=1, lwd=lw, col=cols, bty="n",
-             title=paste0("Moderator (", get_label(input$zvar), ")"))
+      # Legend outside (right)
+      usr <- par("usr")
+      legend(x = usr[2] + 0.02 * diff(usr[1:2]), y = usr[4],
+             legend = z_lbls, lty = 1, lwd = lw, col = cols, bty = "n",
+             xjust = 0, yjust = 1,
+             title = paste0("Moderator (", get_label(input$zvar), ")"))
     }
   })
   
