@@ -1,7 +1,7 @@
 # study-sep25-interactions/app/app.R
 library(shiny)
 
-# ---- Your curated variable list (same as correlation explorer) ----
+# ---- Your curated variable list (same as correlations app) ----
 numeric_vars_user <- c(
   "lebe_cont","system_R","gov","econcult","history","trajectory",
   "leftbehind_gpt","system_to_ind_gpt","gov_gpt","econ_to_cult_gpt","history_gpt","trajectory_gpt",
@@ -11,7 +11,7 @@ numeric_vars_user <- c(
   "rep_bin","dem_bin","ind_bin","age","edu_num","income_num","white_bin","man_bin"
 )
 
-# ---- Data loaders (shinylive/browser-safe: local files only) ----
+# ---- Data loaders (shinylive-safe: local files only) ----
 load_data <- function() {
   p <- "data/df_lebe.csv"
   if (!file.exists(p)) stop("Missing data/df_lebe.csv in app/data/")
@@ -38,14 +38,22 @@ ui <- fluidPage(
       selectInput("yvar", "Outcome (Y)", choices = NULL),
       selectInput("xvar", "Predictor (X)", choices = NULL),
       selectInput("zvar", "Moderator (Z)", choices = NULL),
-      checkboxInput("show_ci", "Show 95% CI in plot (when available)", TRUE),
+      tags$hr(),
+      checkboxInput("show_ci", "Show 95% CI lines", TRUE),
+      radioButtons("mod_levels", "Moderator levels",
+                   c("Quantiles (20/50/80%)" = "q",
+                     "Standardized (−1 SD / 0 / +1 SD)" = "sd"),
+                   inline = FALSE),
       helpText("Tip: use continuous / numeric-like variables.")
     ),
     mainPanel(
       verbatimTextOutput("coefbox"),
       plotOutput("iplot", height = 460),
       tags$hr(),
-      tags$small("Plot uses interactions::interact_plot() when available; otherwise a base-R fallback.")
+      tags$h4("Selected variable descriptions"),
+      uiOutput("ydesc"),
+      uiOutput("xdesc"),
+      uiOutput("zdesc")
     )
   )
 )
@@ -54,11 +62,11 @@ server <- function(input, output, session) {
   df0 <- load_data(); names(df0) <- trimws(names(df0))
   var_info <- load_var_info()
   
-  # Keep only your curated vars that are present
+  # Keep only curated vars that are present
   available <- intersect(numeric_vars_user, names(df0))
   validate(need(length(available) >= 3, "Need at least three of your selected variables present in df_lebe.csv."))
   
-  # Labels from var_info.csv (fallback to var name)
+  # Labels (fallback to var name)
   lab_map <- var_info$label[match(available, var_info$var)]
   lab_map[is.na(lab_map) | !nzchar(lab_map)] <- available
   choices <- as.list(available); names(choices) <- lab_map
@@ -67,13 +75,24 @@ server <- function(input, output, session) {
   updateSelectInput(session, "xvar", choices = choices, selected = available[2])
   updateSelectInput(session, "zvar", choices = choices, selected = available[3])
   
-  # Data triplet, numeric-coerced, NA-omitted
+  # Helper lookups
+  get_label <- function(v) {
+    hit <- var_info$label[match(v, var_info$var)]
+    if (is.na(hit) || !nzchar(hit)) v else hit
+  }
+  get_desc <- function(v) {
+    hit <- var_info$description[match(v, var_info$var)]
+    if (is.na(hit) || !nzchar(hit)) "No description found." else hit
+  }
+  
+  # Reactive: cleaned numeric data triplet
   triplet <- reactive({
     req(input$yvar, input$xvar, input$zvar)
     vars <- c(input$yvar, input$xvar, input$zvar)
     validate(need(all(vars %in% names(df0)), "Pick three valid variables."))
     d <- df0[, vars, drop = FALSE]
-    d[] <- lapply(d, numish); names(d) <- c("Y","X","Z")
+    d[] <- lapply(d, numish)
+    names(d) <- c("Y","X","Z")
     d <- stats::na.omit(d)
     validate(
       need(nrow(d) >= 5, "Not enough complete cases."),
@@ -84,10 +103,10 @@ server <- function(input, output, session) {
     d
   })
   
-  # Fit: interaction-only (per your spec)
+  # Fit: interaction-only
   fit <- reactive({ lm(Y ~ X:Z, data = triplet()) })
   
-  # (1) Interaction term beta / t / p
+  # (1) Interaction beta / t / p
   output$coefbox <- renderText({
     sm <- summary(fit())
     rn <- rownames(sm$coefficients)
@@ -99,42 +118,60 @@ server <- function(input, output, session) {
     sprintf("Interaction (X:Z): beta = %.4f, t = %.3f, p = %.3g (n = %d)", b, t, p, n)
   })
   
-  # (2) Interaction plot: prefer interactions::interact_plot()
+  # (2) Base-R interaction plot (three moderator levels + optional CI lines)
   output$iplot <- renderPlot({
     d <- triplet(); m <- fit()
-    if (requireNamespace("interactions", quietly = TRUE)) {
-      interactions::interact_plot(
-        m,
-        pred = "X",
-        modx = "Z",
-        interval = isTRUE(input$show_ci)
-      )
-      return(invisible())
+    
+    # X sequence over observed range
+    x_seq <- seq(min(d$X, na.rm=TRUE), max(d$X, na.rm=TRUE), length.out = 160)
+    
+    # Moderator levels
+    if (identical(input$mod_levels, "sd")) {
+      z_mean <- mean(d$Z, na.rm = TRUE)
+      z_sd   <- stats::sd(d$Z, na.rm = TRUE)
+      z_vals <- c(z_mean - z_sd, z_mean, z_mean + z_sd)
+      z_lbls <- c("Z = −1 SD", "Z = mean", "Z = +1 SD")
+    } else {
+      qs     <- stats::quantile(d$Z, probs = c(0.2, 0.5, 0.8), na.rm = TRUE)
+      z_vals <- as.numeric(qs)
+      z_lbls <- paste0("Z = ", names(qs))
     }
-    # Fallback base-R interaction curve (3 moderator quantiles)
-    x_seq <- seq(min(d$X), max(d$X), length.out = 80)
-    z_vals <- as.numeric(stats::quantile(d$Z, c(0.2,0.5,0.8)))
-    grid <- do.call(rbind, lapply(z_vals, function(zv) data.frame(X = x_seq, Z = zv)))
+    
+    # Prediction grid
+    grid <- do.call(rbind, lapply(seq_along(z_vals), function(i) {
+      data.frame(X = x_seq, Z = z_vals[i], level = i)
+    }))
     pr <- predict(m, newdata = grid, se.fit = TRUE)
     grid$fit <- pr$fit; grid$se <- pr$se.fit
-    plot(NA, xlim = range(x_seq), ylim = range(grid$fit, na.rm=TRUE),
-         xlab = names(choices)[match(input$xvar, unlist(choices))],
-         ylab = paste0("Predicted ", names(choices)[match(input$yvar, unlist(choices))]))
+    
+    # Axes labels use friendly labels
+    xlab <- get_label(input$xvar)
+    ylab <- paste0("Predicted ", get_label(input$yvar))
+    y_range <- range(grid$fit + 2*grid$se, grid$fit - 2*grid$se, na.rm = TRUE)
+    
+    plot(NA, xlim = range(x_seq), ylim = y_range,
+         xlab = xlab, ylab = ylab)
+    
     cols <- c("black","gray40","gray60")
     for (i in seq_along(z_vals)) {
-      sli <- ((i-1)*length(x_seq)+1):(i*length(x_seq))
-      lines(x_seq, grid$fit[sli], lwd = 2, col = cols[i])
+      sli <- which(grid$level == i)
+      lines(grid$X[sli], grid$fit[sli], lwd = 2, col = cols[i])
       if (isTRUE(input$show_ci)) {
-        ci <- 1.96*grid$se[sli]
-        lines(x_seq, grid$fit[sli]+ci, lty=2, col=cols[i])
-        lines(x_seq, grid$fit[sli]-ci, lty=2, col=cols[i])
+        ci <- 1.96 * grid$se[sli]
+        lines(grid$X[sli], grid$fit[sli] + ci, lty = 2, col = cols[i])
+        lines(grid$X[sli], grid$fit[sli] - ci, lty = 2, col = cols[i])
       }
     }
     legend("topleft",
-           legend = paste0("Z = ", round(z_vals,2)),
+           legend = z_lbls,
            lty = 1, lwd = 2, col = cols, bty = "n",
-           title = names(choices)[match(input$zvar, unlist(choices))])
+           title = paste0("Moderator (", get_label(input$zvar), ")"))
   })
+  
+  # Descriptions for selected vars
+  output$ydesc <- renderUI({ tags$p(tags$strong("Outcome (Y): "), tags$em(get_desc(input$yvar))) })
+  output$xdesc <- renderUI({ tags$p(tags$strong("Predictor (X): "), tags$em(get_desc(input$xvar))) })
+  output$zdesc <- renderUI({ tags$p(tags$strong("Moderator (Z): "), tags$em(get_desc(input$zvar))) })
 }
 
 shinyApp(ui, server)
