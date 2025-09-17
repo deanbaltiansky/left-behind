@@ -368,11 +368,13 @@ Although not everyone might feel overall left behind to the same extent, everyon
 Please describe why you might feel left behind in as much detail as possible. There is no right or wrong answer here; just your honest thoughts about the factors that might make you feel left behind.\
 \
 *paste disabled\
-*character range: 100-5000
+*character range: 100-5000\
+\
+Note: Adding their self-reported left-behind scores to the table below as well.
 
 ```{r,echo=FALSE,results='asis',warning=FALSE}
 df_lebe_elg %>% 
-  select(describe) %>% 
+  select(lebe_cont,describe) %>% 
   kbl() %>% 
   kable_styling(bootstrap_options = "hover",
                 position = "left") %>% 
