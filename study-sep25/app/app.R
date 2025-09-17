@@ -16,27 +16,30 @@ numeric_vars_user <- c(
 )
 
 load_data <- function() {
+  # In shinylive, read from local files bundled with the app
   local_path <- "data/df_lebe.csv"  # relative to app/ folder
-  if (file.exists(local_path)) {
-    read.csv(local_path, check.names = FALSE)
-  } else {
-    read.csv(DATA_URL, check.names = FALSE)
+  if (!file.exists(local_path)) {
+    stop("Missing data/df_lebe.csv inside the app directory. Bundle it before export.")
   }
+  read.csv(local_path, check.names = FALSE, stringsAsFactors = FALSE)
 }
 
 load_var_info <- function() {
-  # var_info.csv should have at least: var,label,description
   local_path <- "data/var_info.csv"
-  if (file.exists(local_path)) {
-    read.csv(local_path, check.names = FALSE, stringsAsFactors = FALSE)
-  } else {
-    # If you don’t want a fallback, just return an empty data.frame here.
-    tryCatch(
-      read.csv(VARINFO_URL, check.names = FALSE, stringsAsFactors = FALSE),
-      error = function(e) data.frame(var=character(), label=character(), description=character(), stringsAsFactors = FALSE)
-    )
+  if (!file.exists(local_path)) {
+    # Graceful fallback if you haven’t made var_info yet
+    return(data.frame(var=character(), label=character(), description=character(), stringsAsFactors = FALSE))
   }
+  read.csv(local_path, check.names = FALSE, stringsAsFactors = FALSE)
 }
+
+pair_data <- reactive({
+  req(input$xvar, input$yvar)
+  d <- df[, c(input$xvar, input$yvar), drop = FALSE]
+  # Coerce to numeric if they came in as character (e.g., "0"/"1")
+  d[] <- lapply(d, function(x) if (is.character(x)) suppressWarnings(as.numeric(x)) else x)
+  stats::na.omit(d)
+})
 
 ui <- fluidPage(
   titlePanel("Study Sep 2025 — Correlations"),
