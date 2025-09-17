@@ -189,11 +189,13 @@ attach from text analysis scripts
 df_lebe <- df_lebe %>% 
   left_join(df_lebe_gpt4o %>% 
               rename(PID = id,
+                     leftbehind_gpt = left_behind_score,
                      reasons = reasons_csv,
-                     system_to_ind = systemic,
-                     econ_to_cult = economic_or_cultural,
-                     hist_to_recent = history,
-                     traj_gpt = trajectory),by = "PID")
+                     system_to_ind_gpt = systemic,
+                     econ_to_cult_gpt = economic_or_cultural,
+                     history_gpt = history,
+                     trajectory_gpt = trajectory,
+                     gov_gpt = government,),by = "PID")
 ```
 
 
@@ -242,7 +244,7 @@ df_lebe <- df_lebe %>%
                 income_num,
                 edu_num,
                 white_bin:ind_bin,
-                left_behind_score:traj_gpt,
+                leftbehind_gpt:trajectory_gpt,
                 feedback)
 ```
 
