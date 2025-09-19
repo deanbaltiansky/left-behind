@@ -11,6 +11,8 @@ gov_gpt,Government: gpt-rated,"To what extent are the factors related to the gov
 econ_to_cult_gpt,Economic-Cultural: gpt-rated,"To what extent are the factors more economic (like income, affordability, financial security) or cultural (like dignity, feeling respected, feeling valued)? (1 = ""Entirely Economic"" to 7 = ""Entirely Cultural"")"
 history_gpt,Historic-Recent: gpt-rated,"To what extent are the factors more historic (i.e., they have been present for many years) or more recent (i.e., they are relatively new)? (1 = ""Entirely Historic"" to 7 = ""Entirely Recent"")"
 trajectory_gpt,Trajectory: gpt-rated,"Is the trajectory of the factors negative (i.e., things are getting worse) or positive (i.e., things are getting better)? (1 = ""Extremely Negative"" to 7 = ""Extremely Positive"")"
+mrl,How tightly one person’s reasons point to the same theme (higher = tighter),
+mpcs,Average similarity across all pairs of that person’s reasons,
 antidem,Support for Anti-Democratic Practices,Mean score of 5-item scale meauring endorsement of partisan anti-democratic practices
 trust,Trust in institutions,"Mean score of trust in congress, government, judicial, science, political parties, and mainstream news"
 antiest,Anti-Establishment Sentiment,Mean score of 4-item scale measuring anti-establishment sentiment

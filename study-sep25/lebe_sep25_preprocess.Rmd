@@ -29,6 +29,7 @@ repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/s
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
 df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+df_lebe_reasoncohesion <- readr::read_csv(paste0(repo_url,"df_lebe_reasoncohesion.csv"), show_col_types = FALSE)
 
 ```
 
@@ -195,7 +196,8 @@ df_lebe <- df_lebe %>%
                      econ_to_cult_gpt = economic_or_cultural,
                      history_gpt = history,
                      trajectory_gpt = trajectory,
-                     gov_gpt = government,),by = "PID")
+                     gov_gpt = government,),by = "PID") %>% 
+  left_join(df_lebe_reasoncohesion,by = "PID")
 ```
 
 
@@ -245,6 +247,8 @@ df_lebe <- df_lebe %>%
                 edu_num,
                 white_bin:ind_bin,
                 leftbehind_gpt:trajectory_gpt,
+                mrl,
+                mpcs,
                 feedback)
 ```
 

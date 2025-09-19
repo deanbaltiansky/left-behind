@@ -4,6 +4,7 @@ library(shiny)
 numeric_vars_user <- c(
   "lebe_cont","system_R","gov","econcult","history","trajectory",
   "leftbehind_gpt","system_to_ind_gpt","gov_gpt","econ_to_cult_gpt","history_gpt","trajectory_gpt",
+  "mrl","mpcs",
   "antidem","trust","antiest","elect_exp","elect_change","elect_econ","elect_cult",
   "trust_con","trust_gov","trust_jud","trust_sci","trust_pol","trust_news",
   "ideo_con","ideo_lib","ideo_demsoc","ideo_lbrtn","ideo_prog",
