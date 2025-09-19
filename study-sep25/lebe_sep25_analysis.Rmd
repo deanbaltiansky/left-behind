@@ -712,6 +712,67 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
+### Cosine similarity measures
+
+From the reasons that I extracted with gpt-4o, I got openai word embeddings. I did this to assess how cohesive the reasons for falling behind are for every person. To that end, I arrived at two measure:
+
+#### MPCS\
+\
+This is just the mean of the pairwise cosine similarities of all possible within-participant embeddings. So, higher scores mean that the reasons are more alike in semantic space.
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  filter(!is.na(mpcs)) %>% 
+  ggplot(aes(x = mpcs)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 0.01) +
+  scale_x_continuous(breaks = seq(0,1,0.1),
+                     limits = c(-0.01,1.01)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$mpcs,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+#### MRL\
+\
+Mean Resultant Length. This is the average of unit-normalized vectors. So, basically, it tells us how tightly each reason the person gives points in the same direction. I took ones where it was only one reason. Also, for both of these measures, we might consider controlling for the number of reasons.
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  filter(!is.na(mrl)) %>% 
+  ggplot(aes(x = mrl)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 0.01) +
+  scale_x_continuous(breaks = seq(0,1,0.1),
+                     limits = c(-0.01,1.01)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$mrl,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
 
 ## Outcome measures
 
@@ -1017,7 +1078,7 @@ df_lebe_elg %>%
 
 ```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
 df_lebe_elg %>% 
-   select(lebe_cont,system_R:trajectory,leftbehind_gpt,system_to_ind_gpt:trajectory_gpt,antidem:elect_cult) %>%
+   select(lebe_cont,system_R:trajectory,leftbehind_gpt,system_to_ind_gpt:trajectory_gpt,mpcs,mrl,antidem:elect_cult) %>%
    corPlot(upper = TRUE,stars = TRUE,xsrt = 270)
 ```
 
