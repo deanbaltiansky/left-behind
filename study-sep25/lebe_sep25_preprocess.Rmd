@@ -30,6 +30,7 @@ repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/s
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
 df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
 df_lebe_reasoncohesion <- readr::read_csv(paste0(repo_url,"df_lebe_reasoncohesion.csv"), show_col_types = FALSE)
+df_PIDreasonclusters <- readr::read_csv(paste0(repo_url,"df_PIDreasonclusters.csv"), show_col_types = FALSE)
 
 ```
 
@@ -197,8 +198,30 @@ df_lebe <- df_lebe %>%
                      history_gpt = history,
                      trajectory_gpt = trajectory,
                      gov_gpt = government,),by = "PID") %>% 
-  left_join(df_lebe_reasoncohesion,by = "PID")
+  left_join(df_lebe_reasoncohesion,by = "PID") %>% 
+  left_join(df_PIDreasonclusters %>% 
+              select(id,assigned_cluster,avg_cosine_to_assigned) %>% 
+              rename(PID = id,
+                     cluster = assigned_cluster,
+                     avg_cosine_to_cluster = avg_cosine_to_assigned),by = "PID")
 ```
+
+attaching cluster labels (from chat-gpt)
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(cluster_label = case_when(cluster == 1 ~ "Personal Agency",
+                                      cluster == 2 ~ "Family Dynamics",
+                                      cluster == 3 ~ "Digital Access",
+                                      cluster == 4 ~ "Opportunity Barriers",
+                                      cluster == 5 ~ "Societal Change",
+                                      cluster == 6 ~ "Inequality",
+                                      cluster == 7 ~ "Financial Insecurity",
+                                      cluster == 8 ~ "Support Deficit",
+                                      cluster == 9 ~ "Career Instability",
+                                      .default = NA))
+```
+
 
 removing mrl = 1
 
@@ -276,6 +299,9 @@ df_lebe <- df_lebe %>%
                 mrl,
                 mpcs,
                 n_reasons,
+                cluster,
+                cluster_label,
+                avg_cosine_to_cluster,
                 feedback)
 ```
 

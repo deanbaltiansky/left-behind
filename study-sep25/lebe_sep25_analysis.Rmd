@@ -57,6 +57,7 @@ library(here)
 repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25/data/"
 
 df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
+top_examples <- readr::read_csv(paste0(repo_url,"top_examples.csv"), show_col_types = FALSE)
 ```
 
 ```{r,include=FALSE}
@@ -773,6 +774,8 @@ df_lebe_elg %>%
         axis.title.x = element_text(color = "black",
                                    face = "bold"))
 ```
+
+### Cluster analysis
 
 ## Outcome measures
 
