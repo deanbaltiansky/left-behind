@@ -200,6 +200,32 @@ df_lebe <- df_lebe %>%
   left_join(df_lebe_reasoncohesion,by = "PID")
 ```
 
+removing mrl = 1
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(mrl = ifelse(mrl == 1,NA,mrl))
+```
+
+adding number of reasons
+
+```{r}
+n_reasons <- df_lebe %>% 
+  select(PID,reasons) %>% 
+  separate(reasons,into = c("reason_1","reason_2","reason_3","reason_4","reason_5","reason_6","reason_7","reason_8","reason_9","reason_10"),sep = ", ") %>% 
+  pivot_longer(-PID,
+               names_to = "reason_id",
+               names_prefix = "reason_",
+               values_to = "reason",
+               values_drop_na = T) %>% 
+  group_by(PID) %>% 
+  summarise(n_reasons = max(reason_id)) %>% 
+  ungroup()
+
+df_lebe <- df_lebe %>% 
+  left_join(n_reasons,by = "PID")
+```
+
 
 take only necessary variables
 
@@ -249,6 +275,7 @@ df_lebe <- df_lebe %>%
                 leftbehind_gpt:trajectory_gpt,
                 mrl,
                 mpcs,
+                n_reasons,
                 feedback)
 ```
 

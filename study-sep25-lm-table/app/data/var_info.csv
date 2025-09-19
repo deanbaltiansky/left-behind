@@ -13,6 +13,7 @@ history_gpt,Historic-Recent: gpt-rated,"To what extent are the factors more hist
 trajectory_gpt,Trajectory: gpt-rated,"Is the trajectory of the factors negative (i.e., things are getting worse) or positive (i.e., things are getting better)? (1 = ""Extremely Negative"" to 7 = ""Extremely Positive"")"
 mrl,How tightly one person’s reasons point to the same theme (higher = tighter),
 mpcs,Average similarity across all pairs of that person’s reasons,
+n_reasons,number of gpt-generated reasons,
 antidem,Support for Anti-Democratic Practices,Mean score of 5-item scale meauring endorsement of partisan anti-democratic practices
 trust,Trust in institutions,"Mean score of trust in congress, government, judicial, science, political parties, and mainstream news"
 antiest,Anti-Establishment Sentiment,Mean score of 4-item scale measuring anti-establishment sentiment
