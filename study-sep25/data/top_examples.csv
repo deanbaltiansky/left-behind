@@ -1,0 +1,46 @@
+"cluster","reason","cosine_to_centroid"
+1,"personal expectations",0.65494298623384
+1,"personal growth",0.653672996378003
+1,"personal struggles",0.640554742487245
+1,"self-reflection",0.628755568077434
+1,"personal choices",0.615009199253115
+2,"family issues",0.730050455356788
+2,"family dynamics",0.712451656515716
+2,"family expectations",0.688280015007155
+2,"relationship changes",0.646175599859755
+2,"single parenthood",0.64444650481208
+3,"technology access",0.726327495420445
+3,"technology changes",0.681310054228061
+3,"technology advancement",0.680455020079994
+3,"education access",0.646187427962796
+3,"job access",0.645233449733476
+4,"work limitations",0.669095057774246
+4,"social exclusion",0.657048496503892
+4,"exclusion",0.656669247344064
+4,"limited access",0.646628239776271
+4,"limited opportunities",0.646354380380622
+5,"societal trends",0.765013454313432
+5,"social trends",0.757474355155451
+5,"societal values",0.757328328318835
+5,"social changes",0.738228874583549
+5,"societal change",0.734973563893436
+6,"income disparity",0.838007244249157
+6,"economic disparity",0.82473174890051
+6,"education gap",0.813722526824478
+6,"education gaps",0.805296572085869
+6,"education disparity",0.786800452269541
+7,"financial struggles",0.80185952690482
+7,"financial insecurity",0.787941160832407
+7,"financial situations",0.781163085190648
+7,"financial strain",0.749742425558981
+7,"financial status",0.74759702432892
+8,"lack of recognition",0.731378741727649
+8,"lack of opportunities",0.724140212605293
+8,"lack of support",0.721849269719152
+8,"lack of progress",0.718713532738551
+8,"lack of guidance",0.707913672348719
+9,"job stagnation",0.776103453326678
+9,"career stagnation",0.764086428141502
+9,"career loss",0.74301612023243
+9,"career uncertainty",0.731459260997286
+9,"employment instability",0.72835968850603
