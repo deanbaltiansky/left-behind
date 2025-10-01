@@ -21,5 +21,7 @@ A few words about the project...
   - [Interactive app: Interactions](studies/study-sep25-interactions/app/){:target="_blank" rel="noopener"}
   - [Interactive app: Linear models](studies/study-sep25-lm-table/app/){:target="_blank" rel="noopener"}
 
+- [Study — September 2025A (preregistered)](studies/study-sep25a){:target="_blank" rel="noopener"}
+
 
 
