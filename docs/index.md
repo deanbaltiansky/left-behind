@@ -9,7 +9,7 @@ author: "Dean Baltiansky"
 
 ## Background
 
-A few words about the project...
+Recent years have been marked by an increase in the general feeling of being left behind in the United States. With this rise, popular discourse and academic research point to its effect on a shift toward alt-right extremism. In this project, we use a data-driven approach to unpack the psychology of feeling left behind and its implication for political attitudes and behaviors. Namely, we ask participants to intuitively indicate the extent to which they feel left behind overall, and importantly, write the ways in which they are falling behind others. We then use these data to examine how feeling left behind shapes candidate choice along two dimensions: ideological direction (left-wing vs. right-wing) and approach to change (incremental vs. sweeping).
 
 ## Studies
 
