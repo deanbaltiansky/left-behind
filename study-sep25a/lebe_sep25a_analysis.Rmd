@@ -6,7 +6,7 @@ output:
     toc: true
     toc_float: true
     code_folding: hide
-knit: (function(input_file, encoding) { rmarkdown::render(input_file, encoding = encoding, output_file = 'index.html', output_dir = here::here('docs','studies','study-sep25')); })
+knit: (function(input_file, encoding) { rmarkdown::render(input_file, encoding = encoding, output_file = 'index.html', output_dir = here::here('docs','studies','study-sep25a')); })
 ---
 
 
