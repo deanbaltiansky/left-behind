@@ -1,6 +1,6 @@
 ---
 title: "Left Behind"
-subtitle: "Sep 2025: Analysis"
+subtitle: "Sep 2025A: Analysis"
 output:
   html_document:
     toc: true
@@ -54,7 +54,7 @@ library(quanteda)
 library(bruceR)
 library(here)
 
-repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25/data/"
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25a/data/"
 
 df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
 top_examples <- readr::read_csv(paste0(repo_url,"top_examples.csv"), show_col_types = FALSE)
@@ -84,36 +84,46 @@ df_lebe_elg <- df_lebe %>%
   filter(is_elg == 1)
 ```
 
-# Purpose
+# Background
 
-This is a pilot study that is intended to further explore the feeling of being left behind. Specifically, we wanted to see what people intuitively write when prompted to think of the ways in which they are being left behind. Potentially, the extent to which they feel left behind, interacted with the way in which they are left behind, inform important political outcomes.
-
-# Procedure
-
-## Demographics
-
-Demographic information, political ideology, and political party identification.
-
-## Left behind
-
-### Continuous measure
-
-They indicated the extent to which they feel left behind on a scale of 0-100.
-
-### Open-ended measure
-
-They wrote, in detail, what feeling left behind means to them and what are the factors that are contributing to that feeling.
-
-### Dimensions of feeling behind
-
-They rated their response on a number of follow-up measures: systemic-individual; relation to government; economic-cultural; historic-recent; trajectory.
-
-## Outcomes
-
-Random order: (1) support for anti-democratic practices; (2) ideal candidate for an election;\
-Random order: (3) anti-establishment sentiment; (4) trust in institutions.\
+This is a preregistered study, aiming to: (1) establish a basic main effect between feeling left behind and support for candidates endorsing sweeping (as opposed to incremental) change; as well as (2) rule out a positive effect between feeling left behind and support for right-wing candidates.\
 \
-Finally, participants indicated their voting behavior in 2024.
+This was the preregistration:
+
+## Hypotheses
+
+1. Feeling left behind is positively associated with support for sweeping, as opposed to incremental, change.\
+2. Feeling left behind is not positively associated with support for right-wing political leaders.
+
+## Study design
+
+Participants will first indicate the extent to which they feel left behind.\ 
+Then, they will write a brief description of the ways in which they feel left behind, if at all.\
+Then, they will indicate their preferences for political candidates on the following dimensions: political experience (outsider vs. insider), approach to change (sweeping vs. incremental), and ideological direction (on both economic issues and cultural issues).\
+Finally, they will indicate their political ideology and party affiliation, as well as their demographic information.
+
+## Analysis plan
+
+1. Linear model 1A: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable.\
+2. Linear model 1B: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; race, gender, age, income, and education as control variables.\
+3. Linear model 1C: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; political party, conservative ideology, progressive ideology, race, gender, age, income, and education as control variables.\
+4. Linear model 2A: Continuous left behind measure as the predictor variable; preference for political candidate that supports right-wing policy as the outcome variable.\
+5. Linear model 2B: Continuous left behind measure as the predictor variable; preference for political candidate that supports right-wing policy as the outcome variable; race, gender, age, income, and education as control variables.\
+6. Linear model 2C: Continuous left behind measure as the predictor variable; preference for political candidate that supports right-wing policy as the outcome variable; political party, conservative ideology, progressive ideology, race, gender, age, income, and education as control variables.
+
+## Exploratory analysis
+
+The open-ended text will be coded along the following dimensions, generated with the use of the OpenAI API:\
+1. The extent of feeling left behind;\
+2. A list of factors contributing to the feeling of being left behind;\
+3. The extent to which feeling left behind is due to systemic, as opposed to individual, factors;\
+4. The extent to which feeling left behind is related to the government;\
+5. The extent to which feeling left behind is related to economic conditions;\
+6. The extent to which feeling left behind is related to cultural issues;\
+7. The extent to which feeling left behind is related to race;\
+8. The extent to which feeling left behind is related to gender;\
+9. The extent to which feeling left behind is related to age.\
+In an exploratory fashion, we will examine these dimensions as moderators for the effects of feeling left behind on preference for political candidates.
 
 # Eligibility
 
@@ -304,31 +314,13 @@ df_lebe_elg %>%
                 position = "left")
 ```
 
-### Voting behavior: 2024
-
-Who did you vote for in the 2024 Presidential Election?
-
-```{r,echo=TRUE,results='asis',warning=FALSE}
-df_lebe_elg %>% 
-  group_by(vote_2024) %>% 
-  summarise(N = n()) %>% 
-  ungroup() %>% 
-  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
-  ungroup() %>% 
-  arrange(desc(N)) %>% 
-  kbl() %>% 
-  kable_styling(bootstrap_options = "hover",
-                full_width = F,
-                position = "left")
-```
-
 # Measures
 
 ## Left behind
 
 ### Continuous
 
-People in America come from all walks of life. Some feel left behind. We are interested in whether you feel left behind and what that means for you.\
+People in America come from all walks of life. Some feel left behind while others are advancing. We are interested in how you feel and what that means for you.\
 \
 **To what extent do you feel left behind?** (0 = *Not at All Left Behind* to 100 = *Extremely Left Behind*)
 
@@ -336,7 +328,7 @@ People in America come from all walks of life. Some feel left behind. We are int
 df_lebe_elg %>% 
   ggplot(aes(x = lebe_cont)) +
   geom_histogram(fill = "lightblue",
-                 binwidth = 10) +
+                 binwidth = 5) +
   scale_x_continuous(breaks = seq(0,100,20),
                      limits = c(-10,110)) +
   ylab("count") +
@@ -356,49 +348,55 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-Interesting. Most people are under the mid-point. Ok.
-
 ### Open-ended description
 
-[For those under 50 in the continuous measure: \
+IF CONTINUOUS MEASURE < 50\
 \
-Although not everyone might feel overall left behind to the same extent, everyone likely does feel left behind in at least a few ways. So, regardless of your answer to the previous question...]\
+Not everyone feels that they are extremely left behind, but nearly everyone can point to at least a few areas where they feel somewhat left behind…\
 \
-**What does the phrase ‘feeling left behind’ mean to you in your own life? In what ways[,if any,] do you feel left behind, and why?**\
+**In what ways, if any, do you feel left behind?**\
 \
-Please describe why you might feel left behind in as much detail as possible. There is no right or wrong answer here; just your honest thoughts about the factors that might make you feel left behind.\
+Please describe why you might feel left behind in as much detail as possible. There is no right or wrong answer here; just your honest thoughts about the factors that make you feel left behind.\
+\
+IF CONTINUOUS MEASURE >= 50\
+\
+**In what ways do you feel left behind?**\
+\
+Please describe why you might feel left behind in as much detail as possible. There is no right or wrong answer here; just your honest thoughts about the factors that make you feel left behind.\
 \
 *paste disabled\
 *character range: 100-5000\
 \
-Note: Adding their self-reported left-behind scores to the table below as well.
+*Note: Adding their self-reported left-behind scores to the table below, as well as clusters (gnerated by k-means clustering the reasons' embedding; see more on that in the text analysis section*.
 
 ```{r,echo=FALSE,results='asis',warning=FALSE}
 df_lebe_elg %>% 
-  select(lebe_cont,describe) %>% 
+  select(lebe_cont,cluster_label,describe) %>% 
   kbl() %>% 
   kable_styling(bootstrap_options = "hover",
                 position = "left") %>% 
   scroll_box(width = "100%", height = "400px")
 ```
 
-### Dimensions of feeling left behind
 
-#### Systemic-Individual\
-\
-Would you say the factors that make you feel left behind are more **systemic** (larger forces outside your control, like government, society, culture, or the economy) or more **individual** (your own circumstances and choices)? (1 = *Entirely Systemic* to 7 = *Entirely Individual*)\
-\
-*Note: I reverse-scored it here so it's more intuitive for us.
+## Ideal candidate
+
+We would like to ask you about your ideal political candidate. 
+
+### Experience
+
+Thinking about experience with politics, where would your ideal candidate fall?\
+1 = *Outsider* (no prior political office); 7 = *Insider* (many years in political office)
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  ggplot(aes(x = system_R)) +
+  ggplot(aes(x = cand_exp)) +
   geom_histogram(fill = "lightblue",
                  binwidth = 1) +
   scale_x_continuous(breaks = seq(1,7,1),
                      limits = c(0,8)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$system_R,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$cand_exp,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -414,47 +412,22 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### Relation to government\
+### Change
+
+**Reverse-scored:**\
 \
-To what extent are the factors contributing to you feeling left behind related to the government? (1 = *Not at all related to the government* to 5 = *Extremely related to the government*)
+Thinking about how they would approach change, what approach would you like them to take?\
+1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  ggplot(aes(x = gov)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,5,1),
-                     limits = c(0,6)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$gov,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-
-#### Economic-Cultural\
-\
-Would you say the factors that make you feel left behind are more **economic** (like income, affordability, financial security) or **cultural** (like dignity, feeling respected, feeling valued)? (1 = *Entirely Economic* to 7 = *Entirely Cultural*)
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = econcult)) +
+  ggplot(aes(x = cand_change_R)) +
   geom_histogram(fill = "lightblue",
                  binwidth = 1) +
   scale_x_continuous(breaks = seq(1,7,1),
                      limits = c(0,8)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$econcult,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$cand_change_R,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -470,19 +443,29 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### History\
-\
-Would you say that the factors contributing to you feeling left behind are more **historic** (i.e.,they have been present for many years) or more **recent** (i.e., they are relatively new)? (1 = *Entirely Historic* to 7 = *Entirely Recent*)
+### Left-Right ideology
+
+Mean score of economic policy (1 = *Redistributive* to 7 = *Free Market*) and cultural issues (1 = *Progressive* to 7 = *Conservative*).
+
+```{r,include=F}
+cormat <- df_lebe_elg %>% 
+  select(cand_econ,cand_cult) %>% 
+  cor()
+
+r_value <- cormat[1,2]
+```
+
+r = `r round(r_value,2)`
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  ggplot(aes(x = history)) +
+  ggplot(aes(x = cand_rightwing)) +
   geom_histogram(fill = "lightblue",
                  binwidth = 1) +
   scale_x_continuous(breaks = seq(1,7,1),
                      limits = c(0,8)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$history,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$cand_rightwing,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -498,40 +481,12 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### Trajectory\
-\
-Would you say that the trajectory of the factors contributing to you feeling left behind is **negative** (i.e., things are getting worse) or **positive** (i.e., things are getting better)? (1 = *Extremely Negative* to 7 = *Extremely Positive*)
+## Text analysis
 
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = trajectory)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$trajectory,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
+I looped through their open-ended responses with gpt-4o to get the following: (1) left behind score; (2) reasons; (3) systemic; (4) government-related; (5) economic; (6) cultural; (7) race-related; (8) gender-related; (9) age-related.
 
-### Text analysis
+### Left behind score
 
-I looped through their open-ended responses with gpt-4o to get the following: (1) left behind score; (2) labeled reasons; (3) systemic to individual; (4) government-related; (5) economic to cultural; (6) history; (7) trajectory.
-
-#### Left behind score\
-\
 To what extent is this person feeling left behind?
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
@@ -558,11 +513,9 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### Reasons\
-\
-What are the factors that are making this person feel left behind?\
-\
-Note: I'll skip the analysis on this for now, but I think this can be useful if we want to do embeddings later on.
+### Reasons
+
+What are the factors that are making this person feel left behind?
 
 ```{r,echo=TRUE,results='asis',warning=FALSE}
 df_lebe_elg %>% 
@@ -573,19 +526,19 @@ df_lebe_elg %>%
   scroll_box(width = "100%", height = "400px")
 ```
 
-#### System to individual\
+### Systemic
 \
-Would you say that the factors that make this person feel left behind are more systemic (larger forces outside their control, like government, society, culture, or the economy) or more individual (their own circumstances and choice)?
+Would you say that the factors that make this person feel left behind are more systemic (larger forces outside their control, like government, society, culture, or the economy) or more individual (their own circumstances and choice)? (1 = *entirely individual* to 7 = *entirely systemic*)
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  ggplot(aes(x = system_to_ind_gpt)) +
+  ggplot(aes(x = systemic_gpt)) +
   geom_histogram(fill = "lightblue",
                  binwidth = 1) +
   scale_x_continuous(breaks = seq(1,7,1),
                      limits = c(0,8)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$system_to_ind_gpt,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$systemic_gpt,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -601,8 +554,8 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### Government-related\
-\
+### Government-related
+
 To what extent are the factors related to the government?
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
@@ -629,19 +582,19 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### Economic to cultural\
-\
-To what extent are the factors more economic (like income, affordability, financial security) or cultural (like dignity, feeling respected, feeling valued)?
+### Economic
+
+To what extent are the factors related to economic conditions?
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  ggplot(aes(x = econ_to_cult_gpt)) +
+  ggplot(aes(x = econ_gpt)) +
   geom_histogram(fill = "lightblue",
                  binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
+  scale_x_continuous(breaks = seq(1,5,1),
+                     limits = c(0,6)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$econ_to_cult_gpt,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$econ_gpt,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -657,19 +610,19 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### Historic\
-\
-To what extent are the factors more historic (i.e., they have been present for many years) or more recent (i.e., they are relatively new)? (Historic to recent)
+### Cultural
+
+To what extent are the factors related to cultural issues (like dignity, feeling respected, feeling valued)?
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  ggplot(aes(x = history_gpt)) +
+  ggplot(aes(x = cult_gpt)) +
   geom_histogram(fill = "lightblue",
                  binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
+  scale_x_continuous(breaks = seq(1,5,1),
+                     limits = c(0,6)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$history_gpt,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$cult_gpt,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -685,19 +638,19 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### Trajectory\
-\
-Is the trajectory of the factors negative (i.e., things are getting worse) or positive (i.e., things are getting better)?
+### Race
+
+To what extent are the factors related to racial background?
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  ggplot(aes(x = trajectory_gpt)) +
+  ggplot(aes(x = race_gpt)) +
   geom_histogram(fill = "lightblue",
                  binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
+  scale_x_continuous(breaks = seq(1,5,1),
+                     limits = c(0,6)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$trajectory_gpt,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$race_gpt,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -713,24 +666,19 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-### Cosine similarity measures
+### Gender
 
-From the reasons that I extracted with gpt-4o, I got openai word embeddings. I did this to assess how cohesive the reasons for falling behind are for every person. To that end, I arrived at two measure:
-
-#### MPCS\
-\
-This is just the mean of the pairwise cosine similarities of all possible within-participant embeddings. So, higher scores mean that the reasons are more alike in semantic space.
+To what extent are the factors related to gender?
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  filter(!is.na(mpcs)) %>% 
-  ggplot(aes(x = mpcs)) +
+  ggplot(aes(x = gender_gpt)) +
   geom_histogram(fill = "lightblue",
-                 binwidth = 0.01) +
-  scale_x_continuous(breaks = seq(0,1,0.1),
-                     limits = c(-0.01,1.01)) +
+                 binwidth = 1) +
+  scale_x_continuous(breaks = seq(1,5,1),
+                     limits = c(0,6)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$mpcs,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$gender_gpt,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -746,20 +694,19 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-#### MRL\
-\
-Mean Resultant Length. This is the average of unit-normalized vectors. So, basically, it tells us how tightly each reason the person gives points in the same direction. I took ones where it was only one reason. Also, for both of these measures, we might consider controlling for the number of reasons.
+### Age
+
+To what extent are the factors related to age?
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
 df_lebe_elg %>% 
-  filter(!is.na(mrl)) %>% 
-  ggplot(aes(x = mrl)) +
+  ggplot(aes(x = age_gpt)) +
   geom_histogram(fill = "lightblue",
-                 binwidth = 0.01) +
-  scale_x_continuous(breaks = seq(0,1,0.1),
-                     limits = c(-0.01,1.01)) +
+                 binwidth = 1) +
+  scale_x_continuous(breaks = seq(1,5,1),
+                     limits = c(0,6)) +
   ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$mrl,na.rm = T),
+  geom_vline(xintercept = mean(df_lebe_elg$age_gpt,na.rm = T),
              color = "black",
              linetype = "dashed",
              size = 1.1) +
@@ -775,40 +722,36 @@ df_lebe_elg %>%
                                    face = "bold"))
 ```
 
-### Cluster analysis
+## Cluster analysis
 
 I took the embeddings of the gpt-generated reasons and clustered them using k-means clustering. These are the top-five reasons in each cluster. The label was generated by chat-gpt.
 
 ```{r,echo=TRUE,results='asis',warning=FALSE}
-top_examples %>% 
+top_examples %>%
+  left_join(df_lebe_elg %>% 
+              select(cluster,cluster_label) %>% 
+              distinct(),by = "cluster") %>% 
   select(-cluster) %>% 
+  select(cluster_label,reason,cosine_to_centroid) %>% 
   kbl() %>% 
   kable_styling(bootstrap_options = "hover",
                 position = "left") %>% 
   scroll_box(width = "100%", height = "400px")
 ```
 
-Then, I wanted to assign a cluster to each participant. So, for each participant, I took the mean of their embeddings, and then took the cosine similarity of that mean with each cluster's centroid. The highest value is the cluster that the participant was assigned to. Below, I'll show participants' assigned cluster, cosine similarity to cluster centroid, and open response. Let's see if this passes the smell test.
-
-```{r,echo=FALSE,results='asis',warning=FALSE}
-df_lebe_elg %>% 
-  select(cluster_label,avg_cosine_to_cluster,describe) %>% 
-  kbl() %>% 
-  kable_styling(bootstrap_options = "hover",
-                position = "left") %>% 
-  scroll_box(width = "100%", height = "400px")
-```
-This looks pretty good, actually.\
+Then, I wanted to assign a cluster to each participant. So, for each participant, I took the mean of their embeddings, and then took the cosine similarity of that mean with each cluster's centroid. The highest value is the cluster that the participant was assigned to. Below, I'll show participants' assigned cluster, cosine similarity to cluster centroid, and open response.\
 \
-Let's get a distribution of categories.
+I'll also add the mean left behind score for that cluster, just for fun.
 
 ```{r,echo=TRUE,results='asis',warning=FALSE}
 df_lebe_elg %>% 
   group_by(cluster_label) %>% 
-  summarise(N = n()) %>% 
+  summarise(N = n(),
+            M_leftbehind = mean(lebe_cont,na.rm = T)) %>% 
   ungroup() %>% 
   mutate(Perc = round(100*(N/sum(N)),2)) %>% 
   ungroup() %>% 
+  select(cluster_label,N,Perc,M_leftbehind) %>% 
   arrange(desc(N)) %>% 
   kbl() %>% 
   kable_styling(bootstrap_options = "hover",
@@ -816,305 +759,6 @@ df_lebe_elg %>%
                 position = "left")
 ```
 
-Cool.
-
-## Outcome measures
-
-### Support for anti-democratic practices
-
-1 = *Strongly Disagree* to 7 = *Strongly Agree*\
-\
-1. The [INPARTY] should reduce the number of polling stations in areas that support the [OUTPARTY].\
-2. The [INPARTY] should not accept the results of elections if they lose.\
-3. The [INPARTY] should ignore unfavorable court rulings.\
-4. When a [INPARTY] candidate questions the outcome of an election, other [INPARTY] members should be more loyal to the [INPARTY] than to election rules or the constitution.\
-5. The government should be able to censor media sources that spend more time attacking the [INPARTY] than the [OUTPARTY].
-
-```{r,include=F}
-alpha_score <- df_lebe_elg %>% 
-  dplyr::select(antidem_1:antidem_5) %>% 
-  psych::alpha()
-
-alpha <- alpha_score$total[1]
-```
-
-Cronbach's alpha = `r round(alpha,2)`
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = antidem)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$antidem,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-
-### Ideal candidate
-
-We would like to ask you about your ideal political candidate. 
-
-#### Experience\
-\
-Thinking about experience with politics, where would your ideal candidate fall?\
-1 = *Outsider* (no prior political office); 7 = *Insider* (many years in political office)
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = elect_exp)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$elect_exp,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-
-#### Change\
-\
-Thinking about how they would approach change, what approach would you like them to take?\
-1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = elect_change)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$elect_change,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-
-#### Economic policy\
-\
-Thinking about their economic platform, which positions would your ideal candidate advance?\
-1 = *Free Market* (low corporate taxes, deregulation); 7 = *Redistributive* (wealth tax, stronger unions)
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = elect_econ)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$elect_econ,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-
-#### Cultural issues\
-\
-Thinking about cultural issues, which positions would your ideal candidate advance?\
-1 = *Conservative* (pro-life, stronger police, immigration crackdown); 7 = *Progressive* (pro-choice, minority rights, inclusive immigration)
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = elect_cult)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$elect_cult,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-
-### Anti-establishment sentiment
-
-1 = *Strongly Disagree* to 7 = *Strongly Agree*\
-\
-1. The US’s economy is rigged to advantage the rich and powerful.\
-2. Traditional politicians and parties don’t care about people like me.\
-3. Experts in this country don’t understand the lives of people like me.\
-4. Most of the time we can trust people in the government to do what is right [R].
-
-```{r,include=F}
-alpha_score <- df_lebe_elg %>% 
-  dplyr::select(antiest_1:antiest_4R) %>% 
-  psych::alpha()
-
-alpha <- alpha_score$total[1]
-```
-
-Cronbach's alpha = `r round(alpha,2)`
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = antiest)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,7,1),
-                     limits = c(0,8)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$antiest,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-
-### Trust in institutions
-
-We would now like to ask you a question about how much trust you have in certain institutions and groups. For each of the following institutions, please indicate if you trust it a lot, trust it somewhat, do not trust it very much, or do not trust it at all?\
-\
-1. Congress\
-2. The Government\
-3. The judiciary\
-4. Scientists\
-5. The political parties\
-6. Traditional newsmedia
-
-```{r,include=F}
-alpha_score <- df_lebe_elg %>% 
-  dplyr::select(trust_con:trust_news) %>% 
-  psych::alpha()
-
-alpha <- alpha_score$total[1]
-```
-
-Cronbach's alpha = `r round(alpha,2)`
-
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-df_lebe_elg %>% 
-  ggplot(aes(x = trust)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,4,1),
-                     limits = c(0,5)) +
-  ylab("count") +
-  geom_vline(xintercept = mean(df_lebe_elg$trust,na.rm = T),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold"))
-```
-\
-Broken up:\
-\
-```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
-means <- df_lebe_elg %>%
-  dplyr::select(PID,trust_con:trust_news) %>% 
-  pivot_longer(-PID,
-               names_to = "inst",
-               values_to = "trust") %>% 
-  filter(!is.na(trust)) %>% 
-  group_by(inst) %>% 
-  summarise(score = mean(trust)) %>% 
-  ungroup()
-
-df_lebe_elg %>%
-  dplyr::select(PID,trust_con:trust_news) %>% 
-  pivot_longer(-PID,
-               names_to = "inst",
-               values_to = "trust") %>% 
-  filter(!is.na(trust)) %>%  
-  ggplot(aes(x = trust)) +
-  geom_histogram(fill = "lightblue",
-                 binwidth = 1) +
-  scale_x_continuous(breaks = seq(1,4,1),
-                     limits = c(0,5)) +
-  ylab("count") +
-  geom_vline(data = means,mapping = aes(xintercept = score),
-             color = "black",
-             linetype = "dashed",
-             size = 1.1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(color = "black",
-                                   face = "bold"),
-        axis.title.x = element_text(color = "black",
-                                   face = "bold")) +
-  facet_wrap(~inst,nrow = 2)
-
-
-```
 
 # Analysis
 
@@ -1122,48 +766,29 @@ df_lebe_elg %>%
 
 ```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
 df_lebe_elg %>% 
-   select(lebe_cont,system_R:trajectory,leftbehind_gpt,system_to_ind_gpt:trajectory_gpt,mpcs,mrl,antidem:elect_cult) %>%
+   select(lebe_cont,cand_rightwing,cand_change_R,cand_exp,systemic_gpt:age_gpt,ideo_con:ideo_prog) %>%
    corPlot(upper = TRUE,stars = TRUE,xsrt = 270)
 ```
 
-To explore these correlations and more, see here:\
-\
-<a href="app/" target="_blank" rel="noopener">
-  Shiny App: Correlations
-</a>
+## Preregistered analyses
 
-## Interactions
+1. Linear model 1A: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable.\
+2. Linear model 1B: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; race, gender, age, income, and education as control variables.\
+3. Linear model 1C: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; political party, conservative ideology, progressive ideology, race, gender, age, income, and education as control variables.\
 
-There are a bunch of ways to interact these variables. Feel free to explore here:\
-\
-<a href="../study-sep25-interactions/app/" target="_blank" rel="noopener">
-  Shiny App: Interactions
-</a>\
-\
-Note that these are just raw interactions, without controlling for main effects or any other variables. Let's start adding controls in the following linear models.
-
-## Linear models
-
-Ok, now to run some actual stats. We want to see if these correlations and interactions hold
-when controlling for some important variables. I'll show a few of them below, but if you want to try some yourself, feel free to explore here:\
-\
-<a href="../study-sep25-lm-table/app/" target="_blank" rel="noopener">Shiny App: Linear Models</a>
-
-### DV: Candidate support for sweeping-incremental change
+### DV: Candidate support for sweeping change
 
 Just as a reminder, this is the measure for this DV...\
 \
-Thinking about how they would approach change, what approach would you like them to take?\
-1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
+**Reverse-scored:** Thinking about how they would approach change, what approach would you like them to take? 1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
 
-#### Model 1\
+#### Model 1A\
 \
-**Outcome:** Incremental change candidate\
+**Outcome:** Sweeping change candidate\
 **Predictor:** left behind - continuous\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
 
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_change ~ lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+m1 <- lm(cand_change_R ~ lebe_cont,data = df_lebe_elg)
 
 apa_lm <- apa_print(m1)
  
@@ -1173,90 +798,14 @@ kbl(apa_lm$table) %>%
                 position = "left")
 ```
 
-#### Model 2\
+#### Model 1B\
 \
-**Outcome:** Incremental change candidate\
-**Predictor:** systemic reason for being left behind\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
-
-```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_change ~ system_R + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
-
-apa_lm <- apa_print(m1)
- 
-kbl(apa_lm$table) %>% 
-  kable_styling(bootstrap_options = "hover",
-                full_width = F,
-                position = "left")
-```
-
-#### Model 3\
-\
-**Outcome:** Incremental change candidate\
-**Predictor:** systemic reason for being left behind\
-**Moderator:** continuous measure of feeling left behind\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
-
-```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_change ~ system_R*lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
-
-apa_lm <- apa_print(m1)
- 
-kbl(apa_lm$table) %>% 
-  kable_styling(bootstrap_options = "hover",
-                full_width = F,
-                position = "left")
-```
-
-#### Model 4\
-\
-**Outcome:** Incremental change candidate\
-**Predictor:** systemic reason for being left behind - gpt (unreversed)\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
-
-```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_change ~ system_to_ind_gpt + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
-
-apa_lm <- apa_print(m1)
- 
-kbl(apa_lm$table) %>% 
-  kable_styling(bootstrap_options = "hover",
-                full_width = F,
-                position = "left")
-```
-
-#### Model 5\
-\
-**Outcome:** Incremental change candidate\
-**Predictor:** trajectory\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
-
-```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_change ~ trajectory + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
-
-apa_lm <- apa_print(m1)
- 
-kbl(apa_lm$table) %>% 
-  kable_styling(bootstrap_options = "hover",
-                full_width = F,
-                position = "left")
-```
-
-### DV: Candidate support for economically progressive policy
-
-Just as a reminder, this is the measure for this DV...\
-\
-Thinking about their economic platform, which positions would your ideal candidate advance?\
-1 = *Free Market* (low corporate taxes, deregulation); 7 = *Redistributive* (wealth tax, stronger unions)
-
-#### Model 1\
-\
-**Outcome:** Economically redistributive candidate\
+**Outcome:** Sweeping change candidate\
 **Predictor:** left behind - continuous\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+**Controls:** race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
 
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_econ ~ lebe_cont + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+m1 <- lm(cand_change_R ~ lebe_cont + white_bin + man_bin + income_num + edu_num + age,data = df_lebe_elg)
 
 apa_lm <- apa_print(m1)
  
@@ -1266,14 +815,14 @@ kbl(apa_lm$table) %>%
                 position = "left")
 ```
 
-#### Model 2\
+#### Model 1C\
 \
-**Outcome:** Economically redistributive candidate\
-**Predictor:** systemic reason for being left behind\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+**Controls:** party id, conservative ideology, progressive ideology, race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
 
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_econ ~ system_R + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+m1 <- lm(cand_change_R ~ lebe_cont + party_gen + ideo_con + ideo_prog + white_bin + man_bin + income_num + edu_num + age,data = df_lebe_elg)
 
 apa_lm <- apa_print(m1)
  
@@ -1283,14 +832,15 @@ kbl(apa_lm$table) %>%
                 position = "left")
 ```
 
-#### Model 3\
+### DV: Right-wing candidate
+
+#### Model 2A\
 \
-**Outcome:** Economically redistributive candidate\
-**Predictor:** economic-cultural reasons\
-**Controls:** political ideology (conservatism), party ID, age, income, education, race, gender
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
 
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lm(elect_econ ~ econcult + ideo_con + party_gen + age + income_num + edu_num + race + gender,data = df_lebe_elg)
+m1 <- lm(cand_rightwing ~ lebe_cont,data = df_lebe_elg)
 
 apa_lm <- apa_print(m1)
  
@@ -1300,64 +850,37 @@ kbl(apa_lm$table) %>%
                 position = "left")
 ```
 
-## Extra relationships
+#### Model 2B\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+**Controls:** race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
 
-Let's see if the cluster categories derived from people's open-ended responses show any patterns. So, below are the means of the left behind continuous measure, self-reported systemic explanation, self-reported government-related, self-reported economic<>cultural, support for anti-democratic practices, trust in institutions, anti-establishment sentiment, ideal candidate: experience, ideal candidate: change (sweeping to incremental), ideal candidate: economic (free market to redistributive), and ideal candidate: cultural (conservative to progressive).
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont + white_bin + man_bin + income_num + edu_num + age,data = df_lebe_elg)
 
-```{r,echo=TRUE,results='asis',warning=FALSE}
-df_lebe_elg %>% 
-  group_by(cluster_label) %>% 
-  summarise(leftbehindcont = mean(lebe_cont,na.rm = T),
-            system = mean(system_R,na.rm = T),
-            gov = mean(gov,na.rm = T),
-            econcult = mean(econcult,na.rm = T),
-            antidem = mean(antidem,na.rm = T),
-            trust = mean(trust,na.rm = T),
-            antiest = mean(antiest,na.rm = T),
-            elect_exp = mean(elect_exp,na.rm = T),
-            elect_change = mean(elect_change,na.rm = T),
-            elect_econ = mean(elect_econ,na.rm = T),
-            elect_cult = mean(elect_cult,na.rm = T)) %>% 
-  ungroup() %>%  
-  kbl() %>% 
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
   kable_styling(bootstrap_options = "hover",
                 full_width = F,
                 position = "left")
 ```
 
-```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
-df_lebe_elg %>% 
-  group_by(cluster_label) %>% 
-  summarise(leftbehindcont = mean(lebe_cont,na.rm = T),
-            system = mean(system_R,na.rm = T),
-            gov = mean(gov,na.rm = T),
-            econcult = mean(econcult,na.rm = T),
-            antidem = mean(antidem,na.rm = T),
-            trust = mean(trust,na.rm = T),
-            antiest = mean(antiest,na.rm = T),
-            elect_exp = mean(elect_exp,na.rm = T),
-            elect_change = mean(elect_change,na.rm = T),
-            elect_econ = mean(elect_econ,na.rm = T),
-            elect_cult = mean(elect_cult,na.rm = T)) %>% 
-  ungroup() %>% 
-  select(-leftbehindcont) %>% 
-  pivot_longer(-cluster_label,
-               names_to = "var",
-               values_to = "mean") %>% 
-  ggplot(aes(x = cluster_label,y = mean,fill = cluster_label)) +
-  stat_summary(geom = "bar",
-               fun.y = "mean") +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_line(color = "grey66"),
-        axis.text.y = element_text(color = "black"),
-        axis.text.x = element_text(angle = 90,
-                                   vjust = -.001),
-        axis.title.x = element_blank(),
-        legend.position = "bottom",
-        legend.title = element_blank()) +
-  facet_wrap(~var,
-             nrow = 2)
+#### Model 2C\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+**Controls:** party id, conservative ideology, progressive ideology, race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont + party_gen + ideo_con + ideo_prog + white_bin + man_bin + income_num + edu_num + age,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
 ```
+
