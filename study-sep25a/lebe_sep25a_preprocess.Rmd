@@ -1,0 +1,313 @@
+---
+title: "lebe_sep25_preprocess"
+output: html_document
+---
+
+```{r,include=FALSE}
+detachAllPackages <- function() {
+
+  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
+
+  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+
+  package.list <- setdiff(package.list,basic.packages)
+
+  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
+
+}
+
+detachAllPackages()
+```
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(janitor)
+library(httr)
+library(readr)
+
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25/data/"
+
+df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
+df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+df_lebe_reasoncohesion <- readr::read_csv(paste0(repo_url,"df_lebe_reasoncohesion.csv"), show_col_types = FALSE)
+df_PIDreasonclusters <- readr::read_csv(paste0(repo_url,"df_PIDreasonclusters.csv"), show_col_types = FALSE)
+
+```
+
+remove ineligible participants
+
+```{r}
+#keep only those who finished
+df_lebe <- df_deid %>% 
+  filter(Finished == 1) %>% 
+  filter(Progress == 100) %>% 
+  filter(intro == 4)
+```
+
+Put NA's where necessary
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(income = ifelse(income == "Prefer not to answer",NA,income))
+```
+
+define income and edu as factors
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(income = factor(income,c("$0-$20,000",
+                                  "$20,001-$40,000",
+                                  "$40,001-$60,000",
+                                  "$60,001-$80,000",
+                                  "$80,001-$100,000",
+                                  "$100,001-$120,000",
+                                  "$120,001-$140,000",
+                                  "$140,001-$160,000",
+                                  "$160,001-$180,000",
+                                  "$180,001-$200,000",
+                                  "Over $200,000")),
+         edu = factor(edu,c("noHS",
+                            "GED",
+                            "2yearColl",
+                            "4yearColl",
+                            "MA",
+                            "PHD")),
+         income_num = as.numeric(income),
+         edu_num = as.numeric(edu))
+```
+
+fix race
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate_at(vars(race_1:race_8),function(x){as.character(x)}) %>% 
+  mutate_at(vars(race_1:race_8),function(x){replace_na(x,"")}) %>% 
+  mutate(race_num_1 = ifelse(race_1 != "",1,0),
+         race_num_2 = ifelse(race_2 != "",1,0),
+         race_num_3 = ifelse(race_3 != "",1,0),
+         race_num_4 = ifelse(race_4 != "",1,0),
+         race_num_5 = ifelse(race_5 != "",1,0),
+         race_num_6 = ifelse(race_6 != "",1,0),
+         race_num_7 = ifelse(race_7 != "",1,0),
+         race_num_8 = ifelse(race_8 != "",1,0),
+         race_num = race_num_1 + race_num_2 + race_num_3 + race_num_4 + race_num_5 + race_num_6 + race_num_7 + race_num_8,
+         race = ifelse(race_num > 1,"multiracial",paste0(race_1,race_2,race_3,race_4,race_5,race_6,race_7,race_8)),
+         race = ifelse(race == "",NA,race)) %>% 
+  mutate(white_bin = ifelse(race == "White",1,0))
+```
+
+gender
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(man_bin = ifelse(gender == "man",1,0))
+```
+
+party 
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(rep_bin = ifelse(party_gen == "Republican",1,0),
+         dem_bin = ifelse(party_gen == "Democrat",1,0),
+         ind_bin = ifelse(party_gen == "Independent",1,0))
+```
+
+rename some vars
+
+```{r}
+df_lebe <- df_lebe %>% 
+  rename(ideo_con = ideo_1,
+         ideo_lib = ideo_2,
+         ideo_demsoc = ideo_3,
+         ideo_lbrtn = ideo_4,
+         ideo_prog = ideo_5,
+         lebe_cont = lebe_cont_1)
+         
+         
+```
+
+reverse-score items
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(antiest_4R = 8 - antiest_4,
+         system_R = 8 - system)
+```
+
+recode items
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(vote_2024 = ifelse(vote_2024 == "Other (please specify)",vote_2024_12_TEXT,vote_2024),
+         party_followup = case_when(party_gen == "Democrat" ~ paste0("Democrat | ",party_dem),
+                                    party_gen == "Republican" ~ paste0("Republican | ",party_rep),
+                                    party_gen == "Independent" |
+                                      party_gen == "No preference" |
+                                      party_gen == "Other party" ~ paste0("Independent | ",party_ind),
+                                    .default = NA)) 
+```
+
+mean scores
+
+```{r}
+df_lebe <- df_lebe %>% 
+  rowwise() %>% 
+  mutate(antidem = mean(c(antidem_1,
+                          antidem_2,
+                          antidem_3,
+                          antidem_4,
+                          antidem_5),na.rm = T),
+         antiest = mean(c(antiest_1,
+                          antiest_2,
+                          antiest_3,
+                          antiest_4R),na.rm = T),
+         trust = mean(c(trust_con,
+                        trust_gov,
+                        trust_jud,
+                        trust_sci,
+                        trust_pol,
+                        trust_news),na.rm = T)) %>% 
+  ungroup()
+```
+
+check
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(att_1 = ifelse(check_1 == "14285733",0,1),
+         is_elg = ifelse(att_1 == 0,0,1))
+```
+
+clean text
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(describe = str_squish(describe))
+```
+
+attach from text analysis scripts
+
+```{r}
+df_lebe <- df_lebe %>% 
+  left_join(df_lebe_gpt4o %>% 
+              rename(PID = id,
+                     leftbehind_gpt = left_behind_score,
+                     reasons = reasons_csv,
+                     system_to_ind_gpt = systemic,
+                     econ_to_cult_gpt = economic_or_cultural,
+                     history_gpt = history,
+                     trajectory_gpt = trajectory,
+                     gov_gpt = government,),by = "PID") %>% 
+  left_join(df_lebe_reasoncohesion,by = "PID") %>% 
+  left_join(df_PIDreasonclusters %>% 
+              select(id,assigned_cluster,avg_cosine_to_assigned) %>% 
+              rename(PID = id,
+                     cluster = assigned_cluster,
+                     avg_cosine_to_cluster = avg_cosine_to_assigned),by = "PID")
+```
+
+attaching cluster labels (from chat-gpt)
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(cluster_label = case_when(cluster == 1 ~ "Personal Agency",
+                                      cluster == 2 ~ "Family Dynamics",
+                                      cluster == 3 ~ "Digital Access",
+                                      cluster == 4 ~ "Opportunity Barriers",
+                                      cluster == 5 ~ "Societal Change",
+                                      cluster == 6 ~ "Inequality",
+                                      cluster == 7 ~ "Financial Insecurity",
+                                      cluster == 8 ~ "Support Deficit",
+                                      cluster == 9 ~ "Career Instability",
+                                      .default = NA))
+```
+
+
+removing mrl = 1
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(mrl = ifelse(mrl == 1,NA,mrl))
+```
+
+adding number of reasons
+
+```{r}
+n_reasons <- df_lebe %>% 
+  select(PID,reasons) %>% 
+  separate(reasons,into = c("reason_1","reason_2","reason_3","reason_4","reason_5","reason_6","reason_7","reason_8","reason_9","reason_10"),sep = ", ") %>% 
+  pivot_longer(-PID,
+               names_to = "reason_id",
+               names_prefix = "reason_",
+               values_to = "reason",
+               values_drop_na = T) %>% 
+  group_by(PID) %>% 
+  summarise(n_reasons = max(reason_id)) %>% 
+  ungroup()
+
+df_lebe <- df_lebe %>% 
+  left_join(n_reasons,by = "PID")
+```
+
+
+take only necessary variables
+
+```{r}
+df_lebe <- df_lebe %>% 
+  dplyr::select(PID,
+                lebe_cont,
+                describe,
+                system_R,
+                gov:trajectory,
+                antidem,
+                trust,
+                antiest,
+                elect_exp:elect_cult,
+                antidem_1,
+                          antidem_2,
+                          antidem_3,
+                          antidem_4,
+                          antidem_5,
+                antiest_1,
+                          antiest_2,
+                          antiest_3,
+                          antiest_4R,
+                trust_con,
+                        trust_gov,
+                        trust_jud,
+                        trust_sci,
+                        trust_pol,
+                        trust_news,
+                vote_2024,
+                ideo_con:ideo_prog,
+                party_gen,
+                party_dem,
+                party_rep,
+                party_ind,
+                party_followup,
+                att_1,
+                is_elg,
+                age,
+                gender,
+                race,
+                edu,
+                income,
+                income_num,
+                edu_num,
+                white_bin:ind_bin,
+                leftbehind_gpt:trajectory_gpt,
+                mrl,
+                mpcs,
+                n_reasons,
+                cluster,
+                cluster_label,
+                avg_cosine_to_cluster,
+                feedback)
+```
+
+write csv
+
+```{r}
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-sep25/data/df_lebe.csv",row.names = F)
+```
+
