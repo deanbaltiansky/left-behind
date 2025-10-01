@@ -28,9 +28,8 @@ library(readr)
 repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25a/data/"
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
-#df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
-#df_lebe_reasoncohesion <- readr::read_csv(paste0(repo_url,"df_lebe_reasoncohesion.csv"), show_col_types = FALSE)
-#df_PIDreasonclusters <- readr::read_csv(paste0(repo_url,"df_PIDreasonclusters.csv"), show_col_types = FALSE)
+df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+df_PIDreasonclusters <- readr::read_csv(paste0(repo_url,"df_PIDreasonclusters.csv"), show_col_types = FALSE)
 
 ```
 
@@ -181,14 +180,15 @@ df_lebe <- df_lebe %>%
               rename(PID = id,
                      leftbehind_gpt = left_behind_score,
                      reasons = reasons_csv,
-                     system_to_ind_gpt = systemic,
-                     econ_to_cult_gpt = economic_or_cultural,
-                     history_gpt = history,
-                     trajectory_gpt = trajectory,
-                     gov_gpt = government,),by = "PID") %>% 
-  left_join(df_lebe_reasoncohesion,by = "PID") %>% 
+                     systemic_gpt = systemic,
+                     gov_gpt = government,
+                     econ_gpt = economic,
+                     cult_gpt = cultural,
+                     race_gpt = race,
+                     gender_gpt = gender,
+                     age_gpt = age),by = "PID") %>% 
   left_join(df_PIDreasonclusters %>% 
-              select(id,assigned_cluster,avg_cosine_to_assigned) %>% 
+              select(id,n_reasons,assigned_cluster,avg_cosine_to_assigned) %>% 
               rename(PID = id,
                      cluster = assigned_cluster,
                      avg_cosine_to_cluster = avg_cosine_to_assigned),by = "PID")
@@ -198,43 +198,17 @@ attaching cluster labels (from chat-gpt)
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  mutate(cluster_label = case_when(cluster == 1 ~ "Personal Agency",
-                                      cluster == 2 ~ "Family Dynamics",
-                                      cluster == 3 ~ "Digital Access",
-                                      cluster == 4 ~ "Opportunity Barriers",
-                                      cluster == 5 ~ "Societal Change",
-                                      cluster == 6 ~ "Inequality",
-                                      cluster == 7 ~ "Financial Insecurity",
-                                      cluster == 8 ~ "Support Deficit",
-                                      cluster == 9 ~ "Career Instability",
+  mutate(cluster_label = case_when(cluster == 1 ~ "Family responsibilities",
+                                      cluster == 2 ~ "Personal growth",
+                                      cluster == 3 ~ "Career opportunities",
+                                      cluster == 4 ~ "Inequality and disparity",
+                                      cluster == 5 ~ "Health limitations",
+                                      cluster == 6 ~ "Technology change",
+                                      cluster == 7 ~ "Financial struggles",
+                                      cluster == 8 ~ "Lack of opportunities",
+                                      cluster == 9 ~ "Social and political issues",
+                                      cluster == 10 ~ "Generational differences",
                                       .default = NA))
-```
-
-
-removing mrl = 1
-
-```{r}
-df_lebe <- df_lebe %>% 
-  mutate(mrl = ifelse(mrl == 1,NA,mrl))
-```
-
-adding number of reasons
-
-```{r}
-n_reasons <- df_lebe %>% 
-  select(PID,reasons) %>% 
-  separate(reasons,into = c("reason_1","reason_2","reason_3","reason_4","reason_5","reason_6","reason_7","reason_8","reason_9","reason_10"),sep = ", ") %>% 
-  pivot_longer(-PID,
-               names_to = "reason_id",
-               names_prefix = "reason_",
-               values_to = "reason",
-               values_drop_na = T) %>% 
-  group_by(PID) %>% 
-  summarise(n_reasons = max(reason_id)) %>% 
-  ungroup()
-
-df_lebe <- df_lebe %>% 
-  left_join(n_reasons,by = "PID")
 ```
 
 
@@ -245,28 +219,9 @@ df_lebe <- df_lebe %>%
   dplyr::select(PID,
                 lebe_cont,
                 describe,
-                system_R,
-                gov:trajectory,
-                antidem,
-                trust,
-                antiest,
-                elect_exp:elect_cult,
-                antidem_1,
-                          antidem_2,
-                          antidem_3,
-                          antidem_4,
-                          antidem_5,
-                antiest_1,
-                          antiest_2,
-                          antiest_3,
-                          antiest_4R,
-                trust_con,
-                        trust_gov,
-                        trust_jud,
-                        trust_sci,
-                        trust_pol,
-                        trust_news,
-                vote_2024,
+                cand_rightwing,
+                cand_exp:cand_cult,
+                leftbehind_gpt:cluster_label,
                 ideo_con:ideo_prog,
                 party_gen,
                 party_dem,
@@ -283,19 +238,12 @@ df_lebe <- df_lebe %>%
                 income_num,
                 edu_num,
                 white_bin:ind_bin,
-                leftbehind_gpt:trajectory_gpt,
-                mrl,
-                mpcs,
-                n_reasons,
-                cluster,
-                cluster_label,
-                avg_cosine_to_cluster,
                 feedback)
 ```
 
 write csv
 
 ```{r}
-write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-sep25/data/df_lebe.csv",row.names = F)
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-sep25a/data/df_lebe.csv",row.names = F)
 ```
 
