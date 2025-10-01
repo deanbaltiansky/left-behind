@@ -132,7 +132,8 @@ df_lebe <- df_lebe %>%
 reverse-score items
 
 ```{r}
-
+df_lebe <- df_lebe %>% 
+  mutate(cand_change_R = 8 - cand_change)
 ```
 
 recode items
@@ -220,6 +221,7 @@ df_lebe <- df_lebe %>%
                 lebe_cont,
                 describe,
                 cand_rightwing,
+                cand_change_R,
                 cand_exp:cand_cult,
                 leftbehind_gpt:cluster_label,
                 ideo_con:ideo_prog,
