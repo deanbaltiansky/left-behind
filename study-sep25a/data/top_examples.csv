@@ -1,0 +1,51 @@
+"cluster","reason","cosine_to_centroid"
+1,"family responsibilities",0.759860716915796
+1,"family dynamics",0.74655550140506
+1,"family obligations",0.737394830010072
+1,"family reliance",0.714250228981837
+1,"family support",0.704347724538782
+2,"personal progress",0.7195920231614
+2,"personal expectations",0.698824596043331
+2,"personal growth",0.69236414316506
+2,"life goals",0.664483092706475
+2,"personal development",0.663570005826804
+3,"career opportunities",0.759598492933198
+3,"employment opportunities",0.754235725622671
+3,"career growth",0.754173837773081
+3,"job opportunities",0.753211963383821
+3,"career success",0.751651961608797
+4,"economic disparity",0.840023890866929
+4,"income disparity",0.836786358031089
+4,"economic inequality",0.829908778628195
+4,"racial inequality",0.820727719210075
+4,"social inequality",0.807408951215347
+5,"health limitations",0.737665306751056
+5,"activity limitations",0.703471345650211
+5,"health issues",0.68680745185092
+5,"disability challenges",0.684947293297467
+5,"physical challenges",0.676257635159606
+6,"technology advances",0.784303404483588
+6,"technology advancement",0.770279898934409
+6,"tech adaptation",0.758033205598486
+6,"technology advancements",0.757524632617318
+6,"technology changes",0.752410628765772
+7,"financial struggles",0.762919010477006
+7,"financial concerns",0.752154046344302
+7,"financial struggle",0.736610787528008
+7,"financial situation",0.729322037197147
+7,"limited income",0.720293374637873
+8,"lack of fulfillment",0.717758848015719
+8,"lack of advancement",0.715807787716377
+8,"lack of opportunities",0.714816173117797
+8,"lack of progress",0.706632940710247
+8,"lack of support",0.702397672159154
+9,"social issues",0.703251370325457
+9,"social changes",0.701063730949679
+9,"political issues",0.697536870043747
+9,"political shifts",0.68316800507038
+9,"policy shifts",0.678899329203456
+10,"generation gap",0.789970129326137
+10,"age differences",0.783797561792269
+10,"age gap",0.780915839735785
+10,"generational gap",0.77022645957495
+10,"education gaps",0.751072440813277

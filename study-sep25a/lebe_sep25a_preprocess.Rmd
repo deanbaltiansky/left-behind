@@ -1,5 +1,5 @@
 ---
-title: "lebe_sep25_preprocess"
+title: "lebe_sep25a_preprocess"
 output: html_document
 ---
 
@@ -25,12 +25,12 @@ library(janitor)
 library(httr)
 library(readr)
 
-repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25/data/"
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25a/data/"
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
-df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
-df_lebe_reasoncohesion <- readr::read_csv(paste0(repo_url,"df_lebe_reasoncohesion.csv"), show_col_types = FALSE)
-df_PIDreasonclusters <- readr::read_csv(paste0(repo_url,"df_PIDreasonclusters.csv"), show_col_types = FALSE)
+#df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
+#df_lebe_reasoncohesion <- readr::read_csv(paste0(repo_url,"df_lebe_reasoncohesion.csv"), show_col_types = FALSE)
+#df_PIDreasonclusters <- readr::read_csv(paste0(repo_url,"df_PIDreasonclusters.csv"), show_col_types = FALSE)
 
 ```
 
@@ -121,7 +121,11 @@ df_lebe <- df_lebe %>%
          ideo_demsoc = ideo_3,
          ideo_lbrtn = ideo_4,
          ideo_prog = ideo_5,
-         lebe_cont = lebe_cont_1)
+         lebe_cont = lebe_cont_1,
+         cand_exp = elect_exp,
+         cand_change = elect_change,
+         cand_econ = elect_econ,
+         cand_cult = elect_cult)
          
          
 ```
@@ -129,22 +133,19 @@ df_lebe <- df_lebe %>%
 reverse-score items
 
 ```{r}
-df_lebe <- df_lebe %>% 
-  mutate(antiest_4R = 8 - antiest_4,
-         system_R = 8 - system)
+
 ```
 
 recode items
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  mutate(vote_2024 = ifelse(vote_2024 == "Other (please specify)",vote_2024_12_TEXT,vote_2024),
-         party_followup = case_when(party_gen == "Democrat" ~ paste0("Democrat | ",party_dem),
+  mutate(party_followup = case_when(party_gen == "Democrat" ~ paste0("Democrat | ",party_dem),
                                     party_gen == "Republican" ~ paste0("Republican | ",party_rep),
                                     party_gen == "Independent" |
                                       party_gen == "No preference" |
                                       party_gen == "Other party" ~ paste0("Independent | ",party_ind),
-                                    .default = NA)) 
+                                    .default = NA))
 ```
 
 mean scores
@@ -152,21 +153,8 @@ mean scores
 ```{r}
 df_lebe <- df_lebe %>% 
   rowwise() %>% 
-  mutate(antidem = mean(c(antidem_1,
-                          antidem_2,
-                          antidem_3,
-                          antidem_4,
-                          antidem_5),na.rm = T),
-         antiest = mean(c(antiest_1,
-                          antiest_2,
-                          antiest_3,
-                          antiest_4R),na.rm = T),
-         trust = mean(c(trust_con,
-                        trust_gov,
-                        trust_jud,
-                        trust_sci,
-                        trust_pol,
-                        trust_news),na.rm = T)) %>% 
+  mutate(cand_rightwing = mean(c(cand_econ,
+                                 cand_cult),na.rm = T)) %>% 
   ungroup()
 ```
 
