@@ -772,10 +772,6 @@ df_lebe_elg %>%
 
 ## Preregistered analyses
 
-1. Linear model 1A: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable.\
-2. Linear model 1B: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; race, gender, age, income, and education as control variables.\
-3. Linear model 1C: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; political party, conservative ideology, progressive ideology, race, gender, age, income, and education as control variables.\
-
 ### DV: Candidate support for sweeping change
 
 Just as a reminder, this is the measure for this DV...\
@@ -884,3 +880,274 @@ kbl(apa_lm$table) %>%
                 position = "left")
 ```
 
+## Exploratory analyses
+
+### DV: Candidate support for sweeping change
+
+Just as a reminder, this is the measure for this DV...\
+\
+**Reverse-scored:** Thinking about how they would approach change, what approach would you like them to take? 1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
+
+#### By Cluster\
+\
+```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
+df_lebe_elg %>% 
+  ggplot(aes(x = lebe_cont,y = cand_change_R)) +
+  geom_smooth(method = "lm") +
+  theme_minimal() +
+  facet_wrap(~cluster_label,nrow = 3)
+```
+
+#### Moderator: Systemic vs. individual factors\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R ~ lebe_cont*systemic_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Government-related\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R ~ lebe_cont*gov_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Economic conditions\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R ~ lebe_cont*econ_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Cultural issues\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R ~ lebe_cont*cult_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(5,3)}
+interact_plot(m1,
+              pred = "lebe_cont",
+              modx = "cult_gpt",
+              interval = T)
+```
+
+#### Moderator: Racial background\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R ~ lebe_cont*race_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(5,3)}
+interact_plot(m1,
+              pred = "lebe_cont",
+              modx = "race_gpt",
+              interval = T)
+```
+
+#### Moderator: Gender\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R ~ lebe_cont*gender_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Age\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R ~ lebe_cont*age_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+
+
+
+
+### DV: Right-wing candidate
+
+#### By Cluster\
+\
+```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
+df_lebe_elg %>% 
+  ggplot(aes(x = lebe_cont,y = cand_rightwing)) +
+  geom_smooth(method = "lm") +
+  theme_minimal() +
+  facet_wrap(~cluster_label,nrow = 3)
+```
+
+#### Moderator: Systemic vs. individual factors\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont*systemic_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Government-related\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont*gov_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Economic conditions\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont*econ_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Cultural issues\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont*cult_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Racial background\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont*race_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Gender\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont*gender_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Moderator: Age\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing ~ lebe_cont*age_gpt,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
