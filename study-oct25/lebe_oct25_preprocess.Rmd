@@ -25,11 +25,9 @@ library(janitor)
 library(httr)
 library(readr)
 
-repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-sep25a/data/"
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25/data/"
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
-df_lebe_gpt4o <- readr::read_csv(paste0(repo_url,"df_lebe_gpt4o.csv"), show_col_types = FALSE)
-df_PIDreasonclusters <- readr::read_csv(paste0(repo_url,"df_PIDreasonclusters.csv"), show_col_types = FALSE)
 
 ```
 
@@ -39,8 +37,7 @@ remove ineligible participants
 #keep only those who finished
 df_lebe <- df_deid %>% 
   filter(Finished == 1) %>% 
-  filter(Progress == 100) %>% 
-  filter(intro == 4)
+  filter(Progress == 100)
 ```
 
 Put NA's where necessary
@@ -115,16 +112,16 @@ rename some vars
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  rename(ideo_con = ideo_1,
-         ideo_lib = ideo_2,
-         ideo_demsoc = ideo_3,
-         ideo_lbrtn = ideo_4,
-         ideo_prog = ideo_5,
-         lebe_cont = lebe_cont_1,
+  rename(lebe_cont = lebe_cont_1,
          cand_exp = elect_exp,
          cand_change = elect_change,
          cand_econ = elect_econ,
-         cand_cult = elect_cult)
+         cand_cult = elect_cult,
+         lebecool_self = mds_self,
+         lebecool_white = mds_white,
+         lebecool_black = mds_black,
+         lebecool_asian = mds_asian,
+         lebecool_latino = mds_latino)
          
          
 ```
@@ -133,7 +130,12 @@ reverse-score items
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  mutate(cand_change_R = 8 - cand_change)
+  mutate(cand_change_R = 8 - cand_change,
+         mob_1R = 8 - mob_1,
+         mob_3R = 8 - mob_3,
+         mob_7R = 8 - mob_7,
+         mob_8R = 8 - mob_8,
+         soccon_4R = 8 - soccon_4)
 ```
 
 recode items
@@ -154,64 +156,339 @@ mean scores
 df_lebe <- df_lebe %>% 
   rowwise() %>% 
   mutate(cand_rightwing = mean(c(cand_econ,
-                                 cand_cult),na.rm = T)) %>% 
+                                 cand_cult),na.rm = T),
+         mob = mean(c(mob_1R,
+                      mob_2,
+                      mob_3R,
+                      mob_4,
+                      mob_5,
+                      mob_6,
+                      mob_7R,
+                      mob_8R),na.rm = T),
+         soccon = mean(c(soccon_1,
+                         soccon_2,
+                         soccon_3,
+                         soccon_4R,
+                         soccon_5),na.rm = T),
+         lonely = sum(c(lonely_1,
+                         lonely_2,
+                         lonely_3),na.rm = T)) %>% 
   ungroup()
 ```
 
-check
+cooley measure
+
+The did LPA (latent profile analysis) to classify each participant as one of three profiles (second place; third place; last place). Their paper only had non-hispanic whites, so we should probably (at least at first), limit our analysis to just non-hispanic whites.
+
+```{r}
+library(tidyLPA)
+library(purrr)
+library(tibble)
+
+# ---- 0) Your data ----
+# df must have five numeric columns: self, white, black, asian, latinx (0–100 scale is fine)
+# Replace these names below if yours differ.
+indicators <- c("lebecool_self", "lebecool_white", "lebecool_black", "lebecool_asian", "lebecool_latino")
+
+df_raw <- df_lebe %>% filter(race == "White")
+df <- df_raw %>%
+  select(any_of(indicators)) %>%
+  tidyr::drop_na()              # they listwise-deleted missing on the status measure
+
+# ---- 1) Fit 1–5 class models with Model 1 (equal variances, zero covariances) ----
+# Many random starts to reduce local maxima
+fit_list <- estimate_profiles(
+  df,
+  1:5,
+  models = 1,                   # Model 1 = equal variances, covariances fixed to 0 (diagonal)
+  variances = "equal",
+  covariances = "zero",
+  starts = 200,                 # random starts (increase if needed)
+  nrep = 20                     # # of best solutions to keep improving
+)
+
+# ---- 2) Build a robust fit table without compare_solutions() ----
+fits <- map_dfr(seq_along(fit_list), function(i) {
+  mod <- fit_list[[i]]
+
+  # Coerce get_fit() to a named list we can index safely
+  fi_raw <- get_fit(mod)
+  fi_list <-
+    if (is.data.frame(fi_raw)) {
+      as.list(fi_raw[1, , drop = TRUE])
+    } else if (is.list(fi_raw)) {
+      fi_raw
+    } else {
+      as.list(fi_raw)
+    }
+
+  # helper: pull a numeric, or NA if absent
+  getv <- function(nm) {
+    v <- fi_list[[nm]]
+    if (is.null(v)) return(NA_real_)
+    suppressWarnings(as.numeric(v)[1])
+  }
+
+  # class sizes -> smallest %
+  cl <- get_data(mod) %>% count(Class, name = "n")
+  smallest_pct <- if (nrow(cl)) min(cl$n / sum(cl$n)) else NA_real_
+
+  tibble(
+    classes      = {
+      k <- getv("Classes"); 
+      if (is.na(k)) i else as.integer(k)
+    },
+    logLik       = getv("LogLik"),
+    AIC          = getv("AIC"),
+    BIC          = getv("BIC"),
+    SABIC        = getv("SABIC"),
+    Entropy      = getv("Entropy"),
+    smallest_pct = smallest_pct
+  )
+}) %>%
+  arrange(classes)
+
+print(fits)
+
+
+# Heuristics from the paper:
+# - prefer lower AIC/BIC/SABIC
+# - entropy closer to 1; they were ~.80–.83
+# - avoid solutions with any class < .10 of sample
+
+# ---- 3) Select your best solution (likely 3 classes if it mirrors the paper) ----
+best_k  <- if (any(fits$classes == 3)) 3 else fits$classes[which.max(fits$Entropy)]
+best_fit <- fit_list[[as.integer(best_k)]]
+
+# Examine indicator means by class (mirrors their Tables 3–4)
+class_means <- get_estimates(best_fit, what = "means")
+print(class_means)
+
+# ---- 4) Export modal class membership (primary predictor) ----
+classified <- get_data(best_fit) %>%    # original rows + Class + posterior probs
+  rename(lpa_class = Class)
+
+# Optional: entropy-at-person level (classification certainty)
+# tidyLPA returns posteriors; you can compute per-person entropy if desired.
+
+# ---- 5) Merge back to your full dataset for downstream models ----
+df_with_class <- df_raw %>%
+  mutate(.row_id = dplyr::row_number()) %>%
+  left_join(classified %>% mutate(.row_id = dplyr::row_number()) %>% select(.row_id, lpa_class), by = ".row_id") %>%
+  select(-.row_id)
+
+# --- 0) class means & quick inspection ---
+class_means <- classified %>%
+  group_by(lpa_class) %>%
+  summarise(across(all_of(indicators), ~ mean(.x, na.rm = TRUE)), .groups = "drop")
+
+print(class_means)
+
+inspect <- class_means %>%
+  pivot_longer(-lpa_class, names_to = "group", values_to = "mean") %>%
+  group_by(lpa_class) %>%
+  arrange(desc(mean), .by_group = TRUE) %>%
+  mutate(rank_desc = row_number()) %>%
+  ungroup()
+
+inspect %>% arrange(lpa_class, rank_desc) %>% print(n = 25)
+
+# --- 1) tolerant rule-based labeling (sweeps eps until it can decide) ---
+label_with_eps <- function(df_means, eps = 1.0) {
+  df_means %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      s = lebecool_self,
+      w = lebecool_white,
+      a = lebecool_asian,
+      b = lebecool_black,
+      l = lebecool_latino,
+
+      # tolerant comparisons (no function objects created)
+      last_place  = (s + eps < w) & (s + eps < a) & (s + eps < b) & (s + eps < l),
+      third_place = (s + eps < w) & (s + eps < a) & (s >= b - eps) & (s >= l - eps),
+      second_place= (s + eps < w) & (s > a + eps) & (s > b + eps) & (s > l + eps),
+
+      label = dplyr::case_when(
+        last_place   ~ "Last Place",
+        third_place  ~ "Third Place",
+        second_place ~ "Second Place",
+        TRUE         ~ "Unclear"
+      )
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(lpa_class, label)
+}
+
+# Try a small grid of eps to resolve near-ties
+label_df <- label_with_eps(class_means, eps = 1)  # try eps = 1, 2, or 3
+print(label_df)
+
+## Different approach
+
+# Inputs assumed:
+# - class_means: one row per lpa_class with your five columns:
+#   lebecool_self, lebecool_white, lebecool_asian, lebecool_black, lebecool_latino
+
+label_lpa_classes <- function(class_means, eps = 2) {
+  cm <- class_means %>%
+    mutate(
+      s = lebecool_self,
+      w = lebecool_white,
+      a = lebecool_asian,
+      b = lebecool_black,
+      l = lebecool_latino,
+
+      # Differences: positive means that group is ABOVE self
+      d_w = w - s,
+      d_a = a - s,
+      d_b = b - s,
+      d_l = l - s,
+
+      # Primary rule set with tolerance
+      rule_label = case_when(
+        # Last Place: self clearly below all four
+        (d_w > eps) & (d_a > eps) & (d_b > eps) & (d_l > eps) ~ "Last Place",
+        # Third Place: self clearly below White & Asian, and not below Black/Latino
+        (d_w >  eps) & (d_a >  eps) & (d_b >= -eps) & (d_l >= -eps) ~ "Third Place",
+        # Second Place: self clearly below White only, above the other three
+        (d_w >  eps) & (d_a < -eps) & (d_b < -eps) & (d_l < -eps) ~ "Second Place",
+        TRUE ~ NA_character_
+      )
+    )
+
+  # If any NA in rule_label, resolve by prototype distance on the (d_w, d_a, d_b, d_l) vector
+  # Prototypes: sign patterns we expect
+  protos <- list(
+    "Second Place" = c( 1, -1, -1, -1),
+    "Third Place"  = c( 1,  1, -1, -1),
+    "Last Place"   = c( 1,  1,  1,  1)
+  )
+
+  # cosine similarity helper (scale-invariant, good with different magnitudes)
+  cos_sim <- function(x, y) {
+    x <- as.numeric(x); y <- as.numeric(y)
+    nx <- sqrt(sum(x*x)); ny <- sqrt(sum(y*y))
+    if (nx == 0 || ny == 0) return(-Inf)
+    sum(x*y) / (nx * ny)
+  }
+
+  cm_fallback <- cm %>%
+    mutate(
+      need_fallback = is.na(rule_label),
+      # small shrink so tiny diffs don’t explode direction
+      v_w = d_w, v_a = d_a, v_b = d_b, v_l = d_l
+    ) %>%
+    rowwise() %>%
+    mutate(
+      fallback_label = if (need_fallback) {
+        v <- c(v_w, v_a, v_b, v_l)
+        # map to best-matching prototype
+        sims <- vapply(protos, function(p) cos_sim(v, p), numeric(1))
+        names(which.max(sims))
+      } else NA_character_
+    ) %>%
+    ungroup() %>%
+    mutate(final_label = coalesce(rule_label, fallback_label)) %>%
+    select(lpa_class, final_label,
+           lebecool_self, lebecool_white, lebecool_asian, lebecool_black, lebecool_latino,
+           d_w, d_a, d_b, d_l)
+
+  cm_fallback
+}
+
+# --- Run it ---
+resolved <- label_lpa_classes(class_means, eps = 3)   # try eps=2 or 3 on a 0–100 scale
+print(resolved %>% select(lpa_class, final_label))
+
+
+
+## See if there even is a last place classification
+
+# 1) print means
+print(class_means)
+
+# 2) compute diffs: positive means the group is ABOVE self (self is below that group)
+cm <- class_means %>%
+  mutate(
+    s = lebecool_self,
+    d_w = lebecool_white  - s,
+    d_a = lebecool_asian  - s,
+    d_b = lebecool_black  - s,
+    d_l = lebecool_latino - s
+  ) %>%
+  select(lpa_class, starts_with("d_"))
+
+print(cm)
+
+# Quick “last-place presence” check:
+# last place should have ALL four diffs > eps
+eps <- 2  # try 2–3 for a 0–100 scale
+cm %>%
+  mutate(is_last_like = (d_w>eps)&(d_a>eps)&(d_b>eps)&(d_l>eps)) %>%
+  select(lpa_class, is_last_like) %>%
+  print()
+
+# 3) prototype similarity (cosine) to Second / Third / Last
+cos_sim <- function(x, y) {
+  x <- as.numeric(x); y <- as.numeric(y)
+  nx <- sqrt(sum(x*x)); ny <- sqrt(sum(y*y))
+  if (nx == 0 || ny == 0) return(-Inf)
+  sum(x*y) / (nx * ny)
+}
+
+protos <- list(
+  "Second Place" = c( 1, -1, -1, -1),  # White>Self>Asian,Black,Latino
+  "Third Place"  = c( 1,  1, -1, -1),  # White>Asian>Self>Black,Latino
+  "Last Place"   = c( 1,  1,  1,  1)   # everyone above Self
+)
+
+sim_table <- cm %>%
+  rowwise() %>%
+  mutate(
+    sim_second = cos_sim(c(d_w,d_a,d_b,d_l), protos[["Second Place"]]),
+    sim_third  = cos_sim(c(d_w,d_a,d_b,d_l), protos[["Third Place"]]),
+    sim_last   = cos_sim(c(d_w,d_a,d_b,d_l), protos[["Last Place"]]),
+    best_label = c("Second Place","Third Place","Last Place")[which.max(c(sim_second, sim_third, sim_last))]
+  ) %>%
+  ungroup() %>%
+  select(lpa_class, sim_second, sim_third, sim_last, best_label)
+
+print(sim_table)
+
+
+```
+
+
+alright, i'll approximate something else from the cooley measure, just for the analyses, but it probably won't get the effect because they're only claiming an effect for "last place" participants. alright.
+
+```{r}
+temp <- df_lebe %>% 
+  select(PID,lebecool_self:lebecool_latino) %>% 
+  pivot_longer(-PID,
+               values_to = "placement",
+               names_to = "dot") %>% 
+  group_by(PID) %>% 
+  mutate(rankorder = rank(placement)) %>% 
+  ungroup() %>% 
+  mutate(rankorder = 6 - rankorder) %>% 
+  filter(dot == "lebecool_self") %>% 
+  select(PID,rankorder) %>% 
+  rename(selfplacement = rankorder)
+
+df_lebe <- df_lebe %>% 
+  left_join(temp,by= "PID")
+```
+
+
+checks
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  mutate(att_1 = ifelse(check_1 == "14285733",0,1),
-         is_elg = ifelse(att_1 == 0,0,1))
+  mutate(att_1 = ifelse(check_1 == 5,1,0),
+         att_2 = ifelse(check_2 == "14285733",0,1),
+         is_elg = ifelse(att_1 == 1 & att_2 == 1,1,0))
 ```
-
-clean text
-
-```{r}
-df_lebe <- df_lebe %>% 
-  mutate(describe = str_squish(describe))
-```
-
-attach from text analysis scripts
-
-```{r}
-df_lebe <- df_lebe %>% 
-  left_join(df_lebe_gpt4o %>% 
-              rename(PID = id,
-                     leftbehind_gpt = left_behind_score,
-                     reasons = reasons_csv,
-                     systemic_gpt = systemic,
-                     gov_gpt = government,
-                     econ_gpt = economic,
-                     cult_gpt = cultural,
-                     race_gpt = race,
-                     gender_gpt = gender,
-                     age_gpt = age),by = "PID") %>% 
-  left_join(df_PIDreasonclusters %>% 
-              select(id,n_reasons,assigned_cluster,avg_cosine_to_assigned) %>% 
-              rename(PID = id,
-                     cluster = assigned_cluster,
-                     avg_cosine_to_cluster = avg_cosine_to_assigned),by = "PID")
-```
-
-attaching cluster labels (from chat-gpt)
-
-```{r}
-df_lebe <- df_lebe %>% 
-  mutate(cluster_label = case_when(cluster == 1 ~ "Family responsibilities",
-                                      cluster == 2 ~ "Personal growth",
-                                      cluster == 3 ~ "Career opportunities",
-                                      cluster == 4 ~ "Inequality and disparity",
-                                      cluster == 5 ~ "Health limitations",
-                                      cluster == 6 ~ "Technology change",
-                                      cluster == 7 ~ "Financial struggles",
-                                      cluster == 8 ~ "Lack of opportunities",
-                                      cluster == 9 ~ "Social and political issues",
-                                      cluster == 10 ~ "Generational differences",
-                                      .default = NA))
-```
-
 
 take only necessary variables
 
@@ -219,18 +496,35 @@ take only necessary variables
 df_lebe <- df_lebe %>% 
   dplyr::select(PID,
                 lebe_cont,
-                describe,
                 cand_rightwing,
                 cand_change_R,
                 cand_exp:cand_cult,
-                leftbehind_gpt:cluster_label,
-                ideo_con:ideo_prog,
+                mob:selfplacement,
+                mob_1R,
+                      mob_2,
+                      mob_3R,
+                      mob_4,
+                      mob_5,
+                      mob_6,
+                      mob_7R,
+                      mob_8R,
+                soccon_1,
+                         soccon_2,
+                         soccon_3,
+                         soccon_4R,
+                         soccon_5,
+                lonely_1,
+                         lonely_2,
+                         lonely_3,
+                lebecool_self:lebecool_latino,
+                ideo,
                 party_gen,
                 party_dem,
                 party_rep,
                 party_ind,
                 party_followup,
                 att_1,
+                att_2,
                 is_elg,
                 age,
                 gender,
@@ -246,6 +540,6 @@ df_lebe <- df_lebe %>%
 write csv
 
 ```{r}
-write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-sep25a/data/df_lebe.csv",row.names = F)
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25/data/df_lebe.csv",row.names = F)
 ```
 
