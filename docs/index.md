@@ -1,11 +1,11 @@
 ---
-title: "Left Behind - Project Hub"
+title: "The Psychology of Feeling Left Behind"
 author: "Dean Baltiansky"
 ---
 
-# Left Behind - Project Hub
+<img src="assets/leftbehind_cover.png" alt="Left behind cover photo" style="width:100%; height:auto;">
 
-<img src="assets/leftbehind_cover.jpg" alt="Left behind cover photo" style="width:100%; height:auto;">
+# The Psychology of Feeling Left Behind
 
 ## Background
 
