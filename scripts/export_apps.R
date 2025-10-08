@@ -20,8 +20,23 @@ export_one_app <- function(src_dir, dst_dir) {
   message("  → Exporting: ", src_dir, "  -->  ", dst_dir)
   if (dir_exists(dst_dir)) dir_delete(dst_dir)
   dir_create(dst_dir, recurse = TRUE)
+  
+  # 1) Export the app
   shinylive::export(src_dir, dst_dir)
+  
+  # 2) Copy sidecar folders (data, www, assets) if present
+  for (extra in c("data", "www", "assets")) {
+    src_extra <- path(src_dir, extra)
+    dst_extra <- path(dst_dir, extra)
+    if (dir_exists(src_extra)) {
+      message("     • Copying ", extra, "/")
+      if (dir_exists(dst_extra)) dir_delete(dst_extra)
+      dir_create(dst_extra, recurse = TRUE)
+      dir_copy(src_extra, dst_extra, overwrite = TRUE)
+    }
+  }
 }
+
 
 # Find study folders
 study_dirs <- dir_ls(".", type = "directory", glob = "study-*", recurse = FALSE)
