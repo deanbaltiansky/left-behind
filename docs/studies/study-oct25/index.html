@@ -2834,8 +2834,7 @@ a “second place” classification, a “third place” classification, and a
 “last place” classification. I was able to replicate their 3-profile
 solution, but I was unable to replicate their “last place”
 classification. There are just almost no cases in which white people put
-themselves as last place. I’ll leave this code open for you to see what
-I did.</p>
+themselves as last place. Click “Show” here to see my code.</p>
 <pre class="r"><code># ---- Packages ----
 library(tibble)
 library(purrr)
@@ -5138,8 +5137,13 @@ actually doing most of the work here.</p>
 </div>
 </div>
 </div>
-<div id="exploratory" class="section level2">
-<h2>Exploratory</h2>
+<div id="exploratory-analyses" class="section level2">
+<h2>Exploratory analyses</h2>
+<p><br />
+<a href="./app/lm-table-app/index.html" target="_blank" rel="noopener" style="background:#0b69ff;color:white;padding:0.55em 0.9em;border-radius:8px;text-decoration:none;">
+EXPLORE MODELS ↗ </a><br />
+<br />
+</p>
 <p>Let’s just see if the cooley measure, on its own, predicts support
 for right-wing candidates, and if race moderates that.</p>
 <pre class="r"><code>m1 &lt;- lm(cand_rightwing_z ~ selfplacement*white_bin,data = df_lebe_elg)
