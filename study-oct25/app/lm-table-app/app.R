@@ -77,17 +77,14 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  # Load once
   df0 <- load_data(); names(df0) <- trimws(names(df0))
   var_info <- load_var_info()
-  
-  listed <- unique(trimws(var_info$var))
-  available_all <- intersect(names(df0), listed)
-  validate(need(length(available_all) >= 2,
-                "Need at least two variables that are listed in var_info.csv and present in the dataset."))
   
   # ---- Your binary indicators for special plotting behavior ----
   bin_vars <- c("rep_bin","dem_bin","ind_bin","white_bin","man_bin")
   
+  # label/description helpers
   lab_of <- function(v) {
     if (!nzchar(v)) return("")
     lb <- var_info$label[match(v, var_info$var)]
@@ -99,41 +96,52 @@ server <- function(input, output, session) {
     ifelse(is.na(ds) | !nzchar(ds), "", ds)
   }
   
-  labs <- lab_of(available_all)
-  choices_all <- as.list(available_all); names(choices_all) <- labs
-  
-  updateSelectInput(session, "xvar", choices = choices_all, selected = available_all[1])
-  updateSelectInput(session, "yvar", choices = choices_all, selected = available_all[min(2, length(available_all))])
-  updateSelectInput(session, "zvar", choices = c("None" = "", choices_all), selected = "")
-  
-  prev_ctrl_pool <- reactiveVal(character(0))
+  # Populate inputs inside a reactive context (prevents blank dropdowns)
   observe({
-    cur_exclude <- unique(c(input$yvar, input$xvar, input$zvar))
-    cur_exclude <- cur_exclude[nzchar(cur_exclude)]
-    ctrl_pool <- setdiff(available_all, cur_exclude)
+    listed <- unique(trimws(var_info$var))
+    available_all <- intersect(names(df0), listed)
     
-    if (identical(ctrl_pool, prev_ctrl_pool())) return(NULL)
+    if (length(available_all) < 2) {
+      showNotification(
+        "Need at least two variables present in both df_lebe_elg.csv and var_info.csv.",
+        type = "error", duration = NULL
+      )
+      updateSelectInput(session, "xvar", choices = list())
+      updateSelectInput(session, "yvar", choices = list())
+      updateSelectInput(session, "zvar", choices = c("None" = ""))
+      return()
+    }
     
-    lab_ctrl <- lab_of(ctrl_pool)
-    ctrl_choices <- as.list(ctrl_pool); names(ctrl_choices) <- lab_ctrl
-    keep <- intersect(isolate(input$controls) %||% character(0), ctrl_pool)
+    labs <- vapply(available_all, lab_of, character(1))
+    choices_all <- as.list(available_all); names(choices_all) <- labs
     
-    freezeReactiveValue(input, "controls")
-    updateSelectizeInput(session, "controls",
-                         choices = ctrl_choices,
-                         selected = keep,
-                         server = TRUE
-    )
-    prev_ctrl_pool(ctrl_pool)
+    updateSelectInput(session, "xvar", choices = choices_all, selected = available_all[1])
+    updateSelectInput(session, "yvar", choices = choices_all, selected = available_all[min(2, length(available_all))])
+    updateSelectInput(session, "zvar", choices = c("None" = "", choices_all), selected = "")
+    
+    # Controls pool updates dynamically as user picks x/y/z
+    prev_ctrl_pool <- reactiveVal(character(0))
+    observe({
+      cur_exclude <- unique(c(input$yvar, input$xvar, input$zvar))
+      cur_exclude <- cur_exclude[nzchar(cur_exclude)]
+      ctrl_pool <- setdiff(available_all, cur_exclude)
+      
+      if (identical(ctrl_pool, prev_ctrl_pool())) return(NULL)
+      
+      lab_ctrl <- vapply(ctrl_pool, lab_of, character(1))
+      ctrl_choices <- as.list(ctrl_pool); names(ctrl_choices) <- lab_ctrl
+      keep <- intersect(isolate(input$controls) %||% character(0), ctrl_pool)
+      
+      freezeReactiveValue(input, "controls")
+      updateSelectizeInput(session, "controls",
+                           choices = ctrl_choices,
+                           selected = keep,
+                           server = TRUE)
+      prev_ctrl_pool(ctrl_pool)
+    })
   })
   
-  term_label <- function(term) {
-    if (term == "(Intercept)") return("Intercept")
-    parts <- strsplit(term, ":", fixed = TRUE)[[1]]
-    lbls  <- lab_of(parts)
-    if (length(parts) > 1) paste(lbls, collapse = " × ") else lbls
-  }
-  
+  # Model formula
   model_spec <- reactive({
     req(input$yvar, input$xvar)
     y <- input$yvar; x <- input$xvar; z <- input$zvar; ctrls <- input$controls
@@ -146,6 +154,7 @@ server <- function(input, output, session) {
     paste(capture.output(model_spec()), collapse = "\n")
   })
   
+  # Fit model
   lm_fit <- reactive({
     d <- df0
     vars_needed <- all.vars(model_spec())
@@ -154,10 +163,16 @@ server <- function(input, output, session) {
     lm(model_spec(), data = d, na.action = na.omit)
   })
   
+  # Table
   output$lm_table <- renderTable({
     sm <- summary(lm_fit()); co <- sm$coefficients; rn <- rownames(co); rdf <- sm$df[2]
     data.frame(
-      term     = vapply(rn, term_label, character(1)),
+      term     = vapply(rn, function(tt) {
+        if (tt == "(Intercept)") return("Intercept")
+        parts <- strsplit(tt, ":", fixed = TRUE)[[1]]
+        lbls  <- vapply(parts, lab_of, character(1))
+        if (length(parts) > 1) paste(lbls, collapse = " × ") else lbls
+      }, character(1)),
       beta     = sprintf("%.4f", unname(co[, "Estimate"])),
       t        = sprintf("%.3f", unname(co[, "t value"])),
       df       = as.integer(rdf),
@@ -165,8 +180,9 @@ server <- function(input, output, session) {
                         sprintf("%.3f", unname(co[, "Pr(>|t|)"]))),
       stringsAsFactors = FALSE
     )
-  }, striped = TRUE, bordered = TRUE, hover = TRUE, spacing = "m")
+  })
   
+  # Viz
   output$viz <- renderPlot({
     fit <- lm_fit()
     d_fit <- model.frame(fit)
@@ -256,15 +272,16 @@ server <- function(input, output, session) {
     }
   })
   
+  # Selected variable info
   output$var_info_table <- renderTable({
     x <- input$xvar; y <- input$yvar; z <- input$zvar
     rows <- list(
       c(role="Predictor (X)", var=x, label=lab_of(x), description=get_desc(x)),
       c(role="Outcome (Y)", var=y, label=lab_of(y), description=get_desc(y))
     )
-    if (nzchar(z)) rows <- c(rows,list(c(role="Moderator (Z)",var=z,label=lab_of(z),description=get_desc(z))))
-    as.data.frame(do.call(rbind,rows), stringsAsFactors=FALSE)
-  }, striped=TRUE, bordered=TRUE, hover=TRUE, spacing="s")
+    if (nzchar(z)) rows <- c(rows, list(c(role="Moderator (Z)", var=z, label=lab_of(z), description=get_desc(z))))
+    as.data.frame(do.call(rbind, rows), stringsAsFactors=FALSE)
+  })
 }
 
 shinyApp(ui, server)
