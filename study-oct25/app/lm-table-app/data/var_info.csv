@@ -1,0 +1,18 @@
+var,label,description
+lebe_cont,Left Behind: Continuous,"To what extent do you feel left behind? (0 = ""Not at All Left Behind""  to 100 = ""Extremely Left Behind"")"
+cand_rightwing,Ideal candidate: Right-wing,Mean score of endorsement of right-wing economic platform and cultural platform
+cand_change_R,Ideal candidate: Change,"Reverse-score of: Thinking about how they would approach change, what approach would you like them to take? 1 = Sweeping (bold, radical changes); 7 = Incremental (smaller, step-by-step changes)"
+elect_exp,Ideal candidate: Experience,"Thinking about experience with politics, where would your ideal candidate fall? 1 = Outsider (no prior political office); 7 = Insider (many years in political office)"
+mob,Social Mobility Belief,Mean score of social mobility scale
+soccon,Social Connectedness,Mean score of social connectedness scale
+lonely,Loneliness,Sum score of loneliness scale
+selfplacement,Left Behind: Race,"Cooley et al's measure: randking of the self, compared to four racial groups (1 = first place; 5 = last place)"
+ideo,Ideology,Extremely Liberal to Extremely Conservative
+rep_bin,Republican,Republican = 1; Not Republican = 0
+dem_bin,Democrat,Democrat = 1; Not Democrat = 0
+ind_bin,Independent,Independent = 1; Not Independent = 0
+age,Age,Age
+edu_num,Education,Numeric transofrmation of education level
+income_num,Income,Numeric transformation of income level
+white_bin,Race,White = 1; Non-White = 0
+man_bin,Gender,Man = 1; Non-Man = 0
