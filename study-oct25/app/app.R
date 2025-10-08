@@ -9,7 +9,7 @@ numeric_vars_user <- c(
 )
 
 load_data <- function() {
-  p <- "data/df_lebe.csv"                      # must be bundled with the app
+  p <- "data/df_lebe_elg.csv"                      # must be bundled with the app
   if (!file.exists(p)) stop("Missing data/df_lebe.csv in app/data/")
   read.csv(p, check.names = FALSE, stringsAsFactors = FALSE)
 }
@@ -33,7 +33,7 @@ load_var_info <- function() {
 }
 
 ui <- fluidPage(
-  titlePanel("Study Sep 2025 — Correlations"),
+  titlePanel("Study Oct 2025 — Correlations"),
   sidebarLayout(
     sidebarPanel(
       helpText("Pick two continuous variables to explore their linear relationship."),
@@ -71,7 +71,7 @@ server <- function(input, output, session) {
   # choices: only columns that actually exist
   available <- intersect(numeric_vars_user, names(df))
   if (length(available) < 2) {
-    stop("Fewer than 2 valid numeric columns found. Check df_lebe.csv column names.")
+    stop("Fewer than 2 valid numeric columns found. Check df_lebe_elg.csv column names.")
   }
   
   # names = labels shown; values = actual column names returned
