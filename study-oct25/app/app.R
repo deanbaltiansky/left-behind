@@ -9,19 +9,17 @@ numeric_vars_user <- c(
 )
 
 load_data <- function() {
-  p <- "data/df_lebe_elg.csv"                      # must be bundled with the app
-  if (!file.exists(p)) stop("Missing data/df_lebe.csv in app/data/")
+  p <- "data/df_lebe_elg.csv"  # must be bundled with the app (relative to app.R)
+  if (!file.exists(p)) return(NULL)
   read.csv(p, check.names = FALSE, stringsAsFactors = FALSE)
 }
 
 load_var_info <- function() {
   p <- "data/var_info.csv"
   if (!file.exists(p)) {
-    return(data.frame(var = character(), label = character(), description = character(), 
-                      stringsAsFactors = FALSE))
+    return(data.frame(var=character(), label=character(), description=character(), stringsAsFactors = FALSE))
   }
   vi <- read.csv(p, check.names = FALSE, stringsAsFactors = FALSE)
-  # normalize columns and trim whitespace
   names(vi) <- tolower(names(vi))
   if (!"var" %in% names(vi)) vi$var <- character(0)
   if (!"label" %in% names(vi)) vi$label <- vi$var
@@ -41,6 +39,7 @@ ui <- fluidPage(
       selectInput("yvar", "Y axis", choices = NULL)
     ),
     mainPanel(
+      uiOutput("data_status"),
       plotOutput("scatter", height = 420),
       tags$hr(),
       verbatimTextOutput("stats"),
@@ -56,6 +55,19 @@ server <- function(input, output, session) {
   df <- load_data()
   var_info <- load_var_info()
   
+  output$data_status <- renderUI({
+    if (is.null(df)) {
+      return(tags$div(
+        style="padding:8px; background:#fff3cd; border:1px solid #ffeeba; border-radius:8px;",
+        tags$strong("Data not found: "),
+        "Expected ", tags$code("data/df_lebe_elg.csv"), " in the app folder. ",
+        "Make sure it exists at ", tags$code("study-oct25/app/data/df_lebe_elg.csv"),
+        " (and is included in your Shinylive export)."
+      ))
+    }
+    invisible(NULL)
+  })
+  
   # helpers
   get_label <- function(v) {
     if (is.null(v) || !nzchar(v)) return("")
@@ -68,28 +80,25 @@ server <- function(input, output, session) {
     if (length(hit) == 1 && nzchar(hit)) hit else "No description found."
   }
   
-  # choices: only columns that actually exist
-  available <- intersect(numeric_vars_user, names(df))
-  if (length(available) < 2) {
-    stop("Fewer than 2 valid numeric columns found. Check df_lebe_elg.csv column names.")
-  }
+  # Only proceed if df loaded
+  observe({
+    req(!is.null(df))
+    available <- intersect(numeric_vars_user, names(df))
+    if (length(available) < 2) {
+      showNotification("Fewer than 2 valid numeric columns found. Check df_lebe_elg.csv column names.", type = "error", duration = NULL)
+      return()
+    }
+    choice_labels <- vapply(available, get_label, character(1))
+    choices <- setNames(object = available, nm = choice_labels)
+    updateSelectInput(session, "xvar", choices = choices, selected = available[1])
+    updateSelectInput(session, "yvar", choices = choices, selected = available[2])
+  })
   
-  # names = labels shown; values = actual column names returned
-  choice_labels <- vapply(available, get_label, character(1))
-  choices <- setNames(object = available, nm = choice_labels)
-  
-  updateSelectInput(session, "xvar", choices = choices, selected = available[1])
-  updateSelectInput(session, "yvar", choices = choices, selected = available[2])
-  
-  # data for selected pair; coerce numeric-like characters
   pair_data <- reactive({
-    req(input$xvar, input$yvar)
-    vars <- c(input$xvar, input$yvar)
-    # guard: both vars must exist
-    vars <- intersect(vars, names(df))
-    validate(need(length(vars) == 2, "Pick two valid variables."))
+    req(!is.null(df), input$xvar, input$yvar)
+    validate(need(input$xvar %in% names(df) && input$yvar %in% names(df), "Pick two valid variables."))
     
-    d <- df[, vars, drop = FALSE]
+    d <- df[, c(input$xvar, input$yvar), drop = FALSE]
     d[] <- lapply(d, function(x) if (is.character(x)) suppressWarnings(as.numeric(x)) else x)
     d <- stats::na.omit(d)
     validate(
@@ -118,7 +127,6 @@ server <- function(input, output, session) {
             unname(ct$estimate), ct$p.value, nrow(d))
   })
   
-  # show ONLY descriptions under the plot
   output$xdesc <- renderUI({
     req(input$xvar)
     tags$p(tags$strong("X: "), tags$em(get_desc(input$xvar)))
