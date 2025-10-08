@@ -867,6 +867,13 @@ ok.
 
 ## Correlations
 
+\
+<a href="./app/index.html" target="_blank" rel="noopener"
+     style="background:#0b69ff;color:white;padding:0.55em 0.9em;border-radius:8px;text-decoration:none;">
+    EXPLORE CORRELATIONS ↗
+  </a>\
+\
+
 ```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
 df_lebe_elg %>% 
    select(lebe_cont,cand_rightwing,cand_change_R,cand_exp,mob:selfplacement,ideo) %>%
@@ -1022,7 +1029,7 @@ kbl(apa_lm$table) %>%
 
 Oh. ok. that explains away our leftwing support. Social mobility is actually doing most of the work here.
 
-## Exploratory
+## Exploratory analyses
 
 Let's just see if the cooley measure, on its own, predicts support for right-wing candidates, and if race moderates that.
 
