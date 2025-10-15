@@ -1,0 +1,1108 @@
+---
+title: "Left Behind"
+subtitle: "Oct 2025: Analysis"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+knit: (function(input_file, encoding) { rmarkdown::render(input_file, encoding = encoding, output_file = 'index.html', output_dir = here::here('docs','studies','study-oct25')); })
+---
+
+
+```{r,include=FALSE}
+detachAllPackages <- function() {
+
+  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
+
+  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+
+  package.list <- setdiff(package.list,basic.packages)
+
+  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
+
+}
+
+detachAllPackages()
+```
+
+```{r setup, include=FALSE}
+library(apa)
+library(see)
+library(lme4)
+library(lmerTest)
+library(interactions)
+library(jtools)
+library(gridExtra)
+library(kableExtra)
+library(apaTables)
+library(papaja)
+library(rstatix)
+library(knitr)
+library(psych)
+library(GPArotation)
+library(PerformanceAnalytics)
+library(gt)
+library(tidytext)
+library(textdata)
+library(tidyverse)
+library(diagram)
+library(factoextra)
+library(SnowballC)
+library(hunspell)
+library(quanteda)
+library(bruceR)
+library(here)
+
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25/data/"
+
+df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
+```
+
+```{r,include=FALSE}
+df_lebe <- df_lebe %>% 
+  mutate(income = factor(income,c("$0-$20,000",
+                                  "$20,001-$40,000",
+                                  "$40,001-$60,000",
+                                  "$60,001-$80,000",
+                                  "$80,001-$100,000",
+                                  "$100,001-$120,000",
+                                  "$120,001-$140,000",
+                                  "$140,001-$160,000",
+                                  "$160,001-$180,000",
+                                  "$180,001-$200,000",
+                                  "Over $200,000")),
+         edu = factor(edu,c("noHS",
+                            "GED",
+                            "2yearColl",
+                            "4yearColl",
+                            "MA",
+                            "PHD"))) %>% 
+  mutate(lebe_cont_z = scale(lebe_cont),
+         cand_rightwing_z = scale(cand_rightwing),
+         cand_change_R_z = scale(cand_change_R),
+         cand_exp_z = scale(cand_exp),
+         mob_z = scale(mob),
+         soccon_z = scale(soccon),
+         lonely_z = scale(lonely),
+         selfplacement_z = scale(selfplacement),
+         ideo_z = scale(ideo),
+         income_num_z = scale(income_num),
+         edu_num_z = scale(edu_num),
+         age_z = scale(age))
+
+df_lebe_elg <- df_lebe %>% 
+  filter(is_elg == 1)
+```
+
+# Background
+
+This is a preregistered study, aiming to show that the effects we found in the previous study hold with additional controls.\
+\
+This was the preregistration:
+
+## Hypotheses
+
+1. Feeling left behind is positively associated with support for sweeping, as opposed to incremental, change.\
+2. Feeling left behind is not positively associated with support for right-wing political leaders.
+
+## Study design
+
+Participants will first indicate the extent to which they feel left behind.\
+Then, they will indicate their preferences for political candidates on the following dimensions: political experience (outsider vs. insider), approach to change (sweeping vs. incremental), and ideological direction (on both economic issues and cultural issues).\
+Then, they will complete the following measures: left behind in the context of race, social mobility beliefs, loneliness, and social connectedness.\
+Finally, they will indicate their political ideology and party affiliation, as well as their demographic information.
+
+## Analysis plan
+
+Linear model 1A: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable.\
+Linear model 1B: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; race, gender, age, income, and education as control variables.\
+Linear model 1C: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; political party, political ideology, race, gender, age, income, and education as control variables.\
+Linear model 1D: Continuous left behind measure as the predictor variable; preference for political candidate that supports sweeping change as the outcome variable; feeling left behind in the context of race, social mobility beliefs, loneliness, social connectedness, political party, political ideology, race, gender, age, income, and education as control variables.\
+Linear model 2A: Continuous left behind measure as the predictor variable; preference for political candidate that supports right-wing policy as the outcome variable.\
+Linear model 2B: Continuous left behind measure as the predictor variable; preference for political candidate that supports right-wing policy as the outcome variable; race, gender, age, income, and education as control variables.\
+Linear model 2C: Continuous left behind measure as the predictor variable; preference for political candidate that supports right-wing policy as the outcome variable; political party, political ideology, race, gender, age, income, and education as control variables.\
+Linear model 2D: Continuous left behind measure as the predictor variable; preference for political candidate that supports right-wing policy as the outcome variable; feeling left behind in the context of race, social mobility beliefs, loneliness, social connectedness, political party, political ideology, race, gender, age, income, and education as control variables.
+
+# Eligibility
+
+There were two exclusion criteria: a simple attention check and a bot-check with an invisible attention check.
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=F}
+eligible_n <- df_lebe %>% 
+  group_by(is_elg) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  filter(is_elg == 1) %>% 
+  select(n) %>% 
+  unlist() %>% 
+  unname()
+
+df_lebe %>% 
+  group_by(att_1,att_2) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+That gives us a total of `r eligible_n` eligible participants.\
+\
+Participants were recruited through Prolific and the following quota was set for political representativeness: (30% dems; 30% reps; 40% independents)
+
+# Demographics
+
+## Race
+
+```{r,results='asis',echo=TRUE,warning=FALSE}
+df_lebe_elg %>% 
+  group_by(race) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Gender
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  mutate(gender = ifelse(is.na(gender) | gender == "","other",gender)) %>% 
+  group_by(gender) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Age
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  summarise(age_mean = round(mean(age,na.rm = T),2),
+            age_sd = round(sd(age,na.rm = T),2)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Education
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  group_by(edu) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+
+
+## Income
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(5,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = income)) +
+  geom_bar() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank()) +
+  coord_flip()
+```
+
+# Politics
+
+## Ideology
+
+Please indicate your general political ideology (1 = *Extremely Liberal* to 7 = *Extremely Consevative*)
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(7,5)}
+df_lebe_elg %>%
+  ggplot() +
+  geom_histogram(aes(x = ideo), fill = "lightblue",color= NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(xintercept = mean(df_lebe_elg$ideo,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"))
+
+```
+
+## Party ID
+
+### Initial selection
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  group_by(party_gen) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### With followups
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  group_by(party_followup) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+# Measures
+
+## Left behind: Continuous
+
+People in America come from all walks of life. Some feel left behind while others are advancing. We are interested in how you feel and what that means for you.\
+\
+**To what extent do you feel left behind?** (0 = *Not at All Left Behind* to 100 = *Extremely Left Behind*)
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = lebe_cont)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 5) +
+  scale_x_continuous(breaks = seq(0,100,20),
+                     limits = c(-10,110)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$lebe_cont,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+## Ideal candidate
+
+We would like to ask you about your ideal political candidate. 
+
+### Experience
+
+Thinking about experience with politics, where would your ideal candidate fall?\
+1 = *Outsider* (no prior political office); 7 = *Insider* (many years in political office)
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = cand_exp)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1) +
+  scale_x_continuous(breaks = seq(1,7,1),
+                     limits = c(0,8)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$cand_exp,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+### Change
+
+**Reverse-scored:**\
+\
+Thinking about how they would approach change, what approach would you like them to take?\
+1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = cand_change_R)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1) +
+  scale_x_continuous(breaks = seq(1,7,1),
+                     limits = c(0,8)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$cand_change_R,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+### Left-Right ideology
+
+Mean score of economic policy (1 = *Redistributive* to 7 = *Free Market*) and cultural issues (1 = *Progressive* to 7 = *Conservative*).
+
+```{r,include=F}
+cormat <- df_lebe_elg %>% 
+  select(cand_econ,cand_cult) %>% 
+  cor()
+
+r_value <- cormat[1,2]
+```
+
+r = `r round(r_value,2)`
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = cand_rightwing)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1) +
+  scale_x_continuous(breaks = seq(1,7,1),
+                     limits = c(0,8)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$cand_rightwing,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+## Mobility beliefs
+
+1 = *Strongly Disagree* to 7 = *Strongly Agree*\
+\
+1. People can do things differently, but their status can’t really be changed. [R]\
+2. Everyone, no matter who they are, can significantly change their status in society.\
+3. The status a person has in society is something basic about them, and it can’t be changed very much. [R]\
+4. People can substantially change their status in society.\
+5. No matter what status a person has in society at one point in their life, they can always change it a lot.\
+6. People can change even their most basic status markers.\
+7. Everyone is of a certain status in society, and there is not much that they can do to really change that. [R]\
+8. As much as I hate to admit it, people can’t really change where they stand in society at large. [R]
+
+
+```{r,include=F}
+alpha_score <- df_lebe_elg %>% 
+  dplyr::select(mob_1R:mob_8R) %>% 
+  psych::alpha()
+
+alpha <- alpha_score$total[1]
+```
+
+Cronbach's alpha = `r round(alpha,2)`
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = mob)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1,
+                 color = NA) +
+  scale_x_continuous(breaks = seq(1,7,1),
+                     limits = c(0,8)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$mob,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+
+## Social Connectedness
+
+1 = *Strongly Disagree* to 7 = *Strongly Agree*\
+\
+1. I feel distant from people.\
+2. I feel like an outsider.\
+3. I feel disconnected from the world around me.\
+4. I am able to relate to my peers. [R]\
+5. I catch myself losing a sense of connectedness with society.
+
+```{r,include=F}
+alpha_score <- df_lebe_elg %>% 
+  dplyr::select(soccon_1:soccon_5) %>% 
+  psych::alpha()
+
+alpha <- alpha_score$total[1]
+```
+
+Cronbach's alpha = `r round(alpha,2)`
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = soccon)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1,
+                 color = NA) +
+  scale_x_continuous(breaks = seq(1,7,1),
+                     limits = c(0,8)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$soccon,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+### Loneliness
+
+The next questions are about how you feel about different aspects of your life. For each one, tell me how often you feel that way. (1 = *Hardly Ever*; 2 = *Some of the Time*; 3 = *Often*)\
+\
+Sum score of the following:\
+\
+1. How often do you feel that you lack companionship?\
+2. How often do you feel left out?\
+3. How often do you feel isolated from others?
+
+
+```{r,include=F}
+alpha_score <- df_lebe_elg %>% 
+  dplyr::select(lonely_1:lonely_3) %>% 
+  psych::alpha()
+
+alpha <- alpha_score$total[1]
+```
+
+Cronbach's alpha = `r round(alpha,2)`
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = lonely)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1,
+                 color = NA) +
+  scale_x_continuous(breaks = seq(3,9,1),
+                     limits = c(2,10)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$lonely,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+## Cooley measure
+
+Using the slider below, please indicate where you believe you and each of the following groups stand in American society today.\
+\
+Place the dots on the slider, ranging from THE WORST OFF (those who have the least money, the least political power, the least education, and the least respected jobs) to THE BEST OFF (those who have the most money, the most political power, the most education, and the most respected jobs).\
+\
+1. You\
+2. White people\
+3. Black people\
+4. Asian people\
+5. Latino/Hispanic people
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(7,5)}
+means <- df_lebe_elg %>%
+  dplyr::select(PID,lebecool_self:lebecool_latino) %>% 
+  pivot_longer(-PID,
+               names_to = "dot",
+               values_to = "score") %>% 
+  filter(!is.na(score)) %>% 
+  group_by(dot) %>% 
+  summarise(score = mean(score)) %>% 
+  ungroup()
+
+df_lebe_elg %>%
+  dplyr::select(PID,lebecool_self:lebecool_latino) %>% 
+  pivot_longer(-PID,
+               names_to = "dot",
+               values_to = "score") %>% 
+  filter(!is.na(score)) %>% 
+  ggplot() +
+  geom_histogram(aes(x = score), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 10) +
+  scale_x_continuous(limits = c(-.1,100.1),
+                     breaks = seq(0,100,20)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~dot,nrow = 2)
+
+```
+
+I tried converting this measure the same way <a href="https://www.nature.com/articles/s44271-024-00154-w" target="_blank">Cooley et al</a> did it, using latent profile analysis (LPA) to get classifications of **white** participants based on how similar/dissimilar the rankings are. Specifically, they were able to get a "second place" classification, a "third place" classification, and a "last place" classification. I was able to replicate their 3-profile solution, but I was unable to replicate their "last place" classification. There are just almost no cases in which white people put themselves as last place. Click "Show" here to see my code.
+
+
+```{r, message=FALSE, warning=FALSE,code_folding="show"}
+# ---- Packages ----
+library(tibble)
+library(purrr)
+library(tidyLPA)
+
+set.seed(20251007)
+
+# ---- 0) Data & indicators ----
+# Using White respondents only (as in your last attempt)
+indicators <- c("lebecool_self", "lebecool_white", "lebecool_black", "lebecool_asian", "lebecool_latino")
+
+df_raw <- df_lebe_elg %>% 
+  filter(race == "White")
+
+df <- df_raw %>%
+  select(any_of(indicators)) %>%
+  tidyr::drop_na()
+
+# ---- 1) LPA: Model 1 (equal variances, zero covariances), 1–5 classes ----
+fit_list <- estimate_profiles(
+  df,
+  1:5,
+  models = 1,            # diagonal; equal variances
+  variances = "equal",
+  covariances = "zero",
+  starts = 200,
+  nrep = 20
+)
+
+# ---- 2) Fit summary (robust to tidyLPA return types) ----
+fits <- map_dfr(seq_along(fit_list), function(i) {
+  mod <- fit_list[[i]]
+  fi_raw <- get_fit(mod)
+  fi_list <- if (is.data.frame(fi_raw)) as.list(fi_raw[1, , drop = TRUE]) else if (is.list(fi_raw)) fi_raw else as.list(fi_raw)
+  getv <- function(nm) { v <- fi_list[[nm]]; if (is.null(v)) return(NA_real_); suppressWarnings(as.numeric(v)[1]) }
+  cl <- get_data(mod) %>% count(Class, name = "n")
+  smallest_pct <- if (nrow(cl)) min(cl$n / sum(cl$n)) else NA_real_
+  tibble(
+    classes      = { k <- getv("Classes"); if (is.na(k)) i else as.integer(k) },
+    logLik       = getv("LogLik"),
+    AIC          = getv("AIC"),
+    BIC          = getv("BIC"),
+    SABIC        = getv("SABIC"),
+    Entropy      = getv("Entropy"),
+    smallest_pct = smallest_pct
+  )
+}) %>% arrange(classes)
+
+# Choose 3-class if available; else highest-entropy
+best_k  <- if (any(fits$classes == 3)) 3 else fits$classes[which.max(fits$Entropy)]
+best_fit <- fit_list[[as.integer(best_k)]]
+
+# ---- 3) Primary outputs for collaborators ----
+# (1) class_means_tbl: class-level means for the 5 indicators
+classified <- get_data(best_fit) %>% rename(lpa_class = Class)
+
+class_means_tbl <- classified %>%
+  group_by(lpa_class) %>%
+  summarise(across(all_of(indicators), ~ mean(.x, na.rm = TRUE)), .groups = "drop")
+
+# (2) sim_table_tbl: similarity to Second/Third/Last prototypes
+# Differences: positive => group is ABOVE self (i.e., Self is below that group)
+cm <- class_means_tbl %>%
+  mutate(
+    d_w = lebecool_white  - lebecool_self,
+    d_a = lebecool_asian  - lebecool_self,
+    d_b = lebecool_black  - lebecool_self,
+    d_l = lebecool_latino - lebecool_self
+  ) %>%
+  select(lpa_class, d_w, d_a, d_b, d_l)
+
+cos_sim <- function(x, y) {
+  x <- as.numeric(x); y <- as.numeric(y)
+  nx <- sqrt(sum(x*x)); ny <- sqrt(sum(y*y))
+  if (nx == 0 || ny == 0) return(-Inf)
+  sum(x*y) / (nx * ny)
+}
+
+protos <- list(
+  "Second Place" = c( 1, -1, -1, -1),  # White>Self>Asian,Black,Latino
+  "Third Place"  = c( 1,  1, -1, -1),  # White>Asian>Self>Black,Latino
+  "Last Place"   = c( 1,  1,  1,  1)   # everyone above Self
+)
+
+sim_table_tbl <- cm %>%
+  rowwise() %>%
+  mutate(
+    sim_second = cos_sim(c(d_w, d_a, d_b, d_l), protos[["Second Place"]]),
+    sim_third  = cos_sim(c(d_w, d_a, d_b, d_l), protos[["Third Place"]]),
+    sim_last   = cos_sim(c(d_w, d_a, d_b, d_l), protos[["Last Place"]]),
+    best_label = c("Second Place","Third Place","Last Place")[which.max(c(sim_second, sim_third, sim_last))]
+  ) %>%
+  ungroup()
+
+detach("package:purrr",unload = T)
+detach("package:tidyLPA",unload = T)
+```
+
+
+The best example of why this isn't working for us is to compare their Table 3 to our class_means table:
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+kbl(class_means_tbl) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+And, indeed, we do not get a "last place" classification to any of our classes:
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+kbl(sim_table_tbl) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+I tried this in all kinds of ways, with different levels of stringency on classification (kept getting "unable to classify" for either one or two of the groups). The version above is the one that gives us the best chance to get a "last place" classification, but we simply aren't seeing it.\
+\
+That's not great. And apart from our own paper, it raises some important questions. Even in their own study 1 data, only 170 (of 1449) white people see themselves as last place... and that classification is the core of their effect. We are not seeing enough white people say that they're last place, using the exact same measure.\
+\
+Let's take a look at how white people rank themselves (1 = first place; 5 = last place):
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(4,3)}
+df_lebe_elg %>% 
+  filter(race == "White") %>% 
+  ggplot(aes(x = selfplacement)) +
+  geom_histogram(fill = "lightblue",
+                 binwidth = 1,
+                 color = NA) +
+  scale_x_continuous(breaks = seq(1,5,1),
+                     limits = c(0,6)) +
+  ylab("count") +
+  geom_vline(xintercept = mean(df_lebe_elg$selfplacement,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_text(color = "black",
+                                   face = "bold"))
+```
+
+Ok, so there is some variance. The reason we're probably still not getting the "last place" classification is because those "five spots" are too close to the rest of the groups. Let's see. This is the distributions of other group ratings for white people who put themselves as last place.
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(7,5)}
+means <- df_lebe_elg %>%
+  filter(race == "White") %>% 
+  filter(selfplacement == 5) %>% 
+  dplyr::select(PID,lebecool_self:lebecool_latino) %>% 
+  pivot_longer(-PID,
+               names_to = "dot",
+               values_to = "score") %>% 
+  filter(!is.na(score)) %>% 
+  group_by(dot) %>% 
+  summarise(score = mean(score)) %>% 
+  ungroup()
+
+df_lebe_elg %>%
+  filter(race == "White") %>% 
+  filter(selfplacement == 5) %>% 
+  dplyr::select(PID,lebecool_self:lebecool_latino) %>% 
+  pivot_longer(-PID,
+               names_to = "dot",
+               values_to = "score") %>% 
+  filter(!is.na(score)) %>% 
+  ggplot() +
+  geom_histogram(aes(x = score), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 10) +
+  scale_x_continuous(limits = c(-.1,100.1),
+                     breaks = seq(0,100,20)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~dot,nrow = 2)
+
+```
+
+Oh. Interesting. They're actually putting the other groups as pretty high on the scale. Alright, maybe we can just us the self-placement rank as the variable. I'll just note that by doing this, we're losing some potentially meaningful variance (the continuous ratings of all groups). Maybe we can figure out a better procedure later.\
+\
+Just to explore, let's see how all other participants (excluding white), ranked themselves as compared to the four racial groups.
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(7,5)}
+means <- df_lebe_elg %>%
+  dplyr::select(PID,race,selfplacement) %>% 
+  filter(!is.na(race)) %>% 
+  filter(race != "White") %>% 
+  group_by(race) %>% 
+  summarise(score = mean(selfplacement)) %>% 
+  ungroup()
+
+df_lebe_elg %>%
+  filter(!is.na(race)) %>% 
+  filter(race != "White") %>% 
+  ggplot() +
+  geom_histogram(aes(x = selfplacement), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,6),
+                     breaks = seq(1,5,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~race,nrow = 3)
+
+```
+
+ok.
+
+# Analysis
+
+## Correlations
+
+\
+<a href="./app/index.html" target="_blank" rel="noopener"
+     style="background:#0b69ff;color:white;padding:0.55em 0.9em;border-radius:8px;text-decoration:none;">
+    EXPLORE CORRELATIONS ↗
+  </a>\
+\
+
+```{r,fig.align='left',echo=FALSE,warning=FALSE,message=FALSE,fig.dim=c(7,7)}
+df_lebe_elg %>% 
+   select(lebe_cont,cand_rightwing,cand_change_R,cand_exp,mob:selfplacement,ideo) %>%
+   corPlot(upper = TRUE,stars = TRUE,xsrt = 270)
+```
+
+## Preregistered analyses
+
+*note:* In all models below, I'm inserting all continuous variables as z-scored for interpretability (especially given our 0-100 predictor).
+
+
+### DV: Candidate support for sweeping change
+
+Just as a reminder, this is the measure for this DV...\
+\
+**Reverse-scored:** Thinking about how they would approach change, what approach would you like them to take? 1 = *Sweeping* (bold, radical changes); 7 = *Incremental* (smaller, step-by-step changes)
+
+#### Model 1A\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R_z ~ lebe_cont_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 1B\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+**Controls:** race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R_z ~ lebe_cont_z + white_bin + man_bin + income_num_z + edu_num_z + age_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 1C\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+**Controls:** party id, conservative ideology, race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R_z ~ lebe_cont_z + party_gen + ideo_z + white_bin + man_bin + income_num_z + edu_num_z + age_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 1D\
+\
+**Outcome:** Sweeping change candidate\
+**Predictor:** left behind - continuous\
+**Controls:** feeling left behind in the context of race, social mobility beliefs, loneliness, social connectedness, party id, conservative ideology, race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R_z ~ lebe_cont_z + selfplacement_z + mob_z + lonely_z + soccon_z + party_gen + ideo_z + white_bin + man_bin + income_num_z + edu_num_z + age_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### DV: Right-wing candidate
+
+#### Model 2A\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing_z ~ lebe_cont_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 2B\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+**Controls:** race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing_z ~ lebe_cont_z + white_bin + man_bin + income_num_z + edu_num_z + age_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 2C\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+**Controls:** party id, conservative ideology, race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing_z ~ lebe_cont_z + party_gen + ideo_z + white_bin + man_bin + income_num_z + edu_num_z + age_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+#### Model 2D\
+\
+**Outcome:** Right-wing candidate\
+**Predictor:** left behind - continuous\
+**Controls:** feeling left behind in the context of race, social mobility beliefs, loneliness, social connectedness, party id, conservative ideology, race (white = 1; non-white = 0), gender (man = 1; non-man = 0), income (numeric), education (numeric), age
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing_z ~ lebe_cont_z + selfplacement_z + mob_z + lonely_z + soccon_z + party_gen + ideo_z + white_bin + man_bin + income_num_z + edu_num_z + age_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+Oh. ok. that explains away our leftwing support. Social mobility is actually doing most of the work here.
+
+## Exploratory analyses
+
+\
+<a href="./app/lm-table-app/index.html" target="_blank" rel="noopener"
+     style="background:#0b69ff;color:white;padding:0.55em 0.9em;border-radius:8px;text-decoration:none;">
+    EXPLORE MODELS ↗
+  </a>\
+\
+
+Let's just see if the cooley measure, on its own, predicts support for right-wing candidates, and if race moderates that.
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_rightwing_z ~ selfplacement*white_bin,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(5,3)}
+interact_plot(m1,
+              pred = "selfplacement",
+              modx = "white_bin",
+              interval = T)
+```
+
+Ok. That's good to see. There's definitely some truth to their finding.\
+\
+What about support for sweeping change?
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R_z ~ selfplacement*white_bin,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(5,3)}
+interact_plot(m1,
+              pred = "selfplacement",
+              modx = "white_bin",
+              interval = T)
+```
+
+Nope.\
+\
+Does social mobility moderate the effect of our left behind measure on support for sweeping change?
+
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R_z ~ lebe_cont_z*mob_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(5,3)}
+interact_plot(m1,
+              pred = "lebe_cont_z",
+              modx = "mob_z",
+              interval = T)
+```
+
+ok. great. that's good to see.

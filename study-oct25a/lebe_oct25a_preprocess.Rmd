@@ -108,20 +108,24 @@ df_lebe <- df_lebe %>%
          ind_bin = ifelse(party_gen == "Independent",1,0))
 ```
 
-rename some vars
+combine some vars
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  rename(lebe_cont = lebe_cont_1,
-         cand_exp = elect_exp,
-         cand_change = elect_change,
-         cand_econ = elect_econ,
-         cand_cult = elect_cult,
-         lebecool_self = mds_self,
-         lebecool_white = mds_white,
-         lebecool_black = mds_black,
-         lebecool_asian = mds_asian,
-         lebecool_latino = mds_latino)
+  mutate(vote_who = case_when(vote_turnout == "Yes" & vote_who_y == "${e://Field/CAND_1}" ~ CAND_1,
+                              vote_turnout == "Yes" & vote_who_y == "${e://Field/CAND_2}" ~ CAND_2,
+                              vote_turnout == "Yes" & vote_who_y == "Other" ~ vote_who_y_3_TEXT,
+                              vote_turnout != "Yes" & vote_who_n == "${e://Field/CAND_1}" ~ CAND_1,
+                              vote_turnout != "Yes" & vote_who_n == "${e://Field/CAND_2}" ~ CAND_2,
+                              vote_turnout != "Yes" & vote_who_n == "Other" ~ vote_who_n_3_TEXT,
+                              .default = NA))
+```
+
+rename some vars
+
+```{r}
+# df_lebe <- df_lebe %>% 
+#   rename()
          
          
 ```
@@ -129,13 +133,8 @@ df_lebe <- df_lebe %>%
 reverse-score items
 
 ```{r}
-df_lebe <- df_lebe %>% 
-  mutate(cand_change_R = 8 - cand_change,
-         mob_1R = 8 - mob_1,
-         mob_3R = 8 - mob_3,
-         mob_7R = 8 - mob_7,
-         mob_8R = 8 - mob_8,
-         soccon_4R = 8 - soccon_4)
+# df_lebe <- df_lebe %>% 
+#   mutate()
 ```
 
 recode items
@@ -153,49 +152,10 @@ df_lebe <- df_lebe %>%
 mean scores
 
 ```{r}
-df_lebe <- df_lebe %>% 
-  rowwise() %>% 
-  mutate(cand_rightwing = mean(c(cand_econ,
-                                 cand_cult),na.rm = T),
-         mob = mean(c(mob_1R,
-                      mob_2,
-                      mob_3R,
-                      mob_4,
-                      mob_5,
-                      mob_6,
-                      mob_7R,
-                      mob_8R),na.rm = T),
-         soccon = mean(c(soccon_1,
-                         soccon_2,
-                         soccon_3,
-                         soccon_4R,
-                         soccon_5),na.rm = T),
-         lonely = sum(c(lonely_1,
-                         lonely_2,
-                         lonely_3),na.rm = T)) %>% 
-  ungroup()
-```
-
-cooley measure
-
-alright, i'll approximate something else from the cooley measure, just for the analyses, but it probably won't get the effect because they're only claiming an effect for "last place" participants. alright.
-
-```{r}
-temp <- df_lebe %>% 
-  select(PID,lebecool_self:lebecool_latino) %>% 
-  pivot_longer(-PID,
-               values_to = "placement",
-               names_to = "dot") %>% 
-  group_by(PID) %>% 
-  mutate(rankorder = rank(placement)) %>% 
-  ungroup() %>% 
-  mutate(rankorder = 6 - rankorder) %>% 
-  filter(dot == "lebecool_self") %>% 
-  select(PID,rankorder) %>% 
-  rename(selfplacement = rankorder)
-
-df_lebe <- df_lebe %>% 
-  left_join(temp,by= "PID")
+# df_lebe <- df_lebe %>% 
+#   rowwise() %>% 
+#   mutate() %>% 
+#   ungroup()
 ```
 
 
@@ -203,9 +163,7 @@ checks
 
 ```{r}
 df_lebe <- df_lebe %>% 
-  mutate(att_1 = ifelse(check_1 == 5,1,0),
-         att_2 = ifelse(check_2 == "14285733",0,1),
-         is_elg = ifelse(att_1 == 1 & att_2 == 1,1,0))
+  mutate(is_elg = ifelse(ELIGIBLE == 1,1,0))
 ```
 
 take only necessary variables
@@ -213,36 +171,18 @@ take only necessary variables
 ```{r}
 df_lebe <- df_lebe %>% 
   dplyr::select(PID,
-                lebe_cont,
-                cand_rightwing,
-                cand_change_R,
-                cand_exp:cand_cult,
-                mob:selfplacement,
-                mob_1R,
-                      mob_2,
-                      mob_3R,
-                      mob_4,
-                      mob_5,
-                      mob_6,
-                      mob_7R,
-                      mob_8R,
-                soccon_1,
-                         soccon_2,
-                         soccon_3,
-                         soccon_4R,
-                         soccon_5,
-                lonely_1,
-                         lonely_2,
-                         lonely_3,
-                lebecool_self:lebecool_latino,
+                STATE:COUNTY,
+                CAND_1:PLACENAME,
+                race_num,
+                cand1_change:cand2_econ,
+                vote_turnout,
+                vote_who,
                 ideo,
                 party_gen,
                 party_dem,
                 party_rep,
                 party_ind,
                 party_followup,
-                att_1,
-                att_2,
                 is_elg,
                 age,
                 gender,
@@ -258,7 +198,7 @@ df_lebe <- df_lebe %>%
 write csv
 
 ```{r}
-write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25/data/df_lebe.csv",row.names = F)
-write.csv(df_lebe %>% filter(is_elg == 1),"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25/data/df_lebe_elg.csv",row.names = F)
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25a/data/df_lebe.csv",row.names = F)
+write.csv(df_lebe %>% filter(is_elg == 1),"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25a/data/df_lebe_elg.csv",row.names = F)
 ```
 
