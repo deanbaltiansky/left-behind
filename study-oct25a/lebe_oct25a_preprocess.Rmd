@@ -1,5 +1,5 @@
 ---
-title: "lebe_oct25_preprocess"
+title: "lebe_oct25a_preprocess"
 output: html_document
 ---
 
@@ -25,7 +25,7 @@ library(janitor)
 library(httr)
 library(readr)
 
-repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25/data/"
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25a/data/"
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
 
