@@ -35,9 +35,7 @@ remove ineligible participants
 
 ```{r}
 #keep only those who finished
-df_lebe <- df_deid %>% 
-  filter(Finished == 1) %>% 
-  filter(Progress == 100)
+df_lebe <- df_deid
 ```
 
 Put NA's where necessary
@@ -86,8 +84,8 @@ df_lebe <- df_lebe %>%
          race_num_6 = ifelse(race_6 != "",1,0),
          race_num_7 = ifelse(race_7 != "",1,0),
          race_num_8 = ifelse(race_8 != "",1,0),
-         race_num = race_num_1 + race_num_2 + race_num_3 + race_num_4 + race_num_5 + race_num_6 + race_num_7 + race_num_8,
-         race = ifelse(race_num > 1,"multiracial",paste0(race_1,race_2,race_3,race_4,race_5,race_6,race_7,race_8)),
+         race_total = race_num_1 + race_num_2 + race_num_3 + race_num_4 + race_num_5 + race_num_6 + race_num_7 + race_num_8,
+         race = ifelse(race_total > 1,"multiracial",paste0(race_1,race_2,race_3,race_4,race_5,race_6,race_7,race_8)),
          race = ifelse(race == "",NA,race)) %>% 
   mutate(white_bin = ifelse(race == "White",1,0))
 ```
