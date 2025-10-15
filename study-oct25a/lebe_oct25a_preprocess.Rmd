@@ -35,7 +35,9 @@ remove ineligible participants
 
 ```{r}
 #keep only those who finished
-df_lebe <- df_deid
+df_lebe <- df_deid %>% 
+  filter(Finished == 1) %>% 
+  filter(Progress == 100)
 ```
 
 Put NA's where necessary
