@@ -286,6 +286,51 @@ df_lebe_elg %>%
 
 For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "New Jersey") %>% 
@@ -333,6 +378,50 @@ df_lebe_elg %>%
 
 What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "New Jersey") %>% 
@@ -379,6 +468,50 @@ df_lebe_elg %>%
 ### Economic policy
 
 What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
@@ -429,6 +562,50 @@ df_lebe_elg %>%
 
 For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Virginia") %>% 
@@ -476,6 +653,50 @@ df_lebe_elg %>%
 
 What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Virginia") %>% 
@@ -522,6 +743,50 @@ df_lebe_elg %>%
 ### Economic policy
 
 What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
@@ -572,6 +837,50 @@ df_lebe_elg %>%
 
 For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "New York City") %>% 
@@ -619,6 +928,50 @@ df_lebe_elg %>%
 
 What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "New York City") %>% 
@@ -665,6 +1018,50 @@ df_lebe_elg %>%
 ### Economic policy
 
 What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
@@ -715,6 +1112,50 @@ df_lebe_elg %>%
 
 For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Seattle") %>% 
@@ -762,6 +1203,50 @@ df_lebe_elg %>%
 
 What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Seattle") %>% 
@@ -808,6 +1293,50 @@ df_lebe_elg %>%
 ### Economic policy
 
 What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
@@ -858,6 +1387,50 @@ df_lebe_elg %>%
 
 For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Minneapolis") %>% 
@@ -905,6 +1478,50 @@ df_lebe_elg %>%
 
 What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Minneapolis") %>% 
@@ -951,6 +1568,50 @@ df_lebe_elg %>%
 ### Economic policy
 
 What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
@@ -1001,6 +1662,50 @@ df_lebe_elg %>%
 
 For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Cleveland") %>% 
@@ -1048,6 +1753,50 @@ df_lebe_elg %>%
 
 What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
 
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 
   filter(PLACENAME == "Cleveland") %>% 
@@ -1094,6 +1843,50 @@ df_lebe_elg %>%
 ### Economic policy
 
 What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
 
 ```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
 means <- df_lebe_elg %>% 

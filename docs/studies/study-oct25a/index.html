@@ -2531,6 +2531,143 @@ done in [PLACENAME] [state/city] government, or a <strong>major,
 sweeping, and drastic</strong> change in how things are done in
 [PLACENAME] [state/city] government? (1 = <em>Incremental</em> to 7 =
 <em>Sweeping</em>)</p>
+<pre class="r"><code>df_lebe_elg %&gt;% 
+  filter(PLACENAME == &quot;New Jersey&quot;) %&gt;% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %&gt;% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = &quot;names&quot;,
+               values_to = &quot;candidate&quot;) %&gt;% 
+  mutate(change = ifelse(names == &quot;CAND_1&quot;,cand1_change,cand2_change)) %&gt;% 
+  select(PID,candidate,change) %&gt;% 
+  group_by(candidate) %&gt;% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %&gt;% 
+  ungroup() %&gt;% 
+  kbl() %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+candidate
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Jack Ciattarelli
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+4.50
+</td>
+<td style="text-align:right;">
+1.460361
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mikie Sherill
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+3.78
+</td>
+<td style="text-align:right;">
+1.460919
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>formodel &lt;- df_lebe_elg %&gt;% 
+  filter(PLACENAME == &quot;New Jersey&quot;) %&gt;% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %&gt;% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = &quot;names&quot;,
+               values_to = &quot;candidate&quot;) %&gt;% 
+  mutate(change = ifelse(names == &quot;CAND_1&quot;,cand1_change,cand2_change)) %&gt;% 
+  select(PID,candidate,change)
+
+t_test(change ~ candidate,data = formodel) %&gt;% 
+  kbl() %&gt;% 
+  kable_styling(bootstrap_options = &quot;hover&quot;,
+                full_width = F,
+                position = &quot;left&quot;)</code></pre>
+<table class="table table-hover" style="color: black; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+.y.
+</th>
+<th style="text-align:left;">
+group1
+</th>
+<th style="text-align:left;">
+group2
+</th>
+<th style="text-align:right;">
+n1
+</th>
+<th style="text-align:right;">
+n2
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+p
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+change
+</td>
+<td style="text-align:left;">
+Jack Ciattarelli
+</td>
+<td style="text-align:left;">
+Mikie Sherill
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+2.464673
+</td>
+<td style="text-align:right;">
+97.99999
+</td>
+<td style="text-align:right;">
+0.0155
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>means &lt;- df_lebe_elg %&gt;% 
   filter(PLACENAME == &quot;New Jersey&quot;) %&gt;% 
   select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %&gt;% 
