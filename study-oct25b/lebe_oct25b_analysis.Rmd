@@ -1127,6 +1127,8 @@ df_lebe_elg %>%
 
 # Analysis Plan
 
+Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect.
+
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
 m1 <- lmerTest::lmer(vote_sweep ~ lebe_cont_z + (1|PLACENAME),data = df_lebe_elg)
 

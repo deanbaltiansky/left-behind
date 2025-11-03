@@ -6376,6 +6376,10 @@ df_lebe_elg %&gt;%
 </div>
 <div id="analysis-plan-1" class="section level1">
 <h1>Analysis Plan</h1>
+<p>Random effects linear model: Continuous left behind measure as the
+predictor variable; voting intention for the political candidate who
+supports sweeping change as the outcome variable; election as random
+effect.</p>
 <pre class="r"><code>m1 &lt;- lmerTest::lmer(vote_sweep ~ lebe_cont_z + (1|PLACENAME),data = df_lebe_elg)
 
 apa_lm &lt;- apa_print(m1)
