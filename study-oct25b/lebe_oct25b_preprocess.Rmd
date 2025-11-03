@@ -203,6 +203,7 @@ df_lebe <- df_lebe %>%
   dplyr::select(PID,
                 STATE:COUNTY,
                 CAND_1:PLACENAME,
+                lebe_cont,
                 vote_sweep:vote_inc_all,
                 cand1_change,
                 cand2_change,
