@@ -1,5 +1,5 @@
 ---
-title: "lebe_oct25a_preprocess"
+title: "lebe_oct25b_preprocess"
 output: html_document
 ---
 
@@ -25,19 +25,20 @@ library(janitor)
 library(httr)
 library(readr)
 
-repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25a/data/"
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25b/data/"
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
 
 ```
 
-remove ineligible participants
+remove ineligible participants (including those who got through the Connect filters but were routed out after indicating where they live)
 
 ```{r}
 #keep only those who finished
 df_lebe <- df_deid %>% 
   filter(Finished == 1) %>% 
-  filter(Progress == 100)
+  filter(Progress == 100) %>% 
+  filter(ELIGIBLE == 1)
 ```
 
 Put NA's where necessary
@@ -115,18 +116,25 @@ df_lebe <- df_lebe %>%
   mutate(vote_who = case_when(vote_turnout == "Yes" & vote_who_y == "${e://Field/CAND_1}" ~ CAND_1,
                               vote_turnout == "Yes" & vote_who_y == "${e://Field/CAND_2}" ~ CAND_2,
                               vote_turnout == "Yes" & vote_who_y == "Other" ~ vote_who_y_3_TEXT,
+                              vote_turnout == "Yes" & vote_who_y_nyc == "${e://Field/CAND_1}" ~ CAND_1,
+                              vote_turnout == "Yes" & vote_who_y_nyc == "${e://Field/CAND_2}" ~ CAND_2,
+                              vote_turnout == "Yes" & vote_who_y_nyc == "Curtis Sliwa" ~ "Curtis Sliwa",
+                              vote_turnout == "Yes" & vote_who_y_nyc == "Other" ~ vote_who_y_nyc_8_TEXT,
                               vote_turnout != "Yes" & vote_who_n == "${e://Field/CAND_1}" ~ CAND_1,
                               vote_turnout != "Yes" & vote_who_n == "${e://Field/CAND_2}" ~ CAND_2,
                               vote_turnout != "Yes" & vote_who_n == "Other" ~ vote_who_n_3_TEXT,
+                              vote_turnout != "Yes" & vote_who_n_nyc == "${e://Field/CAND_1}" ~ CAND_1,
+                              vote_turnout != "Yes" & vote_who_n_nyc == "${e://Field/CAND_2}" ~ CAND_2,
+                              vote_turnout != "Yes" & vote_who_n_nyc == "Curtis Sliwa" ~ "Curtis Sliwa",
+                              vote_turnout != "Yes" & vote_who_n_nyc == "Other" ~ vote_who_n_nyc_6_TEXT,
                               .default = NA))
 ```
 
 rename some vars
 
 ```{r}
-# df_lebe <- df_lebe %>% 
-#   rename()
-         
+df_lebe <- df_lebe %>% 
+   rename(lebe_cont = lebe_cont_1)
          
 ```
 
@@ -139,31 +147,53 @@ reverse-score items
 
 recode items
 
+*note that the following were predetermined as "sweeping change" candidates: "Zohran Mamdani", "Jack Ciattarelli", "Katie Wilson", "Omar Fateh"
+*note that the following were predetermined as "incremental change" candidates: "Andrew Cuomo", "Mikie Sherill", "Bruce Harrell", "Jacob Frey"
+
+So, for the primary DV (vote_sweep), i'll mark the sweeping candidates as 1, the incremental candidates as 0, and everyone else as NA.
+For exploratory DV's, i'll add (1) vote_other: anyone other than the 2 candidates as 1 and everyone else as 0; (2) vote_sweep_all: sweeping candidates as 1 and everyone else as 0; (3) vote_inc_all: incremental candidates as 1 and everyone else as 0.
+
 ```{r}
+cands_sweep = c("Zohran Mamdani","Jack Ciattarelli","Katie Wilson","Omar Fateh")
+cands_inc = c("Andrew Cuomo","Mikie Sherill","Bruce Harrell","Jacob Frey")
+
 df_lebe <- df_lebe %>% 
   mutate(party_followup = case_when(party_gen == "Democrat" ~ paste0("Democrat | ",party_dem),
                                     party_gen == "Republican" ~ paste0("Republican | ",party_rep),
                                     party_gen == "Independent" |
                                       party_gen == "No preference" |
                                       party_gen == "Other party" ~ paste0("Independent | ",party_ind),
-                                    .default = NA))
+                                    .default = NA)) %>% 
+  mutate(vote_sweep = case_when(vote_who %in% cands_sweep ~ 1,
+                                vote_who %in% cands_inc ~ 0,
+                                .default = NA),
+         vote_sweep_all = case_when(vote_who %in% cands_sweep ~ 1,
+                                    .default = 0),
+         vote_other = case_when(!(vote_who %in% c(cands_sweep,cands_inc)) ~ 1,
+                                .default = 0),
+         vote_inc_all = case_when(vote_who %in% cands_inc ~ 1,
+                                  .default = 0))
 ```
 
 mean scores
 
 ```{r}
-# df_lebe <- df_lebe %>% 
-#   rowwise() %>% 
-#   mutate() %>% 
-#   ungroup()
+df_lebe <- df_lebe %>%
+  rowwise() %>%
+  mutate(cand1_rightwing = mean(c(cand1_cult,cand1_econ)),
+         cand2_rightwing = mean(c(cand2_cult,cand2_econ))) %>%
+  ungroup()
 ```
 
 
 checks
 
+*note that the first 35 participants didn't see the attention check because of a data collection error. I'll mark those as pass. In fact, anyone with anything other than 14285733 is not a bot, so i'll just check for that number.
+
 ```{r}
 df_lebe <- df_lebe %>% 
-  mutate(is_elg = ifelse(ELIGIBLE == 1,1,0))
+  mutate(is_elg = ifelse(is.na(check_2),1,
+                         ifelse(check_2 != "14285733",1,0)))
 ```
 
 take only necessary variables
@@ -173,8 +203,12 @@ df_lebe <- df_lebe %>%
   dplyr::select(PID,
                 STATE:COUNTY,
                 CAND_1:PLACENAME,
-                race_num,
-                cand1_change:cand2_econ,
+                vote_sweep:vote_inc_all,
+                cand1_change,
+                cand2_change,
+                cand1_rightwing,
+                cand2_rightwing,
+                cand1_cult:cand2_econ,
                 vote_turnout,
                 vote_who,
                 ideo,
@@ -198,7 +232,7 @@ df_lebe <- df_lebe %>%
 write csv
 
 ```{r}
-write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25a/data/df_lebe.csv",row.names = F)
-write.csv(df_lebe %>% filter(is_elg == 1),"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25a/data/df_lebe_elg.csv",row.names = F)
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25b/data/df_lebe.csv",row.names = F)
+write.csv(df_lebe %>% filter(is_elg == 1),"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25b/data/df_lebe_elg.csv",row.names = F)
 ```
 

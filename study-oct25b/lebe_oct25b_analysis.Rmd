@@ -1,12 +1,12 @@
 ---
 title: "Left Behind"
-subtitle: "Oct 2025A: Analysis"
+subtitle: "Oct 2025B: Analysis"
 output:
   html_document:
     toc: true
     toc_float: true
     code_folding: hide
-knit: (function(input_file, encoding) { rmarkdown::render(input_file, encoding = encoding, output_file = 'index.html', output_dir = here::here('docs','studies','study-oct25a')); })
+knit: (function(input_file, encoding) { rmarkdown::render(input_file, encoding = encoding, output_file = 'index.html', output_dir = here::here('docs','studies','study-oct25b')); })
 ---
 
 
@@ -54,7 +54,7 @@ library(quanteda)
 library(bruceR)
 library(here)
 
-repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25a/data/"
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25b/data/"
 
 df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
 ```
