@@ -1,0 +1,2151 @@
+---
+title: "Left Behind"
+subtitle: "Oct 2025A: Analysis"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+knit: (function(input_file, encoding) { rmarkdown::render(input_file, encoding = encoding, output_file = 'index.html', output_dir = here::here('docs','studies','study-oct25a')); })
+---
+
+
+```{r,include=FALSE}
+detachAllPackages <- function() {
+
+  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
+
+  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+
+  package.list <- setdiff(package.list,basic.packages)
+
+  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
+
+}
+
+detachAllPackages()
+```
+
+```{r setup, include=FALSE}
+library(apa)
+library(see)
+library(lme4)
+library(lmerTest)
+library(interactions)
+library(jtools)
+library(gridExtra)
+library(kableExtra)
+library(apaTables)
+library(papaja)
+library(rstatix)
+library(knitr)
+library(psych)
+library(GPArotation)
+library(PerformanceAnalytics)
+library(gt)
+library(tidytext)
+library(textdata)
+library(tidyverse)
+library(diagram)
+library(factoextra)
+library(SnowballC)
+library(hunspell)
+library(quanteda)
+library(bruceR)
+library(here)
+
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25a/data/"
+
+df_lebe <- readr::read_csv(paste0(repo_url,"df_lebe.csv"), show_col_types = FALSE)
+```
+
+```{r,include=FALSE}
+df_lebe <- df_lebe %>% 
+  mutate(income = factor(income,c("$0-$20,000",
+                                  "$20,001-$40,000",
+                                  "$40,001-$60,000",
+                                  "$60,001-$80,000",
+                                  "$80,001-$100,000",
+                                  "$100,001-$120,000",
+                                  "$120,001-$140,000",
+                                  "$140,001-$160,000",
+                                  "$160,001-$180,000",
+                                  "$180,001-$200,000",
+                                  "Over $200,000")),
+         edu = factor(edu,c("noHS",
+                            "GED",
+                            "2yearColl",
+                            "4yearColl",
+                            "MA",
+                            "PHD")))
+
+df_lebe_elg <- df_lebe %>% 
+  filter(is_elg == 1)
+```
+
+# Background
+
+This is a pretest of local- and state-level races. We want to see which of the upcoming races (held on November 5th) features a candidate that is clearly seen as representing sweeping/radical change. To that end, we targeted residents of two states in which there are upcoming governor races (NJ and VA) and four cities in which there are upcoming mayoral races (NYC, Seattle, Minneapolis, and Cleveland).\
+\
+For each race, we asked the following about the top two polling candidates: (1) approach to change; (2) positions on cultural issues; and (3) positions on economic issues.\
+\
+We then asked about voting intention and political affiliation.
+
+# Eligibility
+
+We used prolific to target NJ and VA residents; and Connect to target NYC, Seattle, Minneapolis, and Cleveland residents. Eligible participants are those who are indeed residents of one of these places; ineligible participants were routed out after this initial prescreen.
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=F}
+eligible_n <- df_lebe %>% 
+  group_by(is_elg) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  filter(is_elg == 1) %>% 
+  select(n) %>% 
+  unlist() %>% 
+  unname()
+
+df_lebe %>% 
+  group_by(is_elg) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+That gives us a total of `r eligible_n` eligible participants.
+
+# Races
+
+```{r,results='asis',echo=TRUE,warning=FALSE}
+df_lebe_elg %>% 
+  group_by(PLACENAME) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+# Demographics
+
+## Race
+
+```{r,results='asis',echo=TRUE,warning=FALSE}
+df_lebe_elg %>% 
+  group_by(race) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Gender
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  mutate(gender = ifelse(is.na(gender) | gender == "","other",gender)) %>% 
+  group_by(gender) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Age
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  summarise(age_mean = round(mean(age,na.rm = T),2),
+            age_sd = round(sd(age,na.rm = T),2)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Education
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  group_by(edu) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Income
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(5,3)}
+df_lebe_elg %>% 
+  ggplot(aes(x = income)) +
+  geom_bar() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank()) +
+  coord_flip()
+```
+
+# Political profile
+
+## Ideology
+
+Please indicate your general political ideology (1 = *Extremely Liberal* to 7 = *Extremely Consevative*)
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(7,5)}
+df_lebe_elg %>%
+  ggplot() +
+  geom_histogram(aes(x = ideo), fill = "lightblue",color= NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(xintercept = mean(df_lebe_elg$ideo,na.rm = T),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold"))
+
+```
+
+## Party ID
+
+### Initial selection
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  group_by(party_gen) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### With followups
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  group_by(party_followup) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+
+# Perception of Candidates
+
+## New Jersey
+
+### Approach to change
+
+For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(change,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  ggplot() +
+  geom_histogram(aes(x = change), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Cultural issues
+
+What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(cult,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  ggplot() +
+  geom_histogram(aes(x = cult), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Economic policy
+
+What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(econ,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "New Jersey") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  ggplot() +
+  geom_histogram(aes(x = econ), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+## Virginia
+
+### Approach to change
+
+For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(change,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  ggplot() +
+  geom_histogram(aes(x = change), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Cultural issues
+
+What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(cult,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  ggplot() +
+  geom_histogram(aes(x = cult), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Economic policy
+
+What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(econ,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Virginia") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  ggplot() +
+  geom_histogram(aes(x = econ), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+## New York City
+
+### Approach to change
+
+For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(change,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  ggplot() +
+  geom_histogram(aes(x = change), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Cultural issues
+
+What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(cult,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  ggplot() +
+  geom_histogram(aes(x = cult), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Economic policy
+
+What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(econ,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  ggplot() +
+  geom_histogram(aes(x = econ), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+## Seattle
+
+### Approach to change
+
+For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(change,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  ggplot() +
+  geom_histogram(aes(x = change), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Cultural issues
+
+What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(cult,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  ggplot() +
+  geom_histogram(aes(x = cult), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Economic policy
+
+What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(econ,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  ggplot() +
+  geom_histogram(aes(x = econ), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+## Minneapolis
+
+### Approach to change
+
+For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(change,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  ggplot() +
+  geom_histogram(aes(x = change), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Cultural issues
+
+What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(cult,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  ggplot() +
+  geom_histogram(aes(x = cult), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Economic policy
+
+What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(econ,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  ggplot() +
+  geom_histogram(aes(x = econ), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+## Cleveland
+
+### Approach to change
+
+For each candidate, would you describe them as promising a **minor, incremental, and modest** change to how things are done in [PLACENAME] [state/city] government, or a **major, sweeping, and drastic** change in how things are done in [PLACENAME] [state/city] government? (1 = *Incremental* to 7 = *Sweeping*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(change,na.rm = T),
+            sd = sd(change,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change)
+
+m1 <- rstatix::t_test(change ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,change ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(change,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_change,cand2_change) %>% 
+  pivot_longer(-c(PID,cand1_change,cand2_change),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(change = ifelse(names == "CAND_1",cand1_change,cand2_change)) %>% 
+  select(PID,candidate,change) %>% 
+  ggplot() +
+  geom_histogram(aes(x = change), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Cultural issues
+
+What is their approach to cultural issues? Broadly, they may have a more **progressive approach** to cultural issues (pro-choice, minority rights, inclusive immigration) or a more **conservative approach** to cultural issues (pro-life, stronger police, immigration crackdown). (1 = *Progressive* to 7 = *Conservative*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(cult,na.rm = T),
+            sd = sd(cult,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult)
+
+m1 <- rstatix::t_test(cult ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,cult ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(cult,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_cult,cand2_cult) %>% 
+  pivot_longer(-c(PID,cand1_cult,cand2_cult),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(cult = ifelse(names == "CAND_1",cand1_cult,cand2_cult)) %>% 
+  select(PID,candidate,cult) %>% 
+  ggplot() +
+  geom_histogram(aes(x = cult), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+### Economic policy
+
+What is their approach to economic policy? Broadly, they may be supportive of more **redistributive** economic policies (high corporate taxes, stronger unions, welfare funding) or more **free-market** economic policies (low corporate taxes, deregulation, reducing government budget). (1 = *Redistributive* to 7 = *Free Market*)
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(n = n(),
+            mean = mean(econ,na.rm = T),
+            sd = sd(econ,na.rm = T)) %>% 
+  ungroup() %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+formodel <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ)
+
+m1 <- rstatix::t_test(econ ~ candidate,data = formodel,paired = T,detailed = T)
+m2 <- rstatix::cohens_d(formodel,econ ~ candidate,paired = T)
+
+d = round(m2$effsize,2)
+
+m1 %>% 
+  select(statistic,df,p,conf.low,conf.high) %>% 
+  mutate(d = d) %>% 
+    kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,fig.align='left',echo=TRUE,warning=FALSE,fig.dim=c(3,3)}
+means <- df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  group_by(candidate) %>% 
+  summarise(score = mean(econ,na.rm = T)) %>% 
+  ungroup()
+
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  select(PID,CAND_1:CAND_2,cand1_econ,cand2_econ) %>% 
+  pivot_longer(-c(PID,cand1_econ,cand2_econ),
+               names_to = "names",
+               values_to = "candidate") %>% 
+  mutate(econ = ifelse(names == "CAND_1",cand1_econ,cand2_econ)) %>% 
+  select(PID,candidate,econ) %>% 
+  ggplot() +
+  geom_histogram(aes(x = econ), 
+                 fill = "lightblue",
+                 color = NA,
+                 binwidth = 1) +
+  scale_x_continuous(limits = c(0,8),
+                     breaks = seq(1,7,1)) +
+  geom_vline(data = means,mapping = aes(xintercept = score),
+             color = "black",
+             linetype = "dashed",
+             size = 1.1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_line(color = "grey66"),
+        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = "black",
+                                   face = "bold")) +
+  facet_wrap(~candidate,nrow = 2)
+```
+
+# Voting intentions
+
+## New Jersey
+
+### Turnout
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(STATE == "New Jersey") %>% 
+  group_by(vote_turnout) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### Who
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(STATE == "New Jersey") %>% 
+  group_by(vote_who) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Virginia
+
+### Turnout
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(STATE == "Virginia") %>% 
+  group_by(vote_turnout) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### Who
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(STATE == "Virginia") %>% 
+  group_by(vote_who) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## New York City
+
+### Turnout
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  group_by(vote_turnout) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### Who
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "New York City") %>% 
+  group_by(vote_who) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Seattle
+
+### Turnout
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  group_by(vote_turnout) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### Who
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Seattle") %>% 
+  group_by(vote_who) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Minneapolis
+
+### Turnout
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  group_by(vote_turnout) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### Who
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Minneapolis") %>% 
+  group_by(vote_who) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Cleveland
+
+### Turnout
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  group_by(vote_turnout) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+### Who
+
+```{r,echo=TRUE,results='asis',warning=FALSE}
+df_lebe_elg %>% 
+  filter(PLACENAME == "Cleveland") %>% 
+  group_by(vote_who) %>% 
+  summarise(N = n()) %>% 
+  ungroup() %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
