@@ -1127,6 +1127,8 @@ df_lebe_elg %>%
 
 # Analysis Plan
 
+## Model 1
+
 Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect.
 
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
@@ -1140,7 +1142,22 @@ kbl(apa_lm$table) %>%
                 position = "left")
 ```
 
-oh boy. that's a bummmer. That is *the opposite* of what we were hoping to find. 
+oh boy. that's a bummer. That is *the opposite* of what we were hoping to find. 
+
+## Model 2
+
+Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect; party ID as control variable.
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lmerTest::lmer(vote_sweep ~ lebe_cont_z + party_gen + (1|PLACENAME),data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
 
 # Exploratory Analysis
 
