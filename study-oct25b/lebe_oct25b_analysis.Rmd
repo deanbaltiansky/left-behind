@@ -86,8 +86,6 @@ df_lebe_elg <- df_lebe %>%
 
 # Background
 
-**CURRENT UPDATE 11/3 AM**
-
 This is a preregistered study in the context of local and state-level elections. This is from the preregistration:
 
 ## Hypothesis
