@@ -1157,6 +1157,21 @@ kbl(apa_lm$table) %>%
                 position = "left")
 ```
 
+## Model 3
+
+Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect; party ID as control variable. (Filter out NJ)
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lmerTest::lmer(vote_sweep ~ lebe_cont_z + party_id + (1|PLACENAME),data = df_lebe_elg %>% filter(PLACENAME != "New Jersey"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
 # Exploratory Analysis
 
 ## Break it down by election
