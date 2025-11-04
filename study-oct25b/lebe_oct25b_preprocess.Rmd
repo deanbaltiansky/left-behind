@@ -163,7 +163,15 @@ df_lebe <- df_lebe %>%
                                     party_gen == "Independent" |
                                       party_gen == "No preference" |
                                       party_gen == "Other party" ~ paste0("Independent | ",party_ind),
-                                    .default = NA)) %>% 
+                                    .default = NA),
+         party_id = case_when(party_followup == "Democrat | Not very strong" |
+                                party_followup == "Democrat | Strong" |
+                                party_followup == "Independent | Closer to Democratic" ~ "Dem",
+                              party_followup == "Republican | Not very strong" |
+                                party_followup == "Republican | Strong" |
+                                party_followup == "Independent | Closer to Republican" ~ "Rep",
+                              party_followup == "Independent | Neither" ~ "Ind",
+                              .default = NA)) %>% 
   mutate(vote_sweep = case_when(vote_who %in% cands_sweep ~ 1,
                                 vote_who %in% cands_inc ~ 0,
                                 .default = NA),
@@ -218,6 +226,7 @@ df_lebe <- df_lebe %>%
                 party_rep,
                 party_ind,
                 party_followup,
+                party_id,
                 is_elg,
                 age,
                 gender,
