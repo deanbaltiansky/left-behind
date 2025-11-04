@@ -1149,7 +1149,7 @@ oh boy. that's a bummer. That is *the opposite* of what we were hoping to find.
 Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect; party ID as control variable.
 
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
-m1 <- lmerTest::lmer(vote_sweep ~ lebe_cont_z + party_gen + (1|PLACENAME),data = df_lebe_elg)
+m1 <- lmerTest::lmer(vote_sweep ~ lebe_cont_z + party_id + (1|PLACENAME),data = df_lebe_elg)
 
 apa_lm <- apa_print(m1)
  

@@ -6465,7 +6465,7 @@ were hoping to find.</p>
 predictor variable; voting intention for the political candidate who
 supports sweeping change as the outcome variable; election as random
 effect; party ID as control variable.</p>
-<pre class="r"><code>m1 &lt;- lmerTest::lmer(vote_sweep ~ lebe_cont_z + party_gen + (1|PLACENAME),data = df_lebe_elg)
+<pre class="r"><code>m1 &lt;- lmerTest::lmer(vote_sweep ~ lebe_cont_z + party_id + (1|PLACENAME),data = df_lebe_elg)
 
 apa_lm &lt;- apa_print(m1)
  
@@ -6505,16 +6505,16 @@ Intercept
 0.47
 </td>
 <td style="text-align:left;">
-[0.17, 0.77]
+[0.17, 0.76]
 </td>
 <td style="text-align:left;">
-3.10
+3.12
 </td>
 <td style="text-align:left;">
-3.15
+3.13
 </td>
 <td style="text-align:left;">
-.050
+.049
 </td>
 </tr>
 <tr>
@@ -6525,93 +6525,53 @@ Lebe cont z
 0.00
 </td>
 <td style="text-align:left;">
-[-0.05, 0.04]
-</td>
-<td style="text-align:left;">
--0.15
-</td>
-<td style="text-align:left;">
-385.59
-</td>
-<td style="text-align:left;">
-.881
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Party genIndependent
+[-0.04, 0.04]
 </td>
 <td style="text-align:left;">
 0.04
 </td>
 <td style="text-align:left;">
-[-0.06, 0.14]
+387.63
 </td>
 <td style="text-align:left;">
-0.74
-</td>
-<td style="text-align:left;">
-385.35
-</td>
-<td style="text-align:left;">
-.458
+.967
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-Party genNo preference
+Party idInd
 </td>
 <td style="text-align:left;">
-0.12
+0.13
 </td>
 <td style="text-align:left;">
-[-0.09, 0.33]
+[-0.01, 0.28]
 </td>
 <td style="text-align:left;">
-1.14
+1.81
 </td>
 <td style="text-align:left;">
-385.24
+387.25
 </td>
 <td style="text-align:left;">
-.253
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Party genOther party
-</td>
-<td style="text-align:left;">
--0.08
-</td>
-<td style="text-align:left;">
-[-0.47, 0.32]
-</td>
-<td style="text-align:left;">
--0.37
-</td>
-<td style="text-align:left;">
-385.18
-</td>
-<td style="text-align:left;">
-.709
+.071
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-Party genRepublican
+Party idRep
 </td>
 <td style="text-align:left;">
-0.37
+0.31
 </td>
 <td style="text-align:left;">
-[0.25, 0.49]
+[0.20, 0.42]
 </td>
 <td style="text-align:left;">
-6.18
+5.69
 </td>
 <td style="text-align:left;">
-385.48
+387.37
 </td>
 <td style="text-align:left;">
 &lt; .001
