@@ -1106,3 +1106,30 @@ interact_plot(m1,
 ```
 
 ok. great. that's good to see.
+
+## Extremity by ideology
+
+We're going to create an additional dependent variable: the ideal candidate as a combination of their approach to change and ideology. Potentially, participants' own ideology X left behind will be predictive of support for extreme candidates who share their ideology. This requires a three-way interaction, so let me just plot it first and then we'll break it down.
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(cand_change_R_z ~ lebe_cont_z*ideo_z*cand_rightwing_z,data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE,fig.dim=c(10,5)}
+interact_plot(
+  m1,
+  pred = lebe_cont_z,
+  modx = cand_rightwing_z,
+  mod2 = ideo_z,
+  plot.points = FALSE,
+  interval = TRUE,
+  legend.main = "Candidate right-wing"
+)
+```

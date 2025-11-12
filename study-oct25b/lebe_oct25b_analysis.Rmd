@@ -78,7 +78,8 @@ df_lebe <- df_lebe %>%
                             "4yearColl",
                             "MA",
                             "PHD")),
-         lebe_cont_z = scale(lebe_cont))
+         lebe_cont_z = scale(lebe_cont),
+         ideo_z = scale(ideo))
 
 df_lebe_elg <- df_lebe %>% 
   filter(is_elg == 1)
@@ -269,6 +270,7 @@ df_lebe_elg %>%
         axis.text.x = element_text(color = "black",
                                    face = "bold")) +
   facet_wrap(~PLACENAME,nrow = 2)
+
 
 ```
 
@@ -1190,7 +1192,7 @@ df_lebe_elg %>%
         axis.text.y = element_text(color = "black"),
         axis.text.x = element_text(color = "black",
                                    face = "bold")) +
-  facet_wrap(~PLACENAME,nrow = 2)
+  facet_wrap(~PLACENAME)
 ```
 
 ### New Jersey
@@ -1313,4 +1315,74 @@ interact_plot(m1,
 
 Hmm, not much going on.
 
+## Moderator: Participants' ideology
 
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lmerTest::lmer(vote_sweep ~ lebe_cont_z*ideo_z + (1|PLACENAME),data = df_lebe_elg %>% filter(PLACENAME %in% c("New Jersey","New York City")))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE,fig.dim=c(10,5)}
+interact_plot(
+  m1,
+  pred = lebe_cont_z,
+  modx = ideo_z,
+  plot.points = FALSE,
+  interval = TRUE,
+  legend.main = "Participant ideology"
+)
+```
+
+### New Jersey
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(vote_sweep ~ lebe_cont_z*ideo_z,data = df_lebe_elg %>% filter(PLACENAME == "New Jersey"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE,fig.dim=c(10,5)}
+interact_plot(
+  m1,
+  pred = lebe_cont_z,
+  modx = ideo_z,
+  plot.points = FALSE,
+  interval = TRUE,
+  legend.main = "Participant ideology"
+)
+```
+
+### New York City
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(vote_sweep ~ lebe_cont_z*ideo_z,data = df_lebe_elg %>% filter(PLACENAME == "New York City"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE,fig.dim=c(10,5)}
+interact_plot(
+  m1,
+  pred = lebe_cont_z,
+  modx = ideo_z,
+  plot.points = FALSE,
+  interval = TRUE,
+  legend.main = "Participant ideology"
+)
+```
