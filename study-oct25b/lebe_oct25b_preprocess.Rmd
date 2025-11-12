@@ -29,6 +29,10 @@ repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/s
 
 df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
 
+repo_url_t2 <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25c/data/"
+
+df_deid_t2  <- readr::read_csv(paste0(repo_url_t2,"df_raw_deid.csv"), show_col_types = FALSE)
+
 ```
 
 remove ineligible participants (including those who got through the Connect filters but were routed out after indicating where they live)
@@ -204,6 +208,43 @@ df_lebe <- df_lebe %>%
                          ifelse(check_2 != "14285733",1,0)))
 ```
 
+add T2
+
+```{r}
+df_lebe_t2 <- df_deid_t2 %>%
+  select(PID,Election:CAND_2,vote_who:vote_who_nyc_8_TEXT) %>%
+  mutate(vote_t2 = case_when(Election == "New York City" & vote_who_nyc == "${e://Field/CAND_1}" ~ CAND_1,
+                          Election == "New York City" & vote_who_nyc == "${e://Field/CAND_2}" ~ CAND_2,
+                          Election == "New York City" & vote_who_nyc == "Curtis Sliwa" ~ "Curtis Sliwa",
+                          Election == "New York City" & vote_who_nyc == "I have not voted" ~ "No Vote",
+                          Election != "New York City" & vote_who == "${e://Field/CAND_1}" ~ CAND_1,
+                          Election != "New York City" & vote_who == "${e://Field/CAND_2}" ~ CAND_2,
+                          Election != "New York City" & vote_who == "Other" ~ vote_who_3_TEXT,
+                          Election != "New York City" & vote_who_nyc == "I have not voted" ~ "No Vote",
+                          .default = NA))
+
+df_lebe_t2 <- df_lebe_t2 %>% 
+  mutate(vote_sweep_t2 = case_when(vote_t2 %in% cands_sweep ~ 1,
+                                vote_t2 %in% cands_inc ~ 0,
+                                .default = NA),
+         vote_sweep_all_t2 = case_when(vote_t2 %in% cands_sweep ~ 1,
+                                    .default = 0),
+         vote_other_t2 = case_when(!(vote_t2 %in% c(cands_sweep,cands_inc)) ~ 1,
+                                .default = 0),
+         vote_inc_all_t2 = case_when(vote_t2 %in% cands_inc ~ 1,
+                                  .default = 0))
+
+df_lebe_t2 <- df_lebe_t2 %>% 
+  select(PID,vote_t2:vote_inc_all_t2)
+
+df_lebe <- df_lebe %>% 
+  group_by(PID) %>% 
+  slice(1) %>% 
+  ungroup() %>% 
+  left_join(df_lebe_t2,by = "PID")
+```
+
+
 take only necessary variables
 
 ```{r}
@@ -213,6 +254,7 @@ df_lebe <- df_lebe %>%
                 CAND_1:PLACENAME,
                 lebe_cont,
                 vote_sweep:vote_inc_all,
+                vote_t2:vote_inc_all_t2,
                 cand1_change,
                 cand2_change,
                 cand1_rightwing,
