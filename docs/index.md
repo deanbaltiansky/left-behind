@@ -29,4 +29,6 @@ Recent years have been marked by an increase in the general feeling of being lef
   
 - [Study — October 2025A (election pretest)](studies/study-oct25a){:target="_blank" rel="noopener"}
 
+- [Study — October 2025B (election study; preregistered)](studies/study-oct25b){:target="_blank" rel="noopener"}
+
 

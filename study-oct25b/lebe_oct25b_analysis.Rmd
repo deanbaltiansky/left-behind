@@ -117,6 +117,8 @@ Target: 300 per race (1200 total).
 
 Stopping rule: Data collection, for each race separately, will start two weeks prior to the election (10/22) and continue until one of the following: (1) the target sample of 300 participants is achieved; (2) one day before the election (11/3).
 
+We also added a Time 2 measure (post-election) that simply asked people who they voted for. 
+
 ## Analysis plan
 
 Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect.
@@ -125,6 +127,10 @@ Random effects linear model: Continuous left behind measure as the predictor var
 
 ```{r,results='asis',echo=TRUE,warning=FALSE,message=F}
 total_responses <- df_lebe %>% 
+  nrow()
+
+t2_responses <- df_lebe_elg %>% 
+  filter(!is.na(vote_t2)) %>% 
   nrow()
 
 eligible_n <- df_lebe %>% 
@@ -137,18 +143,20 @@ eligible_n <- df_lebe %>%
   unname()
 ```
 
-Overall, after routing out participants who do not reside in one of our target counties, we got a total of `r total_responses` responses. After filtering completed responses for bots, we got a total of: That gives us a total of `r eligible_n` eligible participants.
+Overall, after routing out participants who do not reside in one of our target counties, we got a total of `r total_responses` responses. After filtering completed responses for bots, we got a total of `r eligible_n` eligible participants. Of those, `r t2_responses` reported who they ended up voting for in the election.
 
-# Races
+# Elections
 
 ```{r,results='asis',echo=TRUE,warning=FALSE}
 df_lebe_elg %>% 
-  group_by(PLACENAME) %>% 
+  mutate(t2_response = ifelse(is.na(vote_t2),0,1)) %>% 
+  group_by(PLACENAME,t2_response) %>% 
   summarise(N = n()) %>% 
   ungroup() %>% 
-  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
-  ungroup() %>% 
-  arrange(desc(N)) %>% 
+  pivot_wider(names_from = t2_response,
+              values_from = N) %>% 
+  rename(only_t1 = "0",
+         t1_and_t2 = "1") %>% 
   kbl() %>% 
   kable_styling(bootstrap_options = "hover",
                 position = "left") %>% 
@@ -489,6 +497,45 @@ df_lebe_elg %>%
                 position = "left") %>% 
   scroll_box(width = "100%", height = "400px")
 ```
+
+## Voting behavior (T2)
+
+```{r,echo=TRUE,results='asis',message=F,warning=FALSE}
+df_lebe_elg %>% 
+  filter(!is.na(vote_t2)) %>% 
+  group_by(PLACENAME,vote_t2) %>% 
+  summarise(N = n()) %>% 
+  group_by(PLACENAME) %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(PLACENAME,desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                position = "left") %>% 
+  scroll_box(width = "100%", height = "400px")
+```
+
+## Comparing intentions and behavior
+
+I'll look only at those who completed the T2 survey.
+
+```{r,echo=TRUE,results='asis',message=F,warning=FALSE}
+df_lebe_elg %>% 
+  filter(!is.na(vote_t2)) %>% 
+  rename(vote_t1 = vote_who) %>% 
+  group_by(PLACENAME,vote_t1,vote_t2) %>% 
+  summarise(N = n()) %>% 
+  group_by(PLACENAME) %>% 
+  mutate(Perc = round(100*(N/sum(N)),2)) %>% 
+  ungroup() %>% 
+  arrange(PLACENAME,desc(N)) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "hover",
+                position = "left") %>% 
+  scroll_box(width = "100%", height = "400px")
+```
+
+Not a ton of differences. ok.
 
 ## Perception of Candidates
 
@@ -1385,4 +1432,132 @@ interact_plot(
   interval = TRUE,
   legend.main = "Participant ideology"
 )
+```
+
+# Analysis: T2 measure
+
+## Model 1
+
+Random effects linear model: Continuous left behind measure as the predictor variable; voting behavior for the political candidate who supports sweeping change as the outcome variable; election as random effect.
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lmerTest::lmer(vote_sweep_t2 ~ lebe_cont_z + (1|PLACENAME),data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Model 2
+
+Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect; party ID as control variable.
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lmerTest::lmer(vote_sweep_t2 ~ lebe_cont_z + party_id + (1|PLACENAME),data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Model 3
+
+Random effects linear model: Continuous left behind measure as the predictor variable; voting intention for the political candidate who supports sweeping change as the outcome variable; election as random effect; party ID as control variable. (Filter out NJ)
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lmerTest::lmer(vote_sweep_t2 ~ lebe_cont_z + party_id + (1|PLACENAME),data = df_lebe_elg %>% filter(PLACENAME != "New Jersey"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+# T2 Measure: Break it down by election
+
+## New Jersey
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(vote_sweep_t2 ~ lebe_cont_z,data = df_lebe_elg %>% filter(PLACENAME == "New Jersey"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## New York City
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(vote_sweep_t2 ~ lebe_cont_z,data = df_lebe_elg %>% filter(PLACENAME == "New York City"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Seattle
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(vote_sweep_t2 ~ lebe_cont_z,data = df_lebe_elg %>% filter(PLACENAME == "Seattle"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+## Minneapolis
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+m1 <- lm(vote_sweep_t2 ~ lebe_cont_z,data = df_lebe_elg %>% filter(PLACENAME == "Minneapolis"))
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+# T2 outcome - Moderated by Perceived direction
+
+```{r,results='asis',echo=TRUE,warning=FALSE,message=FALSE}
+cands_sweep = c("Zohran Mamdani","Jack Ciattarelli","Katie Wilson","Omar Fateh")
+cands_inc = c("Andrew Cuomo","Mikie Sherill","Bruce Harrell","Jacob Frey")
+
+df_lebe_elg <- df_lebe_elg %>% 
+  mutate(seen_rightwing = case_when(CAND_1 %in% cands_sweep ~ cand1_rightwing,
+                                CAND_2 %in% cands_sweep ~ cand2_rightwing))
+
+m1 <- lmerTest::lmer(vote_sweep_t2 ~ lebe_cont_z*seen_rightwing + (1|PLACENAME),data = df_lebe_elg)
+
+apa_lm <- apa_print(m1)
+ 
+kbl(apa_lm$table) %>% 
+  kable_styling(bootstrap_options = "hover",
+                full_width = F,
+                position = "left")
+```
+
+```{r,echo=T}
+interact_plot(m1,
+              pred = "lebe_cont_z",
+              modx = "seen_rightwing",
+              interval = T)
 ```
