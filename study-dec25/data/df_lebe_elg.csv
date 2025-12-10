@@ -1,0 +1,203 @@
+"PID","lebe_cont","cond","cond_bin","choice","choice_sweep","party_forgroup","ideo","party_gen","party_dem","party_rep","party_ind","party_followup","att_2","is_elg","age","gender","race","edu","income","income_num","edu_num","white_bin","man_bin","rep_bin","dem_bin","ind_bin","feedback"
+"FV244vg",51,"outparty",0,"CANDIDATE B",1,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,39,"man","Asian","4yearColl","Over $200,000",11,4,0,1,0,0,1,NA
+"MC227oj",65,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,50,"man","White","4yearColl","$20,001-$40,000",2,4,1,1,0,1,0,"Fun!"
+"DG569jx",35,"inparty",1,"CANDIDATE A",0,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,35,"woman","White","GED","$120,001-$140,000",7,2,1,0,0,0,1,NA
+"ID917yi",100,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,30,"woman","White","MA","$20,001-$40,000",2,5,1,0,0,0,1,NA
+"TE167of",50,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,51,"woman","White","GED","$0-$20,000",1,2,1,0,0,1,0,NA
+"WB214an",70,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,30,NA,"White","2yearColl","$0-$20,000",1,3,1,NA,0,0,1,NA
+"CC435yg",77,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,32,"woman","White","4yearColl","$60,001-$80,000",4,4,1,0,0,1,0,NA
+"RK881hk",20,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,38,"man","Asian","4yearColl","Over $200,000",11,4,0,1,0,1,0,NA
+"WA473yd",61,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,33,"woman","White","4yearColl","$80,001-$100,000",5,4,1,0,0,1,0,NA
+"XL163wf",100,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,41,"man","Black or African American","4yearColl","$40,001-$60,000",3,4,0,1,0,1,0,NA
+"OT439xx",0,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,48,"woman","White","4yearColl","Over $200,000",11,4,1,0,1,0,0,NA
+"NO866ix",68,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,37,"woman","White","4yearColl","$60,001-$80,000",4,4,1,0,0,1,0,"None, thank you"
+"PC647hd",10,"outparty",0,"CANDIDATE A",0,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,49,"woman","White","4yearColl","$120,001-$140,000",7,4,1,0,0,0,1,NA
+"XT640ub",82,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,36,"man","multiracial","MA","$20,001-$40,000",2,5,0,1,0,1,0,NA
+"SW424im",20,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,42,"man","White","4yearColl","$100,001-$120,000",6,4,1,1,1,0,0,"nope"
+"HY961hs",5,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,43,"man","White","4yearColl","Over $200,000",11,4,1,1,0,1,0,NA
+"UD687ov",41,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,34,"woman","White","4yearColl","$80,001-$100,000",5,4,1,0,1,0,0,NA
+"UZ731gh",82,"outparty",0,"CANDIDATE A",0,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,31,NA,"Asian","GED","$60,001-$80,000",4,2,0,NA,0,0,1,NA
+"HX177dj",80,"outparty",0,"CANDIDATE B",1,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,50,"man","White","2yearColl","$0-$20,000",1,3,1,1,0,1,0,NA
+"VT334vw",82,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,38,"woman","White","2yearColl","$0-$20,000",1,3,1,0,0,1,0,NA
+"KL524ya",74,"outparty",0,"CANDIDATE B",1,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,28,"woman","White","4yearColl","$80,001-$100,000",5,4,1,0,0,0,1,NA
+"VU342xq",0,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,53,"woman","White","2yearColl","$40,001-$60,000",3,3,1,0,1,0,0,"no comments"
+"KG560dc",34,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,70,"woman","White","GED","$120,001-$140,000",7,2,1,0,0,1,0,NA
+"GY011xq",56,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,46,"woman","White","2yearColl","$20,001-$40,000",2,3,1,0,0,0,1,NA
+"RB326bn",70,"inparty",1,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,42,"man","Hispanic, Latino, or Spanish origin","4yearColl","$120,001-$140,000",7,4,0,1,1,0,0,"why were they Depublican?!"
+"GM461uf",20,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,40,"man","White","MA","$140,001-$160,000",8,5,1,1,0,1,0,NA
+"YF144ui",31,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,43,"woman","White","4yearColl","$40,001-$60,000",3,4,1,0,0,1,0,NA
+"AT329lp",15,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,51,"woman","White","MA","$140,001-$160,000",8,5,1,0,0,1,0,"None"
+"FH613az",28,"inparty",1,"CANDIDATE A",0,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,47,"man","White","4yearColl","Over $200,000",11,4,1,1,0,0,1,NA
+"LN517hd",24,"outparty",0,"CANDIDATE B",1,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,33,"man","White","4yearColl","$100,001-$120,000",6,4,1,1,0,0,1,NA
+"PR667kh",78,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,39,"woman","White","4yearColl","$40,001-$60,000",3,4,1,0,0,1,0,NA
+"GK098gr",65,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,36,"woman","multiracial","4yearColl","$20,001-$40,000",2,4,0,0,0,0,1,NA
+"RL064ob",90,"inparty",1,"CANDIDATE B",1,"Democratic",4,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,55,"man","White","GED","$0-$20,000",1,2,1,1,0,0,1,NA
+"AM068br",0,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,64,"woman","White","4yearColl","$100,001-$120,000",6,4,1,0,0,1,0,NA
+"TP083ol",40,"inparty",1,"CANDIDATE B",1,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,39,"woman","multiracial","4yearColl","$180,001-$200,000",10,4,0,0,0,0,1,"Thanks for this opportunity!"
+"RO054wa",41,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,45,"woman","White","2yearColl","$20,001-$40,000",2,3,1,0,1,0,0,NA
+"CM264vy",20,"outparty",0,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,58,"man","White","MA","$100,001-$120,000",6,5,1,1,0,1,0,"All good thanks"
+"NX839ff",70,"inparty",1,"CANDIDATE A",0,"Democratic",3,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,42,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,0,0,1,"Best of luck with your research!"
+"LV149eo",9,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,29,"woman","White","GED","$60,001-$80,000",4,2,1,0,0,1,0,NA
+"MH400do",39,"inparty",1,"CANDIDATE B",1,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,51,"woman","multiracial","4yearColl","$100,001-$120,000",6,4,0,0,0,1,0,"None"
+"QF121zl",0,"outparty",0,"CANDIDATE A",0,"Democratic",4,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,57,"woman","White","4yearColl","$40,001-$60,000",3,4,1,0,0,1,0,NA
+"NW197le",40,"inparty",1,"CANDIDATE B",1,"Democratic",5,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,75,"woman","White","noHS","$40,001-$60,000",3,1,1,0,0,1,0,NA
+"UP943dx",50,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,47,"man","multiracial","4yearColl","$180,001-$200,000",10,4,0,1,0,1,0,NA
+"EO205ao",60,"inparty",1,"CANDIDATE A",0,"Republican",4,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,61,"man","White","4yearColl","$100,001-$120,000",6,4,1,1,1,0,0,NA
+"FU276re",60,"outparty",0,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,50,"man","White","GED","$60,001-$80,000",4,2,1,1,1,0,0,NA
+"CZ829ex",70,"outparty",0,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,34,"man","White","PHD","$140,001-$160,000",8,6,1,1,0,1,0,NA
+"TA975ee",76,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,45,"woman","White","GED","$60,001-$80,000",4,2,1,0,1,0,0,NA
+"IF023aa",51,"outparty",0,"CANDIDATE B",1,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,30,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,NA
+"JN709lo",80,"outparty",0,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,61,"woman","White","GED","$60,001-$80,000",4,2,1,0,0,1,0,NA
+"YQ283xw",70,"outparty",0,"CANDIDATE A",0,"Democratic",5,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,39,"man","Black or African American","GED","$40,001-$60,000",3,2,0,1,0,1,0,NA
+"PL734se",41,"outparty",0,"CANDIDATE A",0,"Democratic",4,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,35,"man","Asian","4yearColl","$140,001-$160,000",8,4,0,1,0,1,0,NA
+"BR678uf",25,"inparty",1,"CANDIDATE A",0,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,35,"man","White","2yearColl","$0-$20,000",1,3,1,1,0,0,1,NA
+"HY725cx",14,"outparty",0,"CANDIDATE A",0,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,25,"man","White","4yearColl","$120,001-$140,000",7,4,1,1,0,0,1,NA
+"HH747lc",80,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,46,"woman","White","MA","$20,001-$40,000",2,5,1,0,0,1,0,NA
+"KL622wi",20,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,79,"man","White","4yearColl","$20,001-$40,000",2,4,1,1,1,0,0,NA
+"TY762ek",74,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,77,"man","White","PHD","$80,001-$100,000",5,6,1,1,0,1,0,"why ask about color??????"
+"OJ205mw",52,"inparty",1,"CANDIDATE B",1,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,41,"man","White","4yearColl","$160,001-$180,000",9,4,1,1,1,0,0,NA
+"QI672he",65,"inparty",1,"CANDIDATE B",1,"Republican",2,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,21,"man","multiracial","GED","$80,001-$100,000",5,2,0,1,1,0,0,NA
+"JU662kd",24,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,23,"man","multiracial","GED","$140,001-$160,000",8,2,0,1,0,1,0,NA
+"MW506pv",20,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,41,"woman","White","GED","$140,001-$160,000",8,2,1,0,0,1,0,"n/a"
+"IP919fx",20,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,54,"man","White","2yearColl","$20,001-$40,000",2,3,1,1,0,1,0,NA
+"EY323dw",70,"inparty",1,"CANDIDATE B",1,"Democratic",4,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,25,"man","White","GED","$20,001-$40,000",2,2,1,1,0,0,1,NA
+"MG595cr",63,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,36,"man","Hispanic, Latino, or Spanish origin","4yearColl","$100,001-$120,000",6,4,0,1,0,1,0,NA
+"XY613qv",20,"outparty",0,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,48,"woman","White","4yearColl","$140,001-$160,000",8,4,1,0,0,1,0,NA
+"NC157ds",23,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,31,"woman","White","MA","Over $200,000",11,5,1,0,0,1,0,NA
+"DI340ri",5,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,67,"woman","White","2yearColl","$100,001-$120,000",6,3,1,0,1,0,0,NA
+"DK312wp",40,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,59,"woman","White","4yearColl","$0-$20,000",1,4,1,0,1,0,0,"n/a"
+"MX495nx",20,"inparty",1,"CANDIDATE A",0,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,72,"woman","White","2yearColl","$40,001-$60,000",3,3,1,0,0,0,1,NA
+"QW628jp",79,"inparty",1,"CANDIDATE B",1,"Democratic",4,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,36,"man","Hispanic, Latino, or Spanish origin","GED","$20,001-$40,000",2,2,0,1,0,1,0,NA
+"NW016yx",85,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,57,"woman","White","GED","$20,001-$40,000",2,2,1,0,1,0,0,"none"
+"JR491re",79,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,39,"woman","multiracial","2yearColl","$60,001-$80,000",4,3,0,0,0,1,0,NA
+"MS882pp",85,"outparty",0,"CANDIDATE A",0,"Democratic",3,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,45,"man","White","2yearColl","$0-$20,000",1,3,1,1,0,0,1,"Thanks for letting me participate."
+"VU929vs",40,"outparty",0,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,46,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,"I wouldn't vote for either. I'm a Republican."
+"BW291ua",20,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,43,"man","White","GED","$80,001-$100,000",5,2,1,1,1,0,0,"n/a"
+"MJ793bj",38,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,36,"woman","White","4yearColl","$60,001-$80,000",4,4,1,0,0,1,0,NA
+"MP802au",30,"outparty",0,"CANDIDATE B",1,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,35,"man","multiracial","GED","$40,001-$60,000",3,2,0,1,0,1,0,NA
+"DR801pd",28,"inparty",1,"CANDIDATE A",0,"Democratic",4,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,33,"man","White","4yearColl","$40,001-$60,000",3,4,1,1,0,0,1,"Thanks for the opportunity"
+"FJ456tj",43,"inparty",1,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,42,"man","Asian","4yearColl","$60,001-$80,000",4,4,0,1,0,1,0,NA
+"DF200yi",40,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,26,"man","White","2yearColl","$60,001-$80,000",4,3,1,1,0,1,0,"I enjoyed the study and didn't experience any issues with it."
+"LE302dt",39,"outparty",0,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,40,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,NA
+"NO871cc",0,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,57,"man","White","4yearColl","$180,001-$200,000",10,4,1,1,1,0,0,NA
+"DT972eh",80,"inparty",1,"CANDIDATE B",1,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,32,"man","White","GED","$40,001-$60,000",3,2,1,1,1,0,0,NA
+"PH536bp",0,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,39,"man","White","4yearColl","$80,001-$100,000",5,4,1,1,1,0,0,NA
+"CN718kc",67,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,32,"man","White","4yearColl","$100,001-$120,000",6,4,1,1,0,1,0,NA
+"SR521jh",40,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,35,"man","White","4yearColl","$160,001-$180,000",9,4,1,1,1,0,0,"no comments thank you"
+"ZK401lr",10,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,67,"woman","White","4yearColl","$120,001-$140,000",7,4,1,0,0,1,0,NA
+"FR541ng",25,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,54,"woman","White","2yearColl","$20,001-$40,000",2,3,1,0,1,0,0,NA
+"TZ585mz",0,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,42,"man","White","4yearColl","$140,001-$160,000",8,4,1,1,1,0,0,"Nothing to add here"
+"BD643wm",0,"inparty",1,"CANDIDATE B",1,"Republican",7,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,53,"man","White","MA","Over $200,000",11,5,1,1,1,0,0,NA
+"EW248rz",0,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,24,"woman","multiracial","4yearColl","$120,001-$140,000",7,4,0,0,1,0,0,"none"
+"CV789cp",56,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,29,"man","White","4yearColl","$0-$20,000",1,4,1,1,1,0,0,NA
+"XP500cp",32,"outparty",0,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,30,"woman","multiracial","MA","$80,001-$100,000",5,5,0,0,0,1,0,NA
+"HW183ew",4,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,57,"man","White","MA","$160,001-$180,000",9,5,1,1,1,0,0,"Merry Christmas!"
+"VT533kc",42,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,46,"woman","White","2yearColl","$80,001-$100,000",5,3,1,0,0,1,0,NA
+"JZ225wq",30,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,30,"man","Asian","4yearColl","$140,001-$160,000",8,4,0,1,0,1,0,"none"
+"AC832hj",80,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,40,"man","White","GED","$60,001-$80,000",4,2,1,1,0,1,0,NA
+"FC166ol",18,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,65,"woman","Black or African American","2yearColl","$60,001-$80,000",4,3,0,0,1,0,0,"None"
+"NA073ss",0,"outparty",0,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,75,"man","White","PHD","$40,001-$60,000",3,6,1,1,0,1,0,NA
+"SM942or",42,"outparty",0,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,23,"man","multiracial","GED","$40,001-$60,000",3,2,0,1,0,1,0,NA
+"NR285vd",30,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,24,"man","multiracial","GED","$60,001-$80,000",4,2,0,1,0,0,1,"Interesting study."
+"YJ296sl",0,"inparty",1,"CANDIDATE B",1,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,41,"man","White","4yearColl","$0-$20,000",1,4,1,1,0,1,0,NA
+"JN237yf",85,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,46,"man","White","PHD","$20,001-$40,000",2,6,1,1,0,1,0,"None, thank you."
+"MZ840bn",75,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,28,"woman","White","PHD","$140,001-$160,000",8,6,1,0,0,1,0,NA
+"CR442uz",0,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,46,"man","multiracial","4yearColl","Over $200,000",11,4,0,1,1,0,0,NA
+"TN384qu",78,"outparty",0,"CANDIDATE A",0,"Democratic",4,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,49,"woman","White","GED","$0-$20,000",1,2,1,0,0,1,0,NA
+"UT437xa",11,"outparty",0,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,30,"man","White","GED","$60,001-$80,000",4,2,1,1,1,0,0,NA
+"UJ831cu",81,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,33,"woman","White","4yearColl","$60,001-$80,000",4,4,1,0,1,0,0,NA
+"PU765nf",35,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,31,"woman","White","PHD","$80,001-$100,000",5,6,1,0,0,1,0,NA
+"GU996iw",65,"inparty",1,"CANDIDATE B",1,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,36,"man","White","2yearColl","$20,001-$40,000",2,3,1,1,0,0,1,NA
+"SQ092gr",0,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,62,"woman","White","GED","$60,001-$80,000",4,2,1,0,1,0,0,"none"
+"FP677jq",29,"outparty",0,"CANDIDATE B",1,"Democratic",2,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,19,"woman","multiracial","GED","$120,001-$140,000",7,2,0,0,0,0,1,NA
+"TS445ok",85,"outparty",0,"CANDIDATE B",1,"Democratic",3,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,64,"man","Black or African American","GED","$40,001-$60,000",3,2,0,1,0,1,0,NA
+"EQ636xk",0,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,58,"man","White","MA","Over $200,000",11,5,1,1,1,0,0,"thanks"
+"NX641kb",30,"inparty",1,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,59,"man","White","2yearColl","$40,001-$60,000",3,3,1,1,1,0,0,NA
+"DT995kn",25,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,40,"woman","Black or African American","MA","$40,001-$60,000",3,5,0,0,0,1,0,NA
+"KC732iq",25,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,66,"man","White","PHD","Over $200,000",11,6,1,1,1,0,0,NA
+"VD355ny",57,"inparty",1,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,28,"woman","Asian","PHD","$180,001-$200,000",10,6,0,0,0,1,0,"n/a"
+"FS202aa",26,"outparty",0,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,50,"woman","White","GED","$60,001-$80,000",4,2,1,0,1,0,0,NA
+"XZ062nu",60,"outparty",0,"CANDIDATE A",0,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,43,"man","multiracial","4yearColl","$40,001-$60,000",3,4,0,1,0,0,1,NA
+"BG185ic",41,"outparty",0,"CANDIDATE A",0,"Republican",4,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,56,"woman","White","GED","$100,001-$120,000",6,2,1,0,1,0,0,NA
+"XD649da",51,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,29,"woman","Hispanic, Latino, or Spanish origin","GED","$60,001-$80,000",4,2,0,0,0,0,1,NA
+"LG968zm",60,"outparty",0,"CANDIDATE A",0,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,28,"woman","Asian","4yearColl","$40,001-$60,000",3,4,0,0,0,0,1,NA
+"LU129nu",60,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,35,"man","White","GED","$0-$20,000",1,2,1,1,0,0,1,NA
+"VC640nd",23,"outparty",0,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,40,"man","White","2yearColl","$40,001-$60,000",3,3,1,1,0,1,0,NA
+"KG839le",40,"outparty",0,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,35,"man","White","GED","$120,001-$140,000",7,2,1,1,1,0,0,"n/a"
+"XD059nt",0,"inparty",1,"CANDIDATE B",1,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,57,"woman","White","4yearColl","Over $200,000",11,4,1,0,1,0,0,NA
+"HS480le",22,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,52,"woman","White","2yearColl","$40,001-$60,000",3,3,1,0,1,0,0,NA
+"IA751hb",0,"outparty",0,"CANDIDATE B",1,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,31,"woman","White","2yearColl","$120,001-$140,000",7,3,1,0,1,0,0,NA
+"VK861bd",61,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,73,"woman","White","GED","$20,001-$40,000",2,2,1,0,0,1,0,"none"
+"SD166hu",100,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,30,"woman","White","GED","$40,001-$60,000",3,2,1,0,1,0,0,"Thank you"
+"YK419tj",37,"inparty",1,"CANDIDATE B",1,"Democratic",4,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,60,"man","White","2yearColl","$100,001-$120,000",6,3,1,1,0,0,1,NA
+"RC363rk",30,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,25,"woman","Hispanic, Latino, or Spanish origin","4yearColl","$100,001-$120,000",6,4,0,0,0,1,0,NA
+"PY096lq",20,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,42,"woman","White","4yearColl","$20,001-$40,000",2,4,1,0,1,0,0,NA
+"QE558ou",80,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,51,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,NA
+"GW018bg",100,"inparty",1,"CANDIDATE A",0,"Democratic",4,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,56,"woman","White","GED","$0-$20,000",1,2,1,0,0,0,1,NA
+"HG576tc",0,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,70,"woman","White","2yearColl","$40,001-$60,000",3,3,1,0,1,0,0,"I sincerely hope my response will help with your research. Thank you and have a nice day"
+"QU484mt",24,"outparty",0,"CANDIDATE B",1,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,45,"woman","White","GED","Over $200,000",11,2,1,0,1,0,0,NA
+"LL644on",0,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,58,"woman","White","4yearColl","$80,001-$100,000",5,4,1,0,0,1,0,NA
+"DB156xp",30,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,61,"man","Black or African American","2yearColl","$40,001-$60,000",3,3,0,1,0,1,0,"None"
+"OQ337fg",87,"outparty",0,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,24,"woman","White","4yearColl","$40,001-$60,000",3,4,1,0,1,0,0,NA
+"XG050zz",20,"inparty",1,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,42,"woman","White","4yearColl","$140,001-$160,000",8,4,1,0,1,0,0,NA
+"VQ832bm",11,"inparty",1,"CANDIDATE B",1,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,39,"woman","White","2yearColl","$80,001-$100,000",5,3,1,0,0,0,1,NA
+"WP733yz",0,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,70,"man","White","PHD","$160,001-$180,000",9,6,1,1,1,0,0,"none"
+"QO695wj",39,"outparty",0,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,27,"man","Asian","4yearColl","Over $200,000",11,4,0,1,1,0,0,NA
+"AM438pl",0,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,38,"man","White","4yearColl","$120,001-$140,000",7,4,1,1,0,0,1,"What was the favorite color question about? It seemed like an attention check, but I didn't identify any contradictory instructions"
+"TJ887vy",54,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,65,"man","White","MA","$80,001-$100,000",5,5,1,1,1,0,0,NA
+"XA318va",21,"inparty",1,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,25,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,NA
+"DU494mu",100,"outparty",0,"CANDIDATE B",1,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,43,"woman","White","MA","$0-$20,000",1,5,1,0,1,0,0,NA
+"QW037yd",25,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,53,"man","White","GED","$80,001-$100,000",5,2,1,1,1,0,0,NA
+"RM825no",48,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,30,"man","multiracial","4yearColl","$100,001-$120,000",6,4,0,1,0,1,0,NA
+"YB384yu",30,"outparty",0,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,59,"woman","Black or African American","MA","$60,001-$80,000",4,5,0,0,0,1,0,NA
+"MA306zb",20,"inparty",1,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,25,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,NA
+"JG922wr",67,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,33,"woman","White","MA","$100,001-$120,000",6,5,1,0,1,0,0,NA
+"ZR564ys",10,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,40,"man","White","MA","$180,001-$200,000",10,5,1,1,0,1,0,NA
+"FL997kc",70,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,43,"woman","multiracial","2yearColl","$100,001-$120,000",6,3,0,0,0,0,1,NA
+"BQ477nd",35,"inparty",1,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,32,"woman","multiracial","MA","$80,001-$100,000",5,5,0,0,1,0,0,NA
+"VE749pp",10,"outparty",0,"CANDIDATE B",1,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,48,"man","White","GED","$40,001-$60,000",3,2,1,1,0,0,1,NA
+"DO573ve",14,"outparty",0,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,33,"woman","White","PHD","$160,001-$180,000",9,6,1,0,1,0,0,NA
+"CT864kn",24,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,23,"woman","White","GED","$20,001-$40,000",2,2,1,0,1,0,0,NA
+"MT429hi",70,"outparty",0,"CANDIDATE B",1,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,23,"man","White","2yearColl","$20,001-$40,000",2,3,1,1,0,0,1,NA
+"HJ569js",60,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,27,"man","White","4yearColl","$40,001-$60,000",3,4,1,1,0,1,0,NA
+"QM924pl",13,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,59,"man","White","4yearColl","Over $200,000",11,4,1,1,1,0,0,NA
+"BW915tr",65,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,42,"man","White","4yearColl","$100,001-$120,000",6,4,1,1,0,0,1,"thank you"
+"UE300mc",19,"inparty",1,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,42,"woman","White","4yearColl","$100,001-$120,000",6,4,1,0,1,0,0,NA
+"ED717hf",44,"outparty",0,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,53,"woman","multiracial","4yearColl","$100,001-$120,000",6,4,0,0,1,0,0,NA
+"EV655yo",60,"outparty",0,"CANDIDATE B",1,"Democratic",1,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,32,"woman","White","GED","$0-$20,000",1,2,1,0,0,0,1,"I think the American society moves very slowly in change and we need more people that are the polar opposite of Trump in that he does whatever he wants, but it hurts everyone, who isn't a billionaire."
+"UT709jv",40,"inparty",1,"CANDIDATE B",1,"Democratic",1,"Other party",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,26,"woman","White","4yearColl","$60,001-$80,000",4,4,1,0,0,0,0,"i believe our systems need significant change rather than simple reform"
+"AH257xb",80,"outparty",0,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,51,"man","Black or African American","MA","$120,001-$140,000",7,5,0,1,0,1,0,NA
+"WG946jk",46,"outparty",0,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,52,"woman","White","4yearColl","Over $200,000",11,4,1,0,1,0,0,NA
+"BD392us",20,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,36,"woman","White","4yearColl","$80,001-$100,000",5,4,1,0,1,0,0,NA
+"DC987lr",50,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,42,"woman","White","4yearColl","$40,001-$60,000",3,4,1,0,1,0,0,NA
+"BK570iz",40,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,32,"man","White","GED","$20,001-$40,000",2,2,1,1,1,0,0,"fun and interesting study! Thank you for the chance to participate!"
+"WG018eu",56,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,46,"woman","White","GED","$40,001-$60,000",3,2,1,0,1,0,0,NA
+"PT715uo",28,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,24,"woman","White","MA","$120,001-$140,000",7,5,1,0,1,0,0,NA
+"DJ230op",36,"inparty",1,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,40,"woman","White","4yearColl","$160,001-$180,000",9,4,1,0,0,1,0,NA
+"EK933ut",53,"inparty",1,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,36,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,"good study"
+"OF670ab",50,"outparty",0,"CANDIDATE A",0,"Republican",4,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,40,"man","White","2yearColl","$60,001-$80,000",4,3,1,1,1,0,0,NA
+"TI465xk",0,"outparty",0,"CANDIDATE B",1,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,36,"man","Asian","GED","$20,001-$40,000",2,2,0,1,1,0,0,"Fast changes are better for our country. The poorer people cannot keep up if the changes are too quick."
+"BD421wt",68,"inparty",1,"CANDIDATE A",0,"Democratic",4,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,38,"woman","White","MA","$120,001-$140,000",7,5,1,0,0,1,0,"None"
+"RK892rb",46,"outparty",0,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,39,"woman","White","4yearColl","Over $200,000",11,4,1,0,0,1,0,NA
+"JN735ic",40,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,59,"man","White","4yearColl","$80,001-$100,000",5,4,1,1,1,0,0,NA
+"QK188vz",0,"inparty",1,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,45,"woman","Black or African American","4yearColl","$20,001-$40,000",2,4,0,0,0,1,0,NA
+"WH715eo",51,"inparty",1,"CANDIDATE A",0,"Democratic",4,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,45,"man","Asian",NA,NA,NA,NA,0,1,0,1,0,NA
+"FK615or",20,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,35,"man","Asian","4yearColl","Over $200,000",11,4,0,1,0,1,0,NA
+"BA881be",60,"outparty",0,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,28,"man","White","2yearColl","$60,001-$80,000",4,3,1,1,1,0,0,NA
+"LW341an",33,"inparty",1,"CANDIDATE A",0,"Democratic",1,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,24,"woman","Black or African American","4yearColl","$0-$20,000",1,4,0,0,0,1,0,NA
+"BF560dy",43,"inparty",1,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,38,"man","White","4yearColl","$60,001-$80,000",4,4,1,1,1,0,0,NA
+"YR184sf",12,"outparty",0,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,39,"woman","Hispanic, Latino, or Spanish origin","2yearColl","$140,001-$160,000",8,3,0,0,0,1,0,NA
+"NP727qd",80,"outparty",0,"CANDIDATE A",0,"Republican",5,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,57,"woman","White","GED","$40,001-$60,000",3,2,1,0,1,0,0,NA
+"IZ546mm",10,"inparty",1,"CANDIDATE A",0,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,45,"woman","White","4yearColl","$100,001-$120,000",6,4,1,0,0,1,0,NA
+"GZ212cm",28,"inparty",1,"CANDIDATE A",0,"Republican",4,"Independent",NA,NA,"Closer to Republican","Independent | Closer to Republican",1,1,23,"woman","White","GED","$20,001-$40,000",2,2,1,0,0,0,1,NA
+"GD015qc",0,"outparty",0,"CANDIDATE B",1,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,74,"man","White","GED","$40,001-$60,000",3,2,1,1,1,0,0,NA
+"DJ135nk",60,"inparty",1,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,33,"woman","White","MA","$100,001-$120,000",6,5,1,0,0,1,0,NA
+"XO901be",73,"outparty",0,"CANDIDATE B",1,"Democratic",2,"Democrat","Strong",NA,NA,"Democrat | Strong",1,1,72,"woman","White","PHD","$140,001-$160,000",8,6,1,0,0,1,0,"preference would  depend on the  types of sweeping steps."
+"KQ541cw",10,"outparty",0,"CANDIDATE A",0,"Republican",7,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,68,"woman","White","4yearColl","$20,001-$40,000",2,4,1,0,1,0,0,"I think that if Democrats would want to change things incrementally and give good cause for each change, the other side of the aisle would be more willing to listen."
+"YO618og",21,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Strong",NA,"Republican | Strong",1,1,36,"woman","White","2yearColl","$100,001-$120,000",6,3,1,0,1,0,0,NA
+"YI912dy",51,"outparty",0,"CANDIDATE A",0,"Democratic",3,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,49,"woman","multiracial","GED","$20,001-$40,000",2,2,0,0,0,0,1,NA
+"JM052nn",95,"inparty",1,"CANDIDATE B",1,"Democratic",3,"Independent",NA,NA,"Closer to Democratic","Independent | Closer to Democratic",1,1,32,"woman","White","2yearColl","$120,001-$140,000",7,3,1,0,0,0,1,"Everything worked well and was clearly written. Thanks."
+"JQ710ti",82,"inparty",1,"CANDIDATE A",0,"Democratic",3,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,57,"woman","White","2yearColl","$0-$20,000",1,3,1,0,0,1,0,NA
+"UI534rk",11,"outparty",0,"CANDIDATE A",0,"Democratic",5,"Democrat","Not very strong",NA,NA,"Democrat | Not very strong",1,1,39,"man","White","GED","$60,001-$80,000",4,2,1,1,0,1,0,NA
+"JY632wd",80,"outparty",0,"CANDIDATE B",1,"True Independent",4,"Independent",NA,NA,"Neither","Independent | Neither",1,1,22,"woman","White","GED","$20,001-$40,000",2,2,1,0,0,0,1,NA
+"NF981mr",14,"inparty",1,"CANDIDATE A",0,"Republican",6,"Republican",NA,"Not very strong",NA,"Republican | Not very strong",1,1,30,"man","White","MA","$120,001-$140,000",7,5,1,1,1,0,0,NA
