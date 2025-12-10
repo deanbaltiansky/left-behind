@@ -1,0 +1,264 @@
+---
+title: "lebe_oct25_preprocess"
+output: html_document
+---
+
+```{r,include=FALSE}
+detachAllPackages <- function() {
+
+  basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
+
+  package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+
+  package.list <- setdiff(package.list,basic.packages)
+
+  if (length(package.list)>0)  for (package in package.list) detach(package, character.only=TRUE)
+
+}
+
+detachAllPackages()
+```
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(janitor)
+library(httr)
+library(readr)
+
+repo_url <- "https://raw.githubusercontent.com/deanbaltiansky/left-behind/main/study-oct25/data/"
+
+df_deid  <- readr::read_csv(paste0(repo_url,"df_raw_deid.csv"), show_col_types = FALSE)
+
+```
+
+remove ineligible participants
+
+```{r}
+#keep only those who finished
+df_lebe <- df_deid %>% 
+  filter(Finished == 1) %>% 
+  filter(Progress == 100)
+```
+
+Put NA's where necessary
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(income = ifelse(income == "Prefer not to answer",NA,income))
+```
+
+define income and edu as factors
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(income = factor(income,c("$0-$20,000",
+                                  "$20,001-$40,000",
+                                  "$40,001-$60,000",
+                                  "$60,001-$80,000",
+                                  "$80,001-$100,000",
+                                  "$100,001-$120,000",
+                                  "$120,001-$140,000",
+                                  "$140,001-$160,000",
+                                  "$160,001-$180,000",
+                                  "$180,001-$200,000",
+                                  "Over $200,000")),
+         edu = factor(edu,c("noHS",
+                            "GED",
+                            "2yearColl",
+                            "4yearColl",
+                            "MA",
+                            "PHD")),
+         income_num = as.numeric(income),
+         edu_num = as.numeric(edu))
+```
+
+fix race
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate_at(vars(race_1:race_8),function(x){as.character(x)}) %>% 
+  mutate_at(vars(race_1:race_8),function(x){replace_na(x,"")}) %>% 
+  mutate(race_num_1 = ifelse(race_1 != "",1,0),
+         race_num_2 = ifelse(race_2 != "",1,0),
+         race_num_3 = ifelse(race_3 != "",1,0),
+         race_num_4 = ifelse(race_4 != "",1,0),
+         race_num_5 = ifelse(race_5 != "",1,0),
+         race_num_6 = ifelse(race_6 != "",1,0),
+         race_num_7 = ifelse(race_7 != "",1,0),
+         race_num_8 = ifelse(race_8 != "",1,0),
+         race_num = race_num_1 + race_num_2 + race_num_3 + race_num_4 + race_num_5 + race_num_6 + race_num_7 + race_num_8,
+         race = ifelse(race_num > 1,"multiracial",paste0(race_1,race_2,race_3,race_4,race_5,race_6,race_7,race_8)),
+         race = ifelse(race == "",NA,race)) %>% 
+  mutate(white_bin = ifelse(race == "White",1,0))
+```
+
+gender
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(man_bin = ifelse(gender == "man",1,0))
+```
+
+party 
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(rep_bin = ifelse(party_gen == "Republican",1,0),
+         dem_bin = ifelse(party_gen == "Democrat",1,0),
+         ind_bin = ifelse(party_gen == "Independent",1,0))
+```
+
+rename some vars
+
+```{r}
+df_lebe <- df_lebe %>% 
+  rename(lebe_cont = lebe_cont_1,
+         cand_exp = elect_exp,
+         cand_change = elect_change,
+         cand_econ = elect_econ,
+         cand_cult = elect_cult,
+         lebecool_self = mds_self,
+         lebecool_white = mds_white,
+         lebecool_black = mds_black,
+         lebecool_asian = mds_asian,
+         lebecool_latino = mds_latino)
+         
+         
+```
+
+reverse-score items
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(cand_change_R = 8 - cand_change,
+         mob_1R = 8 - mob_1,
+         mob_3R = 8 - mob_3,
+         mob_7R = 8 - mob_7,
+         mob_8R = 8 - mob_8,
+         soccon_4R = 8 - soccon_4)
+```
+
+recode items
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(party_followup = case_when(party_gen == "Democrat" ~ paste0("Democrat | ",party_dem),
+                                    party_gen == "Republican" ~ paste0("Republican | ",party_rep),
+                                    party_gen == "Independent" |
+                                      party_gen == "No preference" |
+                                      party_gen == "Other party" ~ paste0("Independent | ",party_ind),
+                                    .default = NA))
+```
+
+mean scores
+
+```{r}
+df_lebe <- df_lebe %>% 
+  rowwise() %>% 
+  mutate(cand_rightwing = mean(c(cand_econ,
+                                 cand_cult),na.rm = T),
+         mob = mean(c(mob_1R,
+                      mob_2,
+                      mob_3R,
+                      mob_4,
+                      mob_5,
+                      mob_6,
+                      mob_7R,
+                      mob_8R),na.rm = T),
+         soccon = mean(c(soccon_1,
+                         soccon_2,
+                         soccon_3,
+                         soccon_4R,
+                         soccon_5),na.rm = T),
+         lonely = sum(c(lonely_1,
+                         lonely_2,
+                         lonely_3),na.rm = T)) %>% 
+  ungroup()
+```
+
+cooley measure
+
+alright, i'll approximate something else from the cooley measure, just for the analyses, but it probably won't get the effect because they're only claiming an effect for "last place" participants. alright.
+
+```{r}
+temp <- df_lebe %>% 
+  select(PID,lebecool_self:lebecool_latino) %>% 
+  pivot_longer(-PID,
+               values_to = "placement",
+               names_to = "dot") %>% 
+  group_by(PID) %>% 
+  mutate(rankorder = rank(placement)) %>% 
+  ungroup() %>% 
+  mutate(rankorder = 6 - rankorder) %>% 
+  filter(dot == "lebecool_self") %>% 
+  select(PID,rankorder) %>% 
+  rename(selfplacement = rankorder)
+
+df_lebe <- df_lebe %>% 
+  left_join(temp,by= "PID")
+```
+
+
+checks
+
+```{r}
+df_lebe <- df_lebe %>% 
+  mutate(att_1 = ifelse(check_1 == 5,1,0),
+         att_2 = ifelse(check_2 == "14285733",0,1),
+         is_elg = ifelse(att_1 == 1 & att_2 == 1,1,0))
+```
+
+take only necessary variables
+
+```{r}
+df_lebe <- df_lebe %>% 
+  dplyr::select(PID,
+                lebe_cont,
+                cand_rightwing,
+                cand_change_R,
+                cand_exp:cand_cult,
+                mob:selfplacement,
+                mob_1R,
+                      mob_2,
+                      mob_3R,
+                      mob_4,
+                      mob_5,
+                      mob_6,
+                      mob_7R,
+                      mob_8R,
+                soccon_1,
+                         soccon_2,
+                         soccon_3,
+                         soccon_4R,
+                         soccon_5,
+                lonely_1,
+                         lonely_2,
+                         lonely_3,
+                lebecool_self:lebecool_latino,
+                ideo,
+                party_gen,
+                party_dem,
+                party_rep,
+                party_ind,
+                party_followup,
+                att_1,
+                att_2,
+                is_elg,
+                age,
+                gender,
+                race,
+                edu,
+                income,
+                income_num,
+                edu_num,
+                white_bin:ind_bin,
+                feedback)
+```
+
+write csv
+
+```{r}
+write.csv(df_lebe,"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25/data/df_lebe.csv",row.names = F)
+write.csv(df_lebe %>% filter(is_elg == 1),"~/Google Drive/My Drive/left behind/left behind - github/left-behind/study-oct25/data/df_lebe_elg.csv",row.names = F)
+```
+
